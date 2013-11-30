@@ -1,7 +1,8 @@
 __author__ = 'mnowotka'
 
-from bottle import route, run, get, post, request, response
+from bottle import Bottle, route, run, get, post, request, response, default_app
 from chembl_beaker import settings
+from chembl_beaker import __version__ as version
 import base64
 from rdkit import Chem
 from rdkit.Chem import Draw
@@ -11,15 +12,17 @@ import os
 from subprocess import PIPE, Popen
 import tempfile
 
-#-----------------------------------------------------------------------------------------------------------------------
-
-@route('/status')
-def hello():
-    return "OK!"
+app = Bottle()
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/ctab2smiles/<ctab>')
+@app.route('/status')
+def status():
+    return "This is ChEMBL beaker, version %s" % version
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/ctab2smiles/<ctab>')
 def ctab2smiles(ctab):
     data = base64.b64decode(ctab)
     suppl = Chem.SDMolSupplier()
@@ -34,7 +37,7 @@ def ctab2smiles(ctab):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/ctab2smiles')
+@app.post('/ctab2smiles')
 def ctab2smiles():
     suppl = Chem.SDMolSupplier()
     suppl.SetData(request.body.getvalue())
@@ -48,7 +51,7 @@ def ctab2smiles():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/smiles2ctab/<smiles>')
+@app.get('/smiles2ctab/<smiles>')
 def smiles2ctab(smiles):
     data = base64.b64decode(smiles)
     if not data.startswith('SMILES Name'):
@@ -56,6 +59,8 @@ def smiles2ctab(smiles):
     suppl = Chem.SmilesMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
+    for m in mols:
+        AllChem.Compute2DCoords(m)
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     for m in mols:
@@ -65,7 +70,7 @@ def smiles2ctab(smiles):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/smiles2ctab')
+@app.post('/smiles2ctab')
 def smiles2ctab():
     data = request.body.getvalue()
     if not data.startswith('SMILES Name'):
@@ -73,6 +78,8 @@ def smiles2ctab():
     suppl = Chem.SmilesMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
+    for m in mols:
+        AllChem.Compute2DCoords(m)
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     for m in mols:
@@ -82,10 +89,12 @@ def smiles2ctab():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/inchi2ctab/<inchi>')
+@app.get('/inchi2ctab/<inchi>')
 def inchi2ctab(inchi):
     inchis = base64.b64decode(inchi)
     mols = [Chem.MolFromInchi(inch) for inch in inchis.split()]
+    for m in mols:
+        AllChem.Compute2DCoords(m)
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     for m in mols:
@@ -95,10 +104,12 @@ def inchi2ctab(inchi):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/inchi2ctab')
+@app.post('/inchi2ctab')
 def inchi2ctab():
     inchis = request.body.getvalue()
     mols = [Chem.MolFromInchi(inch) for inch in inchis.split()]
+    for m in mols:
+        AllChem.Compute2DCoords(m)
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     for m in mols:
@@ -108,7 +119,7 @@ def inchi2ctab():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/ctab2inchi/<ctab>')
+@app.get('/ctab2inchi/<ctab>')
 def ctab2inchi(ctab):
     data = base64.b64decode(ctab)
     suppl = Chem.SDMolSupplier()
@@ -121,7 +132,7 @@ def ctab2inchi(ctab):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/ctab2inchi')
+@app.post('/ctab2inchi')
 def ctab2inchi():
     suppl = Chem.SDMolSupplier()
     suppl.SetData(request.body.getvalue())
@@ -133,7 +144,7 @@ def ctab2inchi():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/inchi2inchiKey/<inchi>')
+@app.get('/inchi2inchiKey/<inchi>')
 def inchi2inchiKey(inchi):
     inchis = base64.b64decode(inchi)
     keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
@@ -141,7 +152,7 @@ def inchi2inchiKey(inchi):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/inchi2inchiKey')
+@app.post('/inchi2inchiKey')
 def inchi2inchiKey():
     inchis = request.body.getvalue()
     keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
@@ -149,9 +160,9 @@ def inchi2inchiKey():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/ctab2image/<ctab>')
-@get('/ctab2image/<ctab>/<size>')
-@get('/ctab2image/<ctab>/<size>/<legend>')
+@app.get('/ctab2image/<ctab>')
+@app.get('/ctab2image/<ctab>/<size>')
+@app.get('/ctab2image/<ctab>/<size>/<legend>')
 def ctab2image(ctab, size=200, legend=''):
     size = int(size)
     data = base64.b64decode(ctab)
@@ -168,7 +179,7 @@ def ctab2image(ctab, size=200, legend=''):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/ctab2image')
+@app.post('/ctab2image')
 def ctab2image():
     size = int(request.forms.get('size', 200))
     data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
@@ -185,7 +196,7 @@ def ctab2image():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/image2ctab/<image>')
+@app.get('/image2ctab/<image>')
 def image2ctab(image):
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
@@ -204,7 +215,7 @@ def image2ctab(image):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/image2ctab')
+@app.post('/image2ctab')
 def image2ctab():
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
@@ -223,7 +234,7 @@ def image2ctab():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@get('/kekulize/<ctab>')
+@app.get('/kekulize/<ctab>')
 def kekulize(ctab):
     data = base64.b64decode(ctab)
     suppl = Chem.SDMolSupplier()
@@ -238,7 +249,7 @@ def kekulize(ctab):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@post('/kekulize')
+@app.post('/kekulize')
 def kekulize():
     data = request.body.getvalue()
     suppl = Chem.SDMolSupplier()
@@ -253,66 +264,69 @@ def kekulize():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/sanitize/<ctab>')
+@app.route('/sanitize/<ctab>')
 def sanitize(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/atomIsInRing/<ctab>/<index>/<size>')
+@app.route('/atomIsInRing/<ctab>/<index>/<size>')
 def sanitize(ctab, index, size):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/symmSSSR/<ctab>')
+@app.route('/symmSSSR/<ctab>')
 def atomIsInRing(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/SSSR/<ctab>')
+@app.route('/SSSR/<ctab>')
 def SSSR(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/addHs/<ctab>')
+@app.route('/addHs/<ctab>')
 def addHs(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/removeHs/<ctab>')
+@app.route('/removeHs/<ctab>')
 def removeHs(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/getNumAtoms/<ctab>')
+@app.route('/getNumAtoms/<ctab>')
 def getNumAtoms(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/logP/<ctab>')
+@app.route('/logP/<ctab>')
 def logP(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/TPSA/<ctab>')
+@app.route('/TPSA/<ctab>')
 def TPSA(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@route('/molWt/<ctab>')
+@app.route('/molWt/<ctab>')
 def molWt(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-run(host=settings.BOTTLE_HOST, port=settings.BOTTLE_PORT, debug=settings.DEBUG, server=settings.SERVER_MIDDLEWARE)
+if __name__ == "__main__":
+    run(app=app, host=settings.BOTTLE_HOST, port=settings.BOTTLE_PORT, debug=settings.DEBUG, server=settings.SERVER_MIDDLEWARE)
+else:
+    application = app
 
 #-----------------------------------------------------------------------------------------------------------------------
