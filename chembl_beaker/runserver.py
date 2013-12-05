@@ -61,6 +61,7 @@ def smiles2ctab(smiles):
     mols = [x for x in suppl]
     for m in mols:
         AllChem.Compute2DCoords(m)
+       
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     for m in mols:
@@ -170,7 +171,8 @@ def ctab2image(ctab, size=200, legend=''):
     suppl.SetData(data)
     mols = [x for x in suppl]
     for m in mols:
-        AllChem.Compute2DCoords(m)
+        if m.GetConformer().Is3D():
+            AllChem.Compute2DCoords(m)
     image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") or legend for x in mols])
     imageData = StringIO.StringIO()
     image.save(imageData, "PNG")
@@ -187,7 +189,8 @@ def ctab2image():
     suppl.SetData(data)
     mols = [x for x in suppl]
     for m in mols:
-        AllChem.Compute2DCoords(m)
+        if m.GetConformer().Is3D():
+            AllChem.Compute2DCoords(m)
     image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") for x in mols])
     imageData = StringIO.StringIO()
     image.save(imageData, "PNG")
