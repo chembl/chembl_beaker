@@ -7,10 +7,12 @@ import base64
 from rdkit import Chem
 from rdkit.Chem import Draw
 from rdkit.Chem import AllChem
+from rdkit.Chem import Descriptors
 import StringIO
 import os
 from subprocess import PIPE, Popen
 import tempfile
+import json
 
 app = Bottle()
 
@@ -274,13 +276,13 @@ def sanitize(ctab):
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/atomIsInRing/<ctab>/<index>/<size>')
-def sanitize(ctab, index, size):
+def atomIsInRing(ctab, index, size):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/symmSSSR/<ctab>')
-def atomIsInRing(ctab):
+def symmSSSR(ctab):
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -303,27 +305,79 @@ def removeHs(ctab):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/getNumAtoms/<ctab>')
+@app.get('/getNumAtoms/<ctab>')
 def getNumAtoms(ctab):
-    pass
+    data = base64.b64decode(ctab)
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ret = [x.GetNumAtoms() for x in suppl]
+    return json.dumps(ret)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/logP/<ctab>')
+@app.post('/getNumAtoms')
+def getNumAtoms():
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(request.body.getvalue())
+    ret = [x.GetNumAtoms() for x in suppl]
+    return json.dumps(ret)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/logP/<ctab>')
 def logP(ctab):
-    pass
+    data = base64.b64decode(ctab)
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ret = [Descriptors.MolLogP(x) for x in suppl]
+    return json.dumps(ret)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/TPSA/<ctab>')
+@app.post('/logP')
+def logP():
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(request.body.getvalue())
+    ret = [Descriptors.MolLogP(x) for x in suppl]
+    return json.dumps(ret)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/TPSA/<ctab>')
 def TPSA(ctab):
-    pass
+    data = base64.b64decode(ctab)
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ret = [Descriptors.TPSA(x) for x in suppl]
+    return json.dumps(ret)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/molWt/<ctab>')
+@app.post('/TPSA')
+def TPSA():
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(request.body.getvalue())
+    ret = [Descriptors.TPSA(x) for x in suppl]
+    return json.dumps(ret)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/molWt/<ctab>')
 def molWt(ctab):
-    pass
+    data = base64.b64decode(ctab)
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ret = [Descriptors.MolWt(x) for x in suppl]
+    return json.dumps(ret)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/molWt')
+def molWt():
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(request.body.getvalue())
+    ret = [Descriptors.MolWt(x) for x in suppl]
+    return json.dumps(ret)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
