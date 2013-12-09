@@ -27,6 +27,14 @@ Software dependencies
  * `Bottle <http://bottlepy.org/docs/dev/>`_
  * `Tornado <http://www.tornadoweb.org/en/stable/>`_
 
+Configuration
+--------
+TODO
+
+Running
+--------
+TODO
+
 More info and help
 --------
 
