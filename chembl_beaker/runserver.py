@@ -206,11 +206,12 @@ def image2ctab(image):
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     img = base64.b64decode(image)
-    path = settings.OSRA_BINARIES_LOCATION['2.0.0']
+    osras = settings.OSRA_BINARIES_LOCATION
+    latest_osra = osras[max(osras.keys())]
     fd, fpath = tempfile.mkstemp()
     os.write(fd, img)
     os.close(fd)
-    p = Popen([path, fpath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    p = Popen([latest_osra, fpath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     a, err = p.communicate(input=img)
     os.remove(fpath)
     for smiles in filter(bool,a.split('\n')):
@@ -225,11 +226,12 @@ def image2ctab():
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
     img = request.body.read()
-    path = settings.OSRA_BINARIES_LOCATION['2.0.0']
+    osras = settings.OSRA_BINARIES_LOCATION
+    latest_osra = osras[max(osras.keys())]
     fd, fpath = tempfile.mkstemp()
     os.write(fd, img)
     os.close(fd)
-    p = Popen([path, fpath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+    p = Popen([latest_osra, fpath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
     a, err = p.communicate(input=img)
     os.remove(fpath)
     for smiles in filter(bool,a.split('\n')):
