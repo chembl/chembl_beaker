@@ -109,4 +109,4 @@ def inchi2ctab(inchi):
 
 @app.post('/inchi2ctab')
 def inchi2ctab():
-    inchis = base64.b64decode(request.body.getvalue())
+    inchis = request.body.getvalue()
