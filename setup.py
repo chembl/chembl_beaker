@@ -17,7 +17,7 @@ if sys.version_info < (2, 7, 3) or sys.version_info >= (2, 7, 6):
 
 setup(
     name='chembl_beaker',
-    version='0.1.1',
+    version='0.1.3',
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',
     description='RDKit in the Bottle on Tornado',
