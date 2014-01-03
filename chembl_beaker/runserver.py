@@ -53,11 +53,7 @@ def ctab2smiles():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2ctab/<smiles>')
-def smiles2ctab(smiles):
-    data = base64.urlsafe_b64decode(smiles)
-    if not data.startswith('SMILES Name'):
-        data = "SMILES Name\n" + data
+def _smiles2ctab(data):
     suppl = Chem.SmilesMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -69,6 +65,14 @@ def smiles2ctab(smiles):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/smiles2ctab/<smiles>')
+def smiles2ctab(smiles):
+    data = base64.urlsafe_b64decode(smiles)
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    return _smiles2ctab(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -77,17 +81,8 @@ def smiles2ctab():
     data = request.body.getvalue()
     if not data.startswith('SMILES Name'):
         data = "SMILES Name\n" + data
-    suppl = Chem.SmilesMolSupplier()
-    suppl.SetData(data)
-    mols = [x for x in suppl]
-    for m in mols:
-        AllChem.Compute2DCoords(m)
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    return _smiles2ctab(data)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -161,13 +156,7 @@ def inchi2inchiKey():
     return '\n'.join(keys)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/ctab2image/<ctab>')
-@app.get('/ctab2image/<ctab>/<size>')
-@app.get('/ctab2image/<ctab>/<size>/<legend>')
-def ctab2image(ctab, size=200, legend=''):
-    size = int(size)
-    data = base64.urlsafe_b64decode(ctab)
+def _ctab2image(data,size,legend):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -179,6 +168,15 @@ def ctab2image(ctab, size=200, legend=''):
     image.save(imageData, "PNG")
     response.content_type = 'image/png'
     return imageData.getvalue()
+    
+
+@app.get('/ctab2image/<ctab>')
+@app.get('/ctab2image/<ctab>/<size>')
+@app.get('/ctab2image/<ctab>/<size>/<legend>')
+def ctab2image(ctab, size=200, legend=''):
+    size = int(size)
+    data = base64.urlsafe_b64decode(ctab)
+    return _ctab2image(data,size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -186,25 +184,14 @@ def ctab2image(ctab, size=200, legend=''):
 def ctab2image():
     size = int(request.forms.get('size', 200))
     data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    mols = [x for x in suppl]
-    for m in mols:
-        if m.GetConformer().Is3D():
-            AllChem.Compute2DCoords(m)
-    image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") for x in mols])
-    imageData = StringIO.StringIO()
-    image.save(imageData, "PNG")
-    response.content_type = 'image/png'
-    return imageData.getvalue()
+    legend=request.parames.get('legend','')
+    return _ctab2image(data,size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/image2ctab/<image>')
-def image2ctab(image):
+def _image2ctab(img):
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
-    img = base64.urlsafe_b64decode(image)
     osras = settings.OSRA_BINARIES_LOCATION
     latest_osra = osras[max(osras.keys())]
     fd, fpath = tempfile.mkstemp()
@@ -217,32 +204,22 @@ def image2ctab(image):
         w.write(Chem.MolFromSmiles(smiles))
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/image2ctab/<image>')
+def image2ctab(image):
+    img = base64.urlsafe_b64decode(image)
+    return _image2ctab(img)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/image2ctab')
 def image2ctab():
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
     img = request.body.read()
-    osras = settings.OSRA_BINARIES_LOCATION
-    latest_osra = osras[max(osras.keys())]
-    fd, fpath = tempfile.mkstemp()
-    os.write(fd, img)
-    os.close(fd)
-    p = Popen([latest_osra, fpath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    a, err = p.communicate(input=img)
-    os.remove(fpath)
-    for smiles in filter(bool,a.split('\n')):
-        w.write(Chem.MolFromSmiles(smiles))
-    w.flush()
-    return sio.getvalue()
+    return _image2ctab(img)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/kekulize/<ctab>')
-def kekulize(ctab):
-    data = base64.urlsafe_b64decode(ctab)
+def _kekulize(data):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     sio = StringIO.StringIO()
@@ -252,21 +229,19 @@ def kekulize(ctab):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/kekulize/<ctab>')
+def kekulize(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return _kekulize(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/kekulize')
 def kekulize():
     data = request.body.getvalue()
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
-    mols = [Chem.Kekulize(x) for x in suppl]
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    return _kekulize(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
