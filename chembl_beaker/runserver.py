@@ -380,6 +380,40 @@ def molWt():
     ret = [Descriptors.MolWt(x) for x in suppl]
     return json.dumps(ret)
 
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _descriptors(data,params):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ds=params.get('descrs','')
+    if ds!='':
+        ds = ds.split(',')
+    ret=[]
+    for x in suppl:
+        d={}
+        if x is not None:
+            for nm,fn in Descriptors.descList:
+                if not ds or nm in ds:
+                    d[nm]=fn(x)
+        ret.append(d)
+    return ret
+    
+
+@app.get('/descriptors/<ctab>')
+def descriptors(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return json.dumps(_descriptors(data,request.params))
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/descriptors')
+def descriptors():
+    data = request.body.getvalue()
+    return json.dumps(_descriptors(data,request.params))
+
+
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('clean')
