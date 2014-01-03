@@ -152,14 +152,11 @@ try:
     import cairo
     from rdkit.Chem.Draw import cairoCanvas,MolDrawing
 except ImportError:
-    _ctab2svg = None
+    pass
 else:
-    def _ctab2svg(data,size,legend):
-        suppl = Chem.SDMolSupplier()
-        suppl.SetData(data)
-        mols = [x for x in suppl]
+    def _mols2svg(mols,size,legend):
         for m in mols:
-            if m.GetConformer().Is3D():
+            if not m.GetNumConformers() or m.GetConformer().Is3D():
                 AllChem.Compute2DCoords(m)
 
         molsPerRow=min(len(mols),4)
@@ -179,45 +176,81 @@ else:
             canv.flush()
             ctx.translate(-tx,-ty)
         surf.finish()
-        response.content_type = 'image/svg+xml'
         return imageData.getvalue()
     
-@app.get('/ctab2svg/<ctab>')
-@app.get('/ctab2svg/<ctab>/<size>')
-@app.get('/ctab2svg/<ctab>/<size>/<legend>')
-def ctab2svg(ctab, size=200, legend=''):
-    if _ctab2svg is None:
-        raise ValueError('only available when cairo is installed')
-    size = int(size)
-    data = base64.urlsafe_b64decode(ctab)
-    return _ctab2svg(data,size,legend)
+    def _ctab2svg(data,size,legend):
+        suppl = Chem.SDMolSupplier()
+        suppl.SetData(data)
+        mols = [x for x in suppl]
+        response.content_type = 'image/svg+xml'
+        return _mols2svg(mols,size,legend)
+    
+    @app.get('/ctab2svg/<ctab>')
+    @app.get('/ctab2svg/<ctab>/<size>')
+    @app.get('/ctab2svg/<ctab>/<size>/<legend>')
+    def ctab2svg(ctab, size=200, legend=''):
+        size = int(size)
+        data = base64.urlsafe_b64decode(ctab)
+        return _ctab2svg(data,size,legend)
+
+    #-----------------------------------------------------------------------------------------------------------------------
+
+    @app.post('/ctab2svg')
+    def ctab2svg():
+        size = int(request.forms.get('size', 200))
+        data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+        legend=request.params.get('legend','')
+        return _ctab2svg(data,size,legend)
+
+
+    #-----------------------------------------------------------------------------------------------------------------------
+
+    def _smiles2svg(data,size,legend):
+        suppl = Chem.SmilesMolSupplier()
+        suppl.SetData(data)
+        mols = [x for x in suppl]
+        response.content_type = 'image/svg+xml'
+        return _mols2svg(mols,size,legend)
+    
+    @app.get('/smiles2svg/<smiles>')
+    @app.get('/smiles2svg/<smiles>/<size>')
+    @app.get('/smiles2svg/<smiles>/<size>/<legend>')
+    def smiles2svg(smiles, size=200, legend=''):
+        size = int(size)
+        data = base64.urlsafe_b64decode(smiles)
+        if not data.startswith('SMILES Name'):
+            data = "SMILES Name\n" + data
+        return _smiles2svg(data,size,legend)
+
+    #-----------------------------------------------------------------------------------------------------------------------
+
+    @app.post('/smiles2svg')
+    def smiles2svg():
+        data = request.body.getvalue()
+        if not data.startswith('SMILES Name'):
+            data = "SMILES Name\n" + data
+        size = int(request.forms.get('size', 200))
+        legend=request.params.get('legend','')
+        return _smiles2svg(data,size,legend)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.post('/ctab2svg')
-def ctab2svg():
-    if _ctab2svg is None:
-        raise ValueError('only available when cairo is installed')
-    size = int(request.forms.get('size', 200))
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
-    legend=request.parames.get('legend','')
-    return _ctab2svg(data,size,legend)
-
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-def _ctab2image(data,size,legend):
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    mols = [x for x in suppl]
+def _mols2image(mols,size,legend):
     for m in mols:
-        if m.GetConformer().Is3D():
+        if not m.GetNumConformers() or m.GetConformer().Is3D():
             AllChem.Compute2DCoords(m)
     image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") or legend for x in mols])
     imageData = StringIO.StringIO()
     image.save(imageData, "PNG")
-    response.content_type = 'image/png'
     return imageData.getvalue()
+    
+def _ctab2image(data,size,legend):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl]
+
+    response.content_type = 'image/png'
+    return _mols2image(mols,size,legend)
     
 
 @app.get('/ctab2image/<ctab>')
@@ -236,6 +269,38 @@ def ctab2image():
     data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
     legend=request.parames.get('legend','')
     return _ctab2image(data,size,legend)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _smiles2image(data,size,legend):
+    suppl = Chem.SmilesMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl]
+
+    response.content_type = 'image/png'
+    return _mols2image(mols,size,legend)
+    
+
+@app.get('/smiles2image/<smiles>')
+@app.get('/smiles2image/<smiles>/<size>')
+@app.get('/smiles2image/<smiles>/<size>/<legend>')
+def smiles2image(smiles, size=200, legend=''):
+    size = int(size)
+    data = base64.urlsafe_b64decode(smiles)
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    return _smiles2image(data,size,legend)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/smiles2image')
+def smiles2image():
+    data = request.body.getvalue()
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    size = int(request.forms.get('size', 200))
+    legend=request.parames.get('legend','')
+    return _smiles2image(data,size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
