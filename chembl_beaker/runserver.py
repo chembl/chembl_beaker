@@ -306,80 +306,68 @@ def removeHs(ctab):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+def _calc(data,fn):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ret = [fn(x) for x in suppl]
+    return ret
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 @app.get('/getNumAtoms/<ctab>')
 def getNumAtoms(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [x.GetNumAtoms() for x in suppl]
-    return json.dumps(ret)
+    return json.dumps(_calc(data,lambda x:x.GetNumAtoms()))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/getNumAtoms')
 def getNumAtoms():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [x.GetNumAtoms() for x in suppl]
-    return json.dumps(ret)
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,lambda x:x.GetNumAtoms()))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.get('/logP/<ctab>')
 def logP(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [Descriptors.MolLogP(x) for x in suppl]
-    return json.dumps(ret)
+    return json.dumps(_calc(data,Descriptors.MolLogP))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/logP')
 def logP():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [Descriptors.MolLogP(x) for x in suppl]
-    return json.dumps(ret)
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,Descriptors.MolLogP))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.get('/TPSA/<ctab>')
 def TPSA(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [Descriptors.TPSA(x) for x in suppl]
-    return json.dumps(ret)
+    return json.dumps(_calc(data,Descriptors.TPSA))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/TPSA')
 def TPSA():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [Descriptors.TPSA(x) for x in suppl]
-    return json.dumps(ret)
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,Descriptors.TPSA))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.get('/molWt/<ctab>')
 def molWt(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [Descriptors.MolWt(x) for x in suppl]
-    return json.dumps(ret)
-
+    return json.dumps(_calc(data,Descriptors.MolWt))
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/molWt')
 def molWt():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [Descriptors.MolWt(x) for x in suppl]
-    return json.dumps(ret)
-
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,Descriptors.MolWt))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
