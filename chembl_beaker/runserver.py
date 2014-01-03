@@ -23,10 +23,7 @@ def status():
     return "This is ChEMBL beaker, version %s" % version
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/ctab2smiles/<ctab>')
-def ctab2smiles(ctab):
-    data = base64.urlsafe_b64decode(ctab)
+def _ctab2smiles(data):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -36,20 +33,20 @@ def ctab2smiles(ctab):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/ctab2smiles/<ctab>')
+def ctab2smiles(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return _ctab2smiles(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/ctab2smiles')
 def ctab2smiles():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    mols = [x for x in suppl]
-    sio = StringIO.StringIO()
-    w = Chem.SmilesWriter(sio)
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    data=request.body.getvalue()
+    return _ctab2smiles(data)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -85,10 +82,7 @@ def smiles2ctab():
 
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/inchi2ctab/<inchi>')
-def inchi2ctab(inchi):
-    inchis = base64.urlsafe_b64decode(inchi)
+def _inchi2ctab(inchis):
     mols = [Chem.MolFromInchi(inch) for inch in inchis.split()]
     for m in mols:
         AllChem.Compute2DCoords(m)
@@ -98,27 +92,21 @@ def inchi2ctab(inchi):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
 
+@app.get('/inchi2ctab/<inchi>')
+def inchi2ctab(inchi):
+    inchis = base64.urlsafe_b64decode(inchi)
+    return _inchi2ctab(inchis)
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/inchi2ctab')
 def inchi2ctab():
     inchis = request.body.getvalue()
-    mols = [Chem.MolFromInchi(inch) for inch in inchis.split()]
-    for m in mols:
-        AllChem.Compute2DCoords(m)
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    return _inchi2ctab(inchis)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/ctab2inchi/<ctab>')
-def ctab2inchi(ctab):
-    data = base64.urlsafe_b64decode(ctab)
+def _ctab2inchi(data):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -126,34 +114,36 @@ def ctab2inchi(ctab):
     for m in mols:
         inchi.append(Chem.MolToInchi(m))
     return '\n'.join(inchi)
+    
+@app.get('/ctab2inchi/<ctab>')
+def ctab2inchi(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return _ctab2inchi(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/ctab2inchi')
 def ctab2inchi():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    mols = [x for x in suppl]
-    inchi = []
-    for m in mols:
-        inchi.append(Chem.MolToInchi(m))
-    return '\n'.join(inchi)
+    data=request.body.getvalue()
+    return _ctab2inchi(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
+def _inchi2inchiKey(inchis):
+    keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
+    return '\n'.join(keys)
+    
+
 
 @app.get('/inchi2inchiKey/<inchi>')
 def inchi2inchiKey(inchi):
     inchis = base64.urlsafe_b64decode(inchi)
-    keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
-    return '\n'.join(keys)
-
+    return _inchi2inchiKey(inchis)
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/inchi2inchiKey')
 def inchi2inchiKey():
     inchis = request.body.getvalue()
-    keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
-    return '\n'.join(keys)
+    return _inchi2inchiKey(inchis)
 
 #-----------------------------------------------------------------------------------------------------------------------
 def _ctab2image(data,size,legend):
