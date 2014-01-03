@@ -145,6 +145,66 @@ def inchi2inchiKey():
     inchis = request.body.getvalue()
     return _inchi2inchiKey(inchis)
 
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+try:
+    import cairo
+    from rdkit.Chem.Draw import cairoCanvas,MolDrawing
+except ImportError:
+    _ctab2svg = None
+else:
+    def _ctab2svg(data,size,legend):
+        suppl = Chem.SDMolSupplier()
+        suppl.SetData(data)
+        mols = [x for x in suppl]
+        for m in mols:
+            if m.GetConformer().Is3D():
+                AllChem.Compute2DCoords(m)
+
+        molsPerRow=min(len(mols),4)
+        nRows = len(mols)//molsPerRow
+        totalWidth=molsPerRow*size
+        totalHeight=molsPerRow*size
+        imageData = StringIO.StringIO()
+        surf = cairo.SVGSurface(imageData,totalWidth,totalHeight)
+        ctx = cairo.Context(surf)
+        for i in range(len(mols)):
+            tx = size*(i%molsPerRow)
+            ty = size*(i//molsPerRow)
+            ctx.translate(tx,ty)
+            canv = cairoCanvas.Canvas(ctx=ctx,size=(size,size))
+            x = mols[i]
+            Draw.MolToImage(x,size=(size,size),legend=x.GetProp("_Name") or legend,canvas=canv)
+            canv.flush()
+            ctx.translate(-tx,-ty)
+        surf.finish()
+        response.content_type = 'image/svg+xml'
+        return imageData.getvalue()
+    
+@app.get('/ctab2svg/<ctab>')
+@app.get('/ctab2svg/<ctab>/<size>')
+@app.get('/ctab2svg/<ctab>/<size>/<legend>')
+def ctab2svg(ctab, size=200, legend=''):
+    if _ctab2svg is None:
+        raise ValueError('only available when cairo is installed')
+    size = int(size)
+    data = base64.urlsafe_b64decode(ctab)
+    return _ctab2svg(data,size,legend)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/ctab2svg')
+def ctab2svg():
+    if _ctab2svg is None:
+        raise ValueError('only available when cairo is installed')
+    size = int(request.forms.get('size', 200))
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+    legend=request.parames.get('legend','')
+    return _ctab2svg(data,size,legend)
+
+
+
 #-----------------------------------------------------------------------------------------------------------------------
 def _ctab2image(data,size,legend):
     suppl = Chem.SDMolSupplier()
