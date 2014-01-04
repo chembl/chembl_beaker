@@ -23,10 +23,7 @@ def status():
     return "This is ChEMBL beaker, version %s" % version
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/ctab2smiles/<ctab>')
-def ctab2smiles(ctab):
-    data = base64.urlsafe_b64decode(ctab)
+def _ctab2smiles(data):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -36,28 +33,24 @@ def ctab2smiles(ctab):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/ctab2smiles/<ctab>')
+def ctab2smiles(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return _ctab2smiles(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/ctab2smiles')
 def ctab2smiles():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    mols = [x for x in suppl]
-    sio = StringIO.StringIO()
-    w = Chem.SmilesWriter(sio)
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    data=request.body.getvalue()
+    return _ctab2smiles(data)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2ctab/<smiles>')
-def smiles2ctab(smiles):
-    data = base64.urlsafe_b64decode(smiles)
-    if not data.startswith('SMILES Name'):
-        data = "SMILES Name\n" + data
+def _smiles2ctab(data):
     suppl = Chem.SmilesMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -69,6 +62,14 @@ def smiles2ctab(smiles):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/smiles2ctab/<smiles>')
+def smiles2ctab(smiles):
+    data = base64.urlsafe_b64decode(smiles)
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    return _smiles2ctab(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -77,23 +78,11 @@ def smiles2ctab():
     data = request.body.getvalue()
     if not data.startswith('SMILES Name'):
         data = "SMILES Name\n" + data
-    suppl = Chem.SmilesMolSupplier()
-    suppl.SetData(data)
-    mols = [x for x in suppl]
-    for m in mols:
-        AllChem.Compute2DCoords(m)
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    return _smiles2ctab(data)
+
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/inchi2ctab/<inchi>')
-def inchi2ctab(inchi):
-    inchis = base64.urlsafe_b64decode(inchi)
+def _inchi2ctab(inchis):
     mols = [Chem.MolFromInchi(inch) for inch in inchis.split()]
     for m in mols:
         AllChem.Compute2DCoords(m)
@@ -103,27 +92,21 @@ def inchi2ctab(inchi):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
 
+@app.get('/inchi2ctab/<inchi>')
+def inchi2ctab(inchi):
+    inchis = base64.urlsafe_b64decode(inchi)
+    return _inchi2ctab(inchis)
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/inchi2ctab')
 def inchi2ctab():
     inchis = request.body.getvalue()
-    mols = [Chem.MolFromInchi(inch) for inch in inchis.split()]
-    for m in mols:
-        AllChem.Compute2DCoords(m)
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    return _inchi2ctab(inchis)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/ctab2inchi/<ctab>')
-def ctab2inchi(ctab):
-    data = base64.urlsafe_b64decode(ctab)
+def _ctab2inchi(data):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     mols = [x for x in suppl]
@@ -131,36 +114,144 @@ def ctab2inchi(ctab):
     for m in mols:
         inchi.append(Chem.MolToInchi(m))
     return '\n'.join(inchi)
+    
+@app.get('/ctab2inchi/<ctab>')
+def ctab2inchi(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return _ctab2inchi(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/ctab2inchi')
 def ctab2inchi():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    mols = [x for x in suppl]
-    inchi = []
-    for m in mols:
-        inchi.append(Chem.MolToInchi(m))
-    return '\n'.join(inchi)
+    data=request.body.getvalue()
+    return _ctab2inchi(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
+def _inchi2inchiKey(inchis):
+    keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
+    return '\n'.join(keys)
+    
+
 
 @app.get('/inchi2inchiKey/<inchi>')
 def inchi2inchiKey(inchi):
     inchis = base64.urlsafe_b64decode(inchi)
-    keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
-    return '\n'.join(keys)
-
+    return _inchi2inchiKey(inchis)
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/inchi2inchiKey')
 def inchi2inchiKey():
     inchis = request.body.getvalue()
-    keys = [Chem.InchiToInchiKey(inch) for inch in inchis.split()]
-    return '\n'.join(keys)
+    return _inchi2inchiKey(inchis)
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
+try:
+    import cairo
+    from rdkit.Chem.Draw import cairoCanvas,MolDrawing
+except ImportError:
+    pass
+else:
+    def _mols2svg(mols,size,legend):
+        for m in mols:
+            if not m.GetNumConformers() or m.GetConformer().Is3D():
+                AllChem.Compute2DCoords(m)
+
+        molsPerRow=min(len(mols),4)
+        nRows = len(mols)//molsPerRow
+        totalWidth=molsPerRow*size
+        totalHeight=molsPerRow*size
+        imageData = StringIO.StringIO()
+        surf = cairo.SVGSurface(imageData,totalWidth,totalHeight)
+        ctx = cairo.Context(surf)
+        for i in range(len(mols)):
+            tx = size*(i%molsPerRow)
+            ty = size*(i//molsPerRow)
+            ctx.translate(tx,ty)
+            canv = cairoCanvas.Canvas(ctx=ctx,size=(size,size))
+            x = mols[i]
+            Draw.MolToImage(x,size=(size,size),legend=x.GetProp("_Name") or legend,canvas=canv)
+            canv.flush()
+            ctx.translate(-tx,-ty)
+        surf.finish()
+        return imageData.getvalue()
+    
+    def _ctab2svg(data,size,legend):
+        suppl = Chem.SDMolSupplier()
+        suppl.SetData(data)
+        mols = [x for x in suppl]
+        response.content_type = 'image/svg+xml'
+        return _mols2svg(mols,size,legend)
+    
+    @app.get('/ctab2svg/<ctab>')
+    @app.get('/ctab2svg/<ctab>/<size>')
+    @app.get('/ctab2svg/<ctab>/<size>/<legend>')
+    def ctab2svg(ctab, size=200, legend=''):
+        size = int(size)
+        data = base64.urlsafe_b64decode(ctab)
+        return _ctab2svg(data,size,legend)
+
+    #-----------------------------------------------------------------------------------------------------------------------
+
+    @app.post('/ctab2svg')
+    def ctab2svg():
+        size = int(request.forms.get('size', 200))
+        data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+        legend=request.params.get('legend','')
+        return _ctab2svg(data,size,legend)
+
+
+    #-----------------------------------------------------------------------------------------------------------------------
+
+    def _smiles2svg(data,size,legend):
+        suppl = Chem.SmilesMolSupplier()
+        suppl.SetData(data)
+        mols = [x for x in suppl]
+        response.content_type = 'image/svg+xml'
+        return _mols2svg(mols,size,legend)
+    
+    @app.get('/smiles2svg/<smiles>')
+    @app.get('/smiles2svg/<smiles>/<size>')
+    @app.get('/smiles2svg/<smiles>/<size>/<legend>')
+    def smiles2svg(smiles, size=200, legend=''):
+        size = int(size)
+        data = base64.urlsafe_b64decode(smiles)
+        if not data.startswith('SMILES Name'):
+            data = "SMILES Name\n" + data
+        return _smiles2svg(data,size,legend)
+
+    #-----------------------------------------------------------------------------------------------------------------------
+
+    @app.post('/smiles2svg')
+    def smiles2svg():
+        data = request.body.getvalue()
+        if not data.startswith('SMILES Name'):
+            data = "SMILES Name\n" + data
+        size = int(request.forms.get('size', 200))
+        legend=request.params.get('legend','')
+        return _smiles2svg(data,size,legend)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+def _mols2image(mols,size,legend):
+    for m in mols:
+        if not m.GetNumConformers() or m.GetConformer().Is3D():
+            AllChem.Compute2DCoords(m)
+    image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") or legend for x in mols])
+    imageData = StringIO.StringIO()
+    image.save(imageData, "PNG")
+    return imageData.getvalue()
+    
+def _ctab2image(data,size,legend):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl]
+
+    response.content_type = 'image/png'
+    return _mols2image(mols,size,legend)
+    
 
 @app.get('/ctab2image/<ctab>')
 @app.get('/ctab2image/<ctab>/<size>')
@@ -168,17 +259,7 @@ def inchi2inchiKey():
 def ctab2image(ctab, size=200, legend=''):
     size = int(size)
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    mols = [x for x in suppl]
-    for m in mols:
-        if m.GetConformer().Is3D():
-            AllChem.Compute2DCoords(m)
-    image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") or legend for x in mols])
-    imageData = StringIO.StringIO()
-    image.save(imageData, "PNG")
-    response.content_type = 'image/png'
-    return imageData.getvalue()
+    return _ctab2image(data,size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -186,25 +267,46 @@ def ctab2image(ctab, size=200, legend=''):
 def ctab2image():
     size = int(request.forms.get('size', 200))
     data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    mols = [x for x in suppl]
-    for m in mols:
-        if m.GetConformer().Is3D():
-            AllChem.Compute2DCoords(m)
-    image = Draw.MolsToGridImage(mols,molsPerRow=min(len(mols),4),subImgSize=(size,size),legends=[x.GetProp("_Name") for x in mols])
-    imageData = StringIO.StringIO()
-    image.save(imageData, "PNG")
-    response.content_type = 'image/png'
-    return imageData.getvalue()
+    legend=request.parames.get('legend','')
+    return _ctab2image(data,size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/image2ctab/<image>')
-def image2ctab(image):
+def _smiles2image(data,size,legend):
+    suppl = Chem.SmilesMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl]
+
+    response.content_type = 'image/png'
+    return _mols2image(mols,size,legend)
+    
+
+@app.get('/smiles2image/<smiles>')
+@app.get('/smiles2image/<smiles>/<size>')
+@app.get('/smiles2image/<smiles>/<size>/<legend>')
+def smiles2image(smiles, size=200, legend=''):
+    size = int(size)
+    data = base64.urlsafe_b64decode(smiles)
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    return _smiles2image(data,size,legend)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/smiles2image')
+def smiles2image():
+    data = request.body.getvalue()
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    size = int(request.forms.get('size', 200))
+    legend=request.parames.get('legend','')
+    return _smiles2image(data,size,legend)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _image2ctab(img):
     sio = StringIO.StringIO()
     w = Chem.SDWriter(sio)
-    img = base64.urlsafe_b64decode(image)
     osras = settings.OSRA_BINARIES_LOCATION
     latest_osra = osras[max(osras.keys())]
     fd, fpath = tempfile.mkstemp()
@@ -217,32 +319,22 @@ def image2ctab(image):
         w.write(Chem.MolFromSmiles(smiles))
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/image2ctab/<image>')
+def image2ctab(image):
+    img = base64.urlsafe_b64decode(image)
+    return _image2ctab(img)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/image2ctab')
 def image2ctab():
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
     img = request.body.read()
-    osras = settings.OSRA_BINARIES_LOCATION
-    latest_osra = osras[max(osras.keys())]
-    fd, fpath = tempfile.mkstemp()
-    os.write(fd, img)
-    os.close(fd)
-    p = Popen([latest_osra, fpath], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-    a, err = p.communicate(input=img)
-    os.remove(fpath)
-    for smiles in filter(bool,a.split('\n')):
-        w.write(Chem.MolFromSmiles(smiles))
-    w.flush()
-    return sio.getvalue()
+    return _image2ctab(img)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-@app.get('/kekulize/<ctab>')
-def kekulize(ctab):
-    data = base64.urlsafe_b64decode(ctab)
+def _kekulize(data):
     suppl = Chem.SDMolSupplier()
     suppl.SetData(data)
     sio = StringIO.StringIO()
@@ -252,21 +344,19 @@ def kekulize(ctab):
         w.write(m)
     w.flush()
     return sio.getvalue()
+    
+
+@app.get('/kekulize/<ctab>')
+def kekulize(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return _kekulize(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/kekulize')
 def kekulize():
     data = request.body.getvalue()
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    sio = StringIO.StringIO()
-    w = Chem.SDWriter(sio)
-    mols = [Chem.Kekulize(x) for x in suppl]
-    for m in mols:
-        w.write(m)
-    w.flush()
-    return sio.getvalue()
+    return _kekulize(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -306,79 +396,101 @@ def removeHs(ctab):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+def _calc(data,fn):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ret = [fn(x) for x in suppl]
+    return ret
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 @app.get('/getNumAtoms/<ctab>')
 def getNumAtoms(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [x.GetNumAtoms() for x in suppl]
-    return json.dumps(ret)
+    return json.dumps(_calc(data,lambda x:x.GetNumAtoms()))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/getNumAtoms')
 def getNumAtoms():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [x.GetNumAtoms() for x in suppl]
-    return json.dumps(ret)
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,lambda x:x.GetNumAtoms()))
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.get('/logP/<ctab>')
 def logP(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [Descriptors.MolLogP(x) for x in suppl]
-    return json.dumps(ret)
+    return json.dumps(_calc(data,Descriptors.MolLogP))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/logP')
 def logP():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [Descriptors.MolLogP(x) for x in suppl]
-    return json.dumps(ret)
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,Descriptors.MolLogP))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.get('/TPSA/<ctab>')
 def TPSA(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [Descriptors.TPSA(x) for x in suppl]
-    return json.dumps(ret)
+    return json.dumps(_calc(data,Descriptors.TPSA))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/TPSA')
 def TPSA():
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [Descriptors.TPSA(x) for x in suppl]
-    return json.dumps(ret)
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,Descriptors.TPSA))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.get('/molWt/<ctab>')
 def molWt(ctab):
     data = base64.urlsafe_b64decode(ctab)
-    suppl = Chem.SDMolSupplier()
-    suppl.SetData(data)
-    ret = [Descriptors.MolWt(x) for x in suppl]
-    return json.dumps(ret)
-
+    return json.dumps(_calc(data,Descriptors.MolWt))
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.post('/molWt')
 def molWt():
+    data = request.body.getvalue()
+    return json.dumps(_calc(data,Descriptors.MolWt))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _descriptors(data,params):
     suppl = Chem.SDMolSupplier()
-    suppl.SetData(request.body.getvalue())
-    ret = [Descriptors.MolWt(x) for x in suppl]
-    return json.dumps(ret)
+    suppl.SetData(data)
+    ds=params.get('descrs','')
+    if ds!='':
+        ds = ds.split(',')
+    ret=[]
+    for x in suppl:
+        d={}
+        if x is not None:
+            for nm,fn in Descriptors.descList:
+                if not ds or nm in ds:
+                    d[nm]=fn(x)
+        ret.append(d)
+    return ret
+    
+
+@app.get('/descriptors/<ctab>')
+def descriptors(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return json.dumps(_descriptors(data,request.params))
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/descriptors')
+def descriptors():
+    data = request.body.getvalue()
+    return json.dumps(_descriptors(data,request.params))
+
+
+
 
 #-----------------------------------------------------------------------------------------------------------------------
 
