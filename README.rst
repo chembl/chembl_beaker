@@ -1,6 +1,10 @@
 chembl_beaker
 ======
 
+.. image:: https://pypip.in/v/chembl_beaker/badge.png
+    :target: https://crate.io/packages/chembl_beaker/
+    :alt: Latest PyPI version
+
 What is Beaker?
 --------
 
@@ -26,6 +30,16 @@ Software dependencies
  * `OSRA <http://cactus.nci.nih.gov/osra/>`_
  * `Bottle <http://bottlepy.org/docs/dev/>`_
  * `Tornado <http://www.tornadoweb.org/en/stable/>`_
+
+Installation
+--------
+
+The best way to install beaker is to use `PIP`:
+
+    ``pip install chembl_beaker``
+    
+This command will install latest stable version with Bottle and Tornado. RDKit and OSRA must be installed separately.
+You can of course clone development version from github but it's not guaranteed to be working.
 
 Configuration
 --------
