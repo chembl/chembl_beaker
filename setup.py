@@ -17,8 +17,8 @@ if sys.version_info < (2, 7, 3) or sys.version_info >= (2, 7, 6):
 
 setup(
     name='chembl_beaker',
-    version='0.2.1',
-    scripts=['run_beaker.py'],
+    version='0.2.3',
+    scripts=['chembl_beaker/run_beaker.py'],
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',
     description='RDKit in the Bottle on Tornado',

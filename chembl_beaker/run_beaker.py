@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 __author__ = 'mnowotka'
 
 from bottle import Bottle, run, request, response, HTTP_CODES
