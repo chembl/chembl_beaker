@@ -29,20 +29,22 @@ Software dependencies
 
 Configuration
 --------
-Right now all configuration is stored in chembl_beaker/settings.py. This file contains following configuration option, feel free to modify it to fit your environment:
+By default configuration is stored in ``beaker.conf`` file, located in current directory. You can specify location of
+configuration file using ``--config (-c)`` parameter when running beaker. Configuration file format is standard ``*.ini``.
+Beaker is distributed with example configuration file named ``beaker.conf.sample``.
 
- * **DEBUG** - run bottle server in debug mode (True/False)
- * **BOTTLE_PORT** - number of porn on which Bottle server is listening for connections (integer)
- * **BOTTLE_HOST** - hostname of Bottle server (string)
- * **SERVER_MIDDLEWARE** - networking middleware library used by Bottle
- * **OSRA_BINARIES_LOCATION** - dictionary of ``(version, path)`` pairs. Each pair describes location of certain OSRA version (for example ``{'2.0.0': '/usr/bin/osra'}``). Right now beaker will choose latest version.
+ * **debug** - run bottle server in debug mode (True/False, default ``True``)
+ * **bottle_port** - number of porn on which Bottle server is listening for connections (integer, default ``8080``)
+ * **bottle_host** - hostname of Bottle server (string, default ``localhost``)
+ * **server_middleware** - networking middleware library used by Bottle (string, default ``tornado``)
+ * **osra_binaries_location** - path to OSRA binary you want to use for compound recognition (string, default ``/usr/bin/osra``)
 
 Running
 --------
-If you want to play with beaker run ``python chembl_beaker/runserver.py``
+If you want to play with beaker run ``python run_beaker.py``
 If you want to run beaker in production you should do this using virtualenv, uWSGI and NGINX as described `here <http://fclef.wordpress.com/2013/01/12/bottle-virtualenv-uwsgi-nginx-installation-on-ubuntu-12-04-1-lts/>`_. Other standard python deployment stacks will work as well.
 
 More info and help
 --------
 
-More information can be found in `web based presentation <https://github.com/mnowotka/beaker-presentation>`_. You can always mail the author: mmmnow@gmail.com
+More information can be found in `web based presentation <https://github.com/mnowotka/beaker-presentation>`_. You can always email the author: mmmnow@gmail.com

@@ -17,7 +17,8 @@ if sys.version_info < (2, 7, 3) or sys.version_info >= (2, 7, 6):
 
 setup(
     name='chembl_beaker',
-    version='0.1.3',
+    version='0.2.0',
+    scripts=['run_beaker.py'],
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',
     description='RDKit in the Bottle on Tornado',
@@ -25,6 +26,7 @@ setup(
     license='CC BY-SA 3.0',
     packages=['chembl_beaker'],
     long_description=open('README.rst').read(),
+    tests_require = ['Pillow', 'WebTest'],
     install_requires=['bottle>=0.11.6',
                       'tornado>=2.4'],
     include_package_data=False,
