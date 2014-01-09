@@ -1,10 +1,13 @@
 chembl_beaker
 ======
 
+.. image:: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Beaker.svg/200px-Beaker.svg.png
+    :alt: logo
+
 .. image:: https://pypip.in/v/chembl_beaker/badge.png
     :target: https://crate.io/packages/chembl_beaker/
     :alt: Latest PyPI version
-
+    
 What is Beaker?
 --------
 
