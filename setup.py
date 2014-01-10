@@ -17,7 +17,7 @@ if sys.version_info < (2, 7, 3) or sys.version_info >= (2, 7, 6):
 
 setup(
     name='chembl_beaker',
-    version='0.2.3',
+    version='0.2.7',
     scripts=['chembl_beaker/run_beaker.py'],
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',
@@ -29,6 +29,9 @@ setup(
     tests_require = ['Pillow', 'WebTest'],
     install_requires=['bottle>=0.11.6',
                       'tornado>=2.4'],
+    package_data={
+        'chembl_beaker': ['samples/*'],
+        },
     include_package_data=False,
     classifiers=['Development Status :: 2 - Pre-Alpha',
                  'Environment :: Web Environment',

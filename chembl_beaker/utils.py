@@ -102,10 +102,20 @@ else:
 
 try:
     import cairo
-    from rdkit.Chem.Draw import cairoCanvas,MolDrawing
 except ImportError:
-    pass
-else:
+    try:
+        import cairocffi
+        cairocffi.install_as_pycairo()
+        import cairo
+    except ImportError:
+        cairo = None
+
+if cairo:
+    try:
+        from rdkit.Chem.Draw import cairoCanvas
+    except ImportError:
+        cairoCanvas = None
+if cairoCanvas:
     def _mols2svg(mols,size,legend):
         for mol in mols:
             if not mol.GetNumConformers() or mol.GetConformer().Is3D():

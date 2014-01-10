@@ -2,13 +2,17 @@
 
 __author__ = 'mnowotka'
 
-from bottle import Bottle, run, request, response, HTTP_CODES
+import bottle
+from bottle import Bottle, run, request, response
 from chembl_beaker import utils
 from chembl_beaker import __version__ as version
 import base64
 import json
 import sys
 from optparse import OptionParser
+
+HTTP_CODES = bottle.HTTP_CODES.copy()
+HTTP_CODES = dict((y,x) for x,y in HTTP_CODES.iteritems())
 
 app = Bottle()
 config = app.config
