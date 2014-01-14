@@ -64,4 +64,4 @@ If you want to run beaker in production you should do this using virtualenv, uWS
 More info and help
 --------
 
-More information can be found in `web based presentation <https://github.com/mnowotka/beaker-presentation>`_. You can always email the author: mmmnow@gmail.com
+More information can be found in `web based presentation <http://mnowotka.github.io/presentations/beaker>`_. You can always email the author: mmmnow@gmail.com
