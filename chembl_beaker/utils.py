@@ -273,3 +273,50 @@ def _mcs(data,params):
     return res
 
 #-----------------------------------------------------------------------------------------------------------------------
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+except:
+    matplotlib=None
+
+def _similarityMap(ms,params):
+    if matplotlib is None:
+        raise ValueError('matplotlib not useable')
+    from rdkit.Chem import Draw
+    from rdkit.Chem.Draw import SimilarityMaps
+    fp=params.get('fingerprint','morgan')
+    if fp=='morgan':
+        rad = int(params.get('radius',2))
+        fn = lambda x,i:SimilarityMaps.GetMorganFingerprint(x,i,radius=rad)
+    elif fp=='tt':
+        fn = SimilarityMaps.GetAPFingerprint
+    elif fp=='ap':
+        fn = SimilarityMaps.GetTTFingerprint
+
+    w = int(params.get('width',300))
+    h = int(params.get('height',300))
+
+    fig,maxv = SimilarityMaps.GetSimilarityMapForFingerprint(ms[0],ms[1],fn,size=(w,h))
+    sio = StringIO.StringIO()
+    fig.savefig(sio,format='png',bbox_inches='tight')
+    
+    return sio.getvalue()
+    
+def _smiles2SimilarityMap(data,params):
+    from rdkit.Chem import AllChem
+    suppl = Chem.SmilesMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl if x is not None]
+    for mol in mols:
+        AllChem.Compute2DCoords(mol)
+    return _similarityMap(mols,params)
+
+def _sdf2SimilarityMap(data,params):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl if x is not None]
+    return _similarityMap(mols,params)
+
+    
+
+#-----------------------------------------------------------------------------------------------------------------------
