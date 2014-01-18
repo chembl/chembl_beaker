@@ -276,6 +276,7 @@ def _mcs(data,params):
 try:
     import matplotlib
     matplotlib.use('Agg')
+    from matplotlib import pyplot
 except:
     matplotlib=None
 
@@ -293,12 +294,12 @@ def _similarityMap(ms,params):
     elif fp=='ap':
         fn = SimilarityMaps.GetTTFingerprint
 
-    w = int(params.get('width',300))
-    h = int(params.get('height',300))
+    w = int(params.get('w',100))
+    h = int(params.get('h',100))
 
     fig,maxv = SimilarityMaps.GetSimilarityMapForFingerprint(ms[0],ms[1],fn,size=(w,h))
     sio = StringIO.StringIO()
-    fig.savefig(sio,format='png',bbox_inches='tight')
+    pyplot.savefig(sio,format='png',bbox_inches='tight',dpi=100)
     
     return sio.getvalue()
     
