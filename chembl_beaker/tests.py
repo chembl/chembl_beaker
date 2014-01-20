@@ -109,6 +109,33 @@ class TestServer(unittest.TestCase):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+    def test_mcs(self):
+        from rdkit import Chem
+        from StringIO import StringIO
+        smis = ['c1ccccc1','c1ccccc1C','c1ccccc1O']
+        sio = StringIO()
+        w = Chem.SDWriter(sio)
+        for smi in smis:
+            w.write(Chem.MolFromSmiles(smi))
+        w.flush()
+        txt=sio.getvalue()        
+        ctab_post = self.app.post("/mcs", txt)
+        self.assertEqual(ctab_post.status_int, 200)
+        self.assertEqual(ctab_post.body,'[#6]:1:[#6]:[#6]:[#6]:[#6]:[#6]:1')
+
+        ctab_get = self.app.get("/mcs/%s" % base64.urlsafe_b64encode(txt))
+        self.assertEqual(ctab_get.status_int, 200)
+        self.assertEqual(ctab_get.body,ctab_post.body)
+
+        ctab_post = self.app.post("/mcs?asSmiles=1", txt)
+        self.assertEqual(ctab_post.status_int, 200)
+        self.assertEqual(ctab_post.body,'c1ccccc1')
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
 

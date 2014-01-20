@@ -427,6 +427,52 @@ def descriptors():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+@app.get('/mcs/<ctab>')
+def mcs(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    return utils._mcs(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/mcs')
+def mcs():
+    data = request.body.getvalue()
+    return utils._mcs(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/smiles2SimilarityMap/<smiles>')
+def smiles2SimilarityMap(smiles):
+    data = base64.urlsafe_b64decode(smiles)
+    response.content_type = 'image/png'
+    return utils._smiles2SimilarityMap(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/smiles2SimilarityMap')
+def smiles2SimilarityMap():
+    data = request.body.getvalue()
+    response.content_type = 'image/png'
+    return utils._smiles2SimilarityMap(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/sdf2SimilarityMap/<ctab>')
+def sdf2SimilarityMap(ctab):
+    data = base64.urlsafe_b64decode(ctab)
+    response.content_type = 'image/png'
+    return utils._sdf2SimilarityMap(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/sdf2SimilarityMap')
+def sdf2SimilarityMap():
+    data = request.body.getvalue()
+    response.content_type = 'image/png'
+    return utils._sdf2SimilarityMap(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 @app.post('clean')
 def clean2D():
     pass
@@ -444,6 +490,8 @@ def molExport():
     pass
 
 #-----------------------------------------------------------------------------------------------------------------------
+
+
 
 if __name__ == "__main__":
     run(app=app, host=config.get('bottle_host', 'localhost'), port=config.get('bottle_port', '8080'),

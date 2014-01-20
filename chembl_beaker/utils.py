@@ -243,3 +243,81 @@ def _descriptors(data,params):
     return ret
 
 #-----------------------------------------------------------------------------------------------------------------------
+
+def _mcs(data,params):
+    from rdkit.Chem import MCS
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    ms = [x for x in suppl if x is not None]
+    atomCompare=params.get('atomCompare','elements')
+    bondCompare=params.get('bondCompare','bondtypes')
+    ringMatchesRingOnly=bool(int(params.get('ringMatchesRingOnly','0')))
+    completeRingsOnly=bool(int(params.get('completeRingsOnly','0')))
+    threshold=params.get('threshold',None)
+    if threshold:
+        threshold=float(threshold)
+    mcs = MCS.FindMCS(ms,
+                      atomCompare=atomCompare,
+                      bondCompare=bondCompare,
+                      ringMatchesRingOnly=ringMatchesRingOnly,
+                      completeRingsOnly=completeRingsOnly,
+                      threshold=threshold)
+    res = mcs.smarts
+    if bool(int(params.get('asSmiles','0'))):
+        p = Chem.MolFromSmarts(res)
+        for m in ms:
+            if m.HasSubstructMatch(p):
+                match = m.GetSubstructMatch(p)
+                res = Chem.MolFragmentToSmiles(m,atomsToUse=match,isomericSmiles=True,canonical=False)
+                break
+    return res
+
+#-----------------------------------------------------------------------------------------------------------------------
+try:
+    import matplotlib
+    matplotlib.use('Agg')
+    from matplotlib import pyplot
+except:
+    matplotlib=None
+
+def _similarityMap(ms,params):
+    if matplotlib is None:
+        raise ValueError('matplotlib not useable')
+    from rdkit.Chem import Draw
+    from rdkit.Chem.Draw import SimilarityMaps
+    fp=params.get('fingerprint','morgan')
+    if fp=='morgan':
+        rad = int(params.get('radius',2))
+        fn = lambda x,i:SimilarityMaps.GetMorganFingerprint(x,i,radius=rad)
+    elif fp=='tt':
+        fn = SimilarityMaps.GetAPFingerprint
+    elif fp=='ap':
+        fn = SimilarityMaps.GetTTFingerprint
+
+    w = int(params.get('w',100))
+    h = int(params.get('h',100))
+
+    fig,maxv = SimilarityMaps.GetSimilarityMapForFingerprint(ms[0],ms[1],fn,size=(w,h))
+    sio = StringIO.StringIO()
+    pyplot.savefig(sio,format='png',bbox_inches='tight',dpi=100)
+    
+    return sio.getvalue()
+    
+def _smiles2SimilarityMap(data,params):
+    from rdkit.Chem import AllChem
+    suppl = Chem.SmilesMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl if x is not None]
+    for mol in mols:
+        AllChem.Compute2DCoords(mol)
+    return _similarityMap(mols,params)
+
+def _sdf2SimilarityMap(data,params):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(data)
+    mols = [x for x in suppl if x is not None]
+    return _similarityMap(mols,params)
+
+    
+
+#-----------------------------------------------------------------------------------------------------------------------
