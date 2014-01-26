@@ -43,6 +43,9 @@ The best way to install beaker is to use `PIP`:
     
 This command will install latest stable version with Bottle and Tornado. RDKit and OSRA must be installed separately.
 You can of course clone development version from github but it's not guaranteed to be working.
+If you want to install github version using `PIP`, invoke this command:
+
+    ``sudo pip install git+https://github.com/mnowotka/chembl_beaker.git``
 
 Configuration
 --------
