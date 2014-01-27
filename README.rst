@@ -20,7 +20,7 @@ This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nc
  * Descriptors
  * Marvin 4 JS compilant `webservices <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_
 
-As a portable lightweight `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_ ready webserver, speaking REST. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
+As a portable, lightweight, `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_ ready webserver, speaking REST. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
 
 Where is it used?
 --------
