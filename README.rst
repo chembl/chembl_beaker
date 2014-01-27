@@ -49,6 +49,13 @@ Software dependencies
  * `Bottle <http://bottlepy.org/docs/dev/>`_
  * `Tornado <http://www.tornadoweb.org/en/stable/>`_
 
+Additional dependencies
+--------
+
+ * cairo/cairocffi (for SVG format support)
+ * lxml (mrv file format)
+ * matplotlib (generating similarity maps)
+
 Installation
 --------
 
