@@ -19,12 +19,24 @@ This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nc
  * Fingerprints
  * Descriptors
 
-As a portable lightweight webserver, speaking REST. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
+As a portable lightweight `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_ ready webserver, speaking REST. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
 
 Where is it used?
 --------
 
 Beaker is used in `Clippy <https://github.com/madgpap/chembl_clippy>`_ project but can be used as a standalone web server as well.
+
+It can be used as web service backend for `Marvin For Java Script <http://www.chemaxon.com/products/marvin/marvin-for-javascript/>`_ as it exposes methods compatible with it's webservice `specification <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_. 
+To do this you need to configure marvin sketcher instance:
+
+::
+
+    marvin.sketcherInstance = new marvin.Sketch("sketch");
+    marvin.sketcherInstance.setServices(getDefaultServices({
+        'clean2dws' : <url of  Beaker clean webservice>,
+        'molconvertws' : <url of Beaker molExport webservice>,
+        "stereoinfows" : <url of Beaker cipStereoInfo>
+    }));
 
 Software dependencies
 --------
@@ -58,6 +70,10 @@ Beaker is distributed with example configuration file named ``beaker.conf.sample
  * **bottle_host** - hostname of Bottle server (string, default ``localhost``)
  * **server_middleware** - networking middleware library used by Bottle (string, default ``tornado``)
  * **osra_binaries_location** - path to OSRA binary you want to use for compound recognition (string, default ``/usr/bin/osra``)
+ * **enable_cors** - enable CORS plugin and respect all header settings below (True/False, default ``True``) 
+ * **access_control_allow_origin** - content of 'Access-Control-Allow-Origin' header send with every response (string, default ``*``)
+ * **access_control_allow_methods** - content of 'Access-Control-Allow-Methods' header send with every response (string, default ``GET, POST, PUT, OPTIONS``)
+ * **access_control_allow_headers** - content of 'Access-Control-Allow-Headers' header send with every response (string, default ``Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token``)
 
 Running
 --------
