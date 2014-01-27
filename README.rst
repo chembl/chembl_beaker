@@ -16,6 +16,8 @@ This is chembl_beaker package developed at `Chembl <https://www.ebi.ac.uk/chembl
 This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nci.nih.gov/osra/>`_, which exposes following RDKit functions:
 
  * Format convertion
+ * Compound recognition
+ * Image generation
  * Fingerprints
  * Descriptors
  * Marvin 4 JS compilant `webservices <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_
