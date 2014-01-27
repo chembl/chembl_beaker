@@ -59,6 +59,30 @@ config.load_config(conf_path)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+class EnableCors(object):
+    name = 'enable_cors'
+    api = 2
+
+    def apply(self, fn, context):
+        def _enable_cors(*args, **kwargs):
+            # set CORS headers
+            response.headers['Access-Control-Allow-Origin'] = config.get('access_control_allow_origin', '*')
+            response.headers['Access-Control-Allow-Methods'] = config.get('access_control_allow_methods',
+                                                                                        'GET, POST, PUT, OPTIONS')
+            response.headers['Access-Control-Allow-Headers'] = config.get('access_control_allow_headers',
+                                                    'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token')
+
+            if bottle.request.method != 'OPTIONS':
+                # actual request; reply with the actual response
+                return fn(*args, **kwargs)
+
+        return _enable_cors
+
+if config.get('enable_cors', 'true') != 'false':
+    app.install(EnableCors())
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 @app.route('/status')
 def status():
     return "This is ChEMBL beaker, version %s" % version
@@ -473,25 +497,36 @@ def sdf2SimilarityMap():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.post('clean')
+@app.route('/clean', method=['OPTIONS', 'POST'])
 def clean2D():
-    pass
+    params = json.loads(request.body.getvalue())
+    structure = params['structure']
+    response.content_type = 'text/plain'
+    return utils._clean2D(structure)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.post('cipStereoInfo')
+@app.route('/cipStereoInfo', method=['OPTIONS', 'POST'])
 def stereoInfo():
-    pass
+    params = json.loads(request.body.getvalue())
+    structure = params['structure']
+    response.content_type = 'application/json'
+    return json.dumps(utils._stereoInfo(structure))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.post('molExport')
+@app.route('/molExport' , method=['OPTIONS', 'POST'])
 def molExport():
-    pass
+    params = json.loads(request.body.getvalue())
+    structure = params['structure']
+    input_f = params['inputFormat']
+    output_f = params['parameters']
+
+    res = utils._molExport(structure, input_f, output_f)
+    response.content_type = 'application/json'
+    return json.dumps(res)
 
 #-----------------------------------------------------------------------------------------------------------------------
-
-
 
 if __name__ == "__main__":
     run(app=app, host=config.get('bottle_host', 'localhost'), port=config.get('bottle_port', '8080'),
