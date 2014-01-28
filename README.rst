@@ -52,9 +52,9 @@ Software dependencies
 Additional dependencies
 --------
 
- * cairo/cairocffi (for SVG format support)
- * lxml (mrv file format)
- * matplotlib (generating similarity maps)
+ * `pycairo <http://cairographics.org/pycairo/>`_/`cairocffi <https://github.com/SimonSapin/cairocffi>`_ (for `SVG <https://en.wikipedia.org/wiki/Scalable_Vector_Graphics>`_ format support)
+ * `lxml <http://lxml.de/>`_ (`mrv <https://www.chemaxon.com/marvin/help/formats/mrv-doc.html>`_ file format)
+ * `matplotlib <http://matplotlib.org/>`_ (generating similarity maps)
 
 Installation
 --------
