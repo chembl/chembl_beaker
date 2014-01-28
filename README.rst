@@ -76,7 +76,7 @@ configuration file using ``--config (-c)`` parameter when running beaker. Config
 Beaker is distributed with example configuration file named ``beaker.conf.sample``.
 
  * **debug** - run bottle server in debug mode (True/False, default ``True``)
- * **bottle_port** - number of porn on which Bottle server is listening for connections (integer, default ``8080``)
+ * **bottle_port** - number of port on which Bottle server is listening for connections (integer, default ``8080``)
  * **bottle_host** - hostname of Bottle server (string, default ``localhost``)
  * **server_middleware** - networking middleware library used by Bottle (string, default ``tornado``)
  * **osra_binaries_location** - path to OSRA binary you want to use for compound recognition (string, default ``/usr/bin/osra``)
