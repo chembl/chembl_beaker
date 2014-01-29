@@ -247,7 +247,7 @@ def _descriptors(data, params):
 
 def _clean2D(mrv):
     mol = Chem.MolFromMolBlock(MarvinToMol(mrv))
-    AllChem.Compute2DCoords(mol)
+    AllChem.Compute2DCoords(mol, bondLength = 0.8)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -264,11 +264,11 @@ def _stereoInfo(mrv):
     }
 
     mol = Chem.MolFromMolBlock(MarvinToMol(mrv))
-    Chem.AssignStereochemistry(mol)
+    Chem.AssignStereochemistry(mol, flagPossibleStereoCenters=True, force=True)
     for atom in mol.GetAtoms():
         stereo = str(atom.GetChiralTag())
+        atomIndex = atom.GetIdx()
         if str(atom.GetChiralTag()) != "CHI_UNSPECIFIED":
-            atomIndex = atom.GetIdx() + 1
             if stereo == "CHI_TETRAHEDRAL_CW":
                 chirality = "R"
             elif stereo == "CHI_TETRAHEDRAL_CCW":
@@ -276,13 +276,17 @@ def _stereoInfo(mrv):
             else:
                 chirality = "R/S"
             ret["tetraHedral"].append({"atomIndex":atomIndex,"chirality":chirality})
+        elif atom.HasProp('_ChiralityPossible'):
+            chirality = "R/S"
+            ret["tetraHedral"].append({"atomIndex":atomIndex,"chirality":chirality})
+
 
     for bond in mol.GetBonds():
         stereo = str(bond.GetStereo())
         if stereo != "STEREONONE":
-            atom1Index = bond.GetBeginAtomIdx() + 1
-            atom2Index = bond.GetEndAtomIdx() + 1
-            bondIndex = bond.GetIdx() + 1
+            atom1Index = bond.GetBeginAtomIdx()
+            atom2Index = bond.GetEndAtomIdx()
+            bondIndex = bond.GetIdx()
             if stereo == "STEREOANY":
                 cistrans = "E/Z"
             elif stereo == "STEREOZ":
@@ -307,7 +311,7 @@ def _molExport(structure, input_f, output_f):
         mol = Chem.MolFromMolBlock(structure)
 
     if not mol.GetNumConformers() or mol.GetConformer().Is3D():
-        AllChem.Compute2DCoords(mol)
+        AllChem.Compute2DCoords(mol, bondLength = 0.8)
 
     if output_f == 'smiles':
         out_structure = Chem.MolToSmiles(mol)
