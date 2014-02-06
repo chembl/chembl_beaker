@@ -8,6 +8,11 @@ import os
 import tempfile
 from subprocess import PIPE, Popen
 from rdkit.Chem import Descriptors
+from rdkit import rdBase
+from rdkit import DataStructs
+from rdkit.Chem.AtomPairs import Pairs
+from rdkit.Chem import MACCSkeys
+from rdkit.Chem import rdMolDescriptors
 from chembl_beaker.MarvinJSONEncoder import MolToMarvin, MarvinToMol
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -246,7 +251,11 @@ def _descriptors(data, params):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def _clean2D(mrv):
-    mol = Chem.MolFromMolBlock(MarvinToMol(mrv))
+    block = MarvinToMol(mrv)
+    mol = Chem.MolFromMolBlock(block)
+    if not mol:
+        print "No mol for block:\n %s" % block
+        return mrv
     AllChem.Compute2DCoords(mol, bondLength = 0.8)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
@@ -263,7 +272,11 @@ def _stereoInfo(mrv):
            "doubleBond":[]
     }
 
-    mol = Chem.MolFromMolBlock(MarvinToMol(mrv))
+    block = MarvinToMol(mrv)
+    mol = Chem.MolFromMolBlock(block)
+    if not mol:
+        print "No mol for block:\n %s" % block
+        return ret
     Chem.AssignStereochemistry(mol, flagPossibleStereoCenters=True, force=True)
     for atom in mol.GetAtoms():
         stereo = str(atom.GetChiralTag())
@@ -411,5 +424,30 @@ def _sdf2SimilarityMap(data,params):
     suppl.SetData(data)
     mols = [x for x in suppl if x is not None]
     return _similarityMap(mols,params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _sdf2fps(f, sdf, type='morgan', radius=2, n_bits=2048):
+    suppl = Chem.SDMolSupplier()
+    suppl.SetData(sdf)
+    f.write("#FPS1\n#num_bits=%s\n#software=RDKit/%s\n" % (n_bits, rdBase.rdkitVersion))
+
+    for i, mol in enumerate(suppl):
+        if mol:
+            idx = i
+            if mol.HasProp('chembl_id'):
+                idx = mol.GetProp('chembl_id')
+            else:
+                try:
+                    idx = Chem.InchiToInchiKey(Chem.MolToInchi(mol))
+                except:
+                    pass
+            if type == 'morgan':
+                fp = rdMolDescriptors.GetMorganFingerprintAsBitVect(mol,radius,nBits=n_bits)
+            elif type == 'pair':
+                fp = Pairs.GetAtomPairFingerprintAsBitVect(mol)
+            elif type == 'maccs':
+                fp = MACCSkeys.GenMACCSKeys(mol)
+            f.write("%s\t%s\n" % (DataStructs.BitVectToFPSText(fp), idx))
 
 #-----------------------------------------------------------------------------------------------------------------------

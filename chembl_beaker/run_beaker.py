@@ -9,6 +9,7 @@ from chembl_beaker import __version__ as version
 import base64
 import json
 import sys
+import StringIO
 from optparse import OptionParser
 
 HTTP_CODES = bottle.HTTP_CODES.copy()
@@ -478,6 +479,28 @@ def smiles2SimilarityMap():
     data = request.body.getvalue()
     response.content_type = 'image/png'
     return utils._smiles2SimilarityMap(data,request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.get('/sdf2fps/<ctab>')
+@app.get('/sdf2fps/<ctab>/<type>')
+def sdf2fps(ctab, type='morgan'):
+    buffer = StringIO.StringIO()
+    utils._sdf2fps(buffer, ctab, type)
+    return buffer.getvalue()
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.post('/sdf2fps')
+def sdf2fps():
+    buffer = StringIO.StringIO()
+    params = json.loads(request.body.getvalue())
+    structure = params['structure']
+    type = params.get('type', 'morgan')
+    radius = params.get('radius', 2)
+    n_bits = params.get('n_bits', 2048)
+    utils._sdf2fps(buffer, structure, type, radius, n_bits)
+    return buffer.getvalue()
 
 #-----------------------------------------------------------------------------------------------------------------------
 
