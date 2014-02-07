@@ -7,6 +7,10 @@ chembl_beaker
 .. image:: https://pypip.in/v/chembl_beaker/badge.png
     :target: https://crate.io/packages/chembl_beaker/
     :alt: Latest PyPI version
+
+.. image:: https://pypip.in/d/chembl_beaker/badge.png
+    :target: https://crate.io/packages/chembl_beaker/
+    :alt: Number of PyPI downloads
     
 What is Beaker?
 --------
