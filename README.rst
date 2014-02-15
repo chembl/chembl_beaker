@@ -92,7 +92,20 @@ Beaker is distributed with example configuration file named ``beaker.conf.sample
  * **enable_cors** - enable CORS plugin and respect all header settings below (True/False, default ``True``) 
  * **access_control_allow_origin** - content of 'Access-Control-Allow-Origin' header send with every response (string, default ``*``)
  * **access_control_allow_methods** - content of 'Access-Control-Allow-Methods' header send with every response (string, default ``GET, POST, PUT, OPTIONS``)
- * **access_control_allow_headers** - content of 'Access-Control-Allow-Headers' header send with every response (string, default ``Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token``)
+ * **installed_apps** - apps installed in beaker, default to [
+    "chembl_beaker.beaker",
+    "chembl_beaker.beaker.core_apps.calculations",
+    "chembl_beaker.beaker.core_apps.conversions",
+    "chembl_beaker.beaker.core_apps.descriptors",
+    "chembl_beaker.beaker.core_apps.fingerprints",
+    "chembl_beaker.beaker.core_apps.marvin",
+    "chembl_beaker.beaker.core_apps.mcs",
+    "chembl_beaker.beaker.core_apps.osra",
+    "chembl_beaker.beaker.core_apps.rasterImages",
+    "chembl_beaker.beaker.core_apps.svgImages",
+    "chembl_beaker.beaker.core_apps.jsonImages",
+    "chembl_beaker.beaker.core_apps.autoDocs",
+    ]
 
 Running
 --------
@@ -102,6 +115,10 @@ If you want to run beaker in production you should do this using virtualenv, uWS
 Documentation
 --------
 Like every good software written in Python, beaker is self-documented. When you run beaker, open your browser and go to URL: ``BEAKER_ROOT/docs``. You will see live documentation genrated on the fly from all available webservices, exposed by beaker. You can immediately try them and see results return by the server. Every webservice should be documented - documentation is generated automatically as well, from docstring of every exposed webservice, interpreted as markdown.
+
+Development - writing your own extentions
+--------
+TODO
 
 More info and help
 --------
