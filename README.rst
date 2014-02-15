@@ -120,6 +120,10 @@ Development - writing your own extentions
 --------
 TODO
 
+FAQ
+--------
+TODO
+
 More info and help
 --------
 
