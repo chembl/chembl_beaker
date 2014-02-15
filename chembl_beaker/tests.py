@@ -62,7 +62,7 @@ class TestServer(unittest.TestCase):
 #-----------------------------------------------------------------------------------------------------------------------
 
     def test_TPSA(self):
-        r = self.app.post("/TPSA", self.sample_mol_data)
+        r = self.app.post("/tpsa", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
         self.assertEqual(r.body, '[96.01, 23.47, 54.37, 49.339999999999996]')
 
