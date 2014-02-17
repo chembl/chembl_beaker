@@ -118,7 +118,8 @@ Like every good software written in Python, beaker is self-documented. When you 
 
 Development - writing your own extentions
 --------
-TODO
+Developing new app should be easy. The only required file is `views.py` where you should define your botte `routes`. Since your app is technically speaking a python module, `__init__.py` will be required as well.
+You should wrap your module in PIP package and distribute via `PyPi`. By doing so, a user who want to install your app has to install it via `PIP` and add it to `installed_apps` list.
 
 FAQ
 --------
