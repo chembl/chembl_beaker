@@ -15,7 +15,7 @@ Implements Marvin 4 js clean2D web service. Recomputes 2D coordinates of given c
 Marvin's *.mrv format.
     """
 
-    params = json.loads(request.body.getvalue())
+    params = json.loads(request.body.read())
     structure = params['structure']
     response.content_type = 'text/plain'
     return _clean2D(structure)
@@ -29,7 +29,7 @@ Implements Marvin 4 js Stereo Info web service. Marks possible stereocenters, R/
 bonds.
     """
 
-    params = json.loads(request.body.getvalue())
+    params = json.loads(request.body.read())
     structure = params['structure']
     response.content_type = 'application/json'
     return json.dumps(_stereoInfo(structure))
@@ -43,7 +43,7 @@ Implements Marvin 4 js MolConvert web service. Converts compound from one format
 *.mrv.
     """
 
-    params = json.loads(request.body.getvalue())
+    params = json.loads(request.body.read())
     structure = params['structure']
     input_f = params['inputFormat']
     output_f = params['parameters']

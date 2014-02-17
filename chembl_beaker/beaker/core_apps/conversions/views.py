@@ -27,7 +27,7 @@ def ctab2smiles():
 Converts CTAB to SMILES format. CTAB is either single molfile or SDF file.
     """
 
-    data=request.body.getvalue()
+    data=request.body.read()
     return _ctab2smiles(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ def smiles2ctab():
 Converts SMILES to CTAB. This method accepts single or multiple SMILES or *.smi file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     if not data.startswith('SMILES Name'):
         data = "SMILES Name\n" + data
     return _smiles2ctab(data)
@@ -76,7 +76,7 @@ def inchi2ctab():
 Converts InChi to CTAB. This method accepts one or multiple InChis.
     """
 
-    inchis = request.body.getvalue()
+    inchis = request.body.read()
     return _inchi2ctab(inchis)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ def ctab2inchi():
 Converts CTAB to InChis. CTAB is either single molfile or SDF file.
     """
 
-    data=request.body.getvalue()
+    data=request.body.read()
     return _ctab2inchi(data)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -121,7 +121,7 @@ def inchi2inchiKey():
 Converts InChis to InChiKeys. This method accepts one or multiple InChis.
     """
 
-    inchis = request.body.getvalue()
+    inchis = request.body.read()
     return _inchi2inchiKey(inchis)
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -25,3 +25,9 @@ def server_static(filename):
     return static_file(filename, root=STATIC_ROOT)
 
 #-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/favicon.ico')
+def favicon():
+    return static_file('favicon.ico', root=STATIC_ROOT)
+
+#-----------------------------------------------------------------------------------------------------------------------

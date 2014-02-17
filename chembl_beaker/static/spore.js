@@ -19,7 +19,7 @@ var spore = {
         var file = files[0];
         var name = file.name;
 
-        if (!name.match('(.*)\\.(jpg|gif|png|bmp|tiff|pdf)'))
+        if (!name.match('(.*)\\.(jpg|gif|png|bmp|tiff|pdf|mol|sdf|mrv|txt|xml|json)'))
             return alert('Unrecognised file extension.');
 
         if(files.length > 1)
@@ -28,22 +28,23 @@ var spore = {
         if(file.size > 2000000)
             return alert('File too large', 'Files larger than 2MB will not be accepted now.');
 
-        if(evt.type == 'drop')
-        {
-            var descriptionBox = $('.dropDesc', target);
-            descriptionBox.text(name);
-            var reader = new FileReader();
-            reader.onload = function(e){
-                spore.fileToUpload = e.target.result;
-            };
+        var descriptionBox = $('.dropDesc', target);
+        descriptionBox.text(name);
+        var reader = new FileReader();
+        reader.onload = function(e){
+            spore.fileToUpload = e.target.result;
+        };
 
-            reader.onerror = function(error){
-                var desc  = error.target.error.name ? error.target.error.name : '';
-                alert("Error reading file: " + desc);
-            };
+        reader.onerror = function(error){
+            var desc  = error.target.error.name ? error.target.error.name : '';
+            alert("Error reading file: " + desc);
+        };
 
+        if (name.match('(.*)\\.(jpg|gif|png|bmp|tiff|pdf)'))
             reader.readAsDataURL(file);
-        }
+        else if(name.match('(.*)\\.(mol|sdf|mrv|txt|xml|json)'))
+            reader.readAsText(file);
+
     },
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -53,6 +54,13 @@ var spore = {
         evt.stopPropagation();
         evt.preventDefault();
         evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+    },
+
+//----------------------------------------------------------------------------------------------------------------------
+
+    handleClipboard: function (evt) {
+        var response = $('.rawResponse', $(evt.target).closest('.restapiholderresponse')).text();
+        ClipboardCopyInit(this, response);
     },
 
 //----------------------------------------------------------------------------------------------------------------------
@@ -129,8 +137,10 @@ var spore = {
             };
         };
 
-         $(document).on('dragover', '.drop_zone', spore.handleDragOver);
-         $(document).on('drop', '.drop_zone', spore.handleFileSelect);
+        $(document).on('dragover', '.drop_zone', spore.handleDragOver);
+        $(document).on('drop', '.drop_zone', spore.handleFileSelect);
+        $(document).on('change', '.fileUploader', spore.handleFileSelect);
+        $(document).on('mouseover', '.clipboardBtn', spore.handleClipboard);
 
         spore.settitle(this.destination,this.spec);
 
@@ -264,6 +274,7 @@ var spore = {
                     method_widget.append('<textarea id="'+fn+'_input_post" rows="3" placeholder="POST body"></textarea>');
                 else
                     method_widget.append('<div class="drop_zone well" id="'+fn+'_file_upload_'+ method + '"><div class="dropDesc">Drop image here</div></div>');
+                method_widget.append('...or upload a file: <div><form style="margin-top: 1em;"><input type="file" class="fileUploader" name="file[]" multiple /></form></div>');
                 required_params.push('post');
             }
 
@@ -276,6 +287,7 @@ var spore = {
                     method_widget.append('<textarea id="'+fn+'_input_post" rows="3" placeholder="POST body"></textarea>');
                 else
                     method_widget.append('<div class="drop_zone well" id="'+fn+'_file_upload_'+ method + '"><div class="dropDesc">Drop image here</div></div>');
+                method_widget.append('...or upload a file: <div><form style="margin-top: 1em;"><input type="file" class="fileUploader" name="file[]" multiple /></form></div>');
                 var required_params = [];
                 required_params.push('post');
             }
@@ -306,7 +318,7 @@ var spore = {
        triggerflags = [];
        run = true;
 
-       if(imageUpload && method == 'POST') {
+       if(spore.fileToUpload && method == 'POST') {
            params['post']=spore.fileToUpload;
        }
 
@@ -351,6 +363,8 @@ var spore = {
            return;
        }
 
+       spore.fileToUpload = null;
+
     spore.log("RP: "+required_params);
 
         if (params['post']!=undefined && required_params.length == 1) {
@@ -367,7 +381,7 @@ var spore = {
                     var content_type = req.getResponseHeader('Content-Type');
                     document.getElementById(fn+'_response').classList.remove('resterror');
                     document.getElementById(fn+'_response').classList.add('restsuccess');
-                    document.getElementById(fn+'_response').innerHTML = '<h4>Request URI</h4><div id="'+fn+'_requestURI" class="mhsy well">'+url+'</div><h4>Response Code</h4><div class="well">'+req.status+'</div><h4>Response</h4><div class="well">'+req.statusText+'</div><h4>Response Body</h4><div id="'+fn+'_responseJSON"></div>';
+                    document.getElementById(fn+'_response').innerHTML = '<h4>Request URI</h4><div id="'+fn+'_requestURI" class="mhsy well">'+url+'</div><h4>Response Code</h4><div class="well">'+req.status+'</div><h4>Response</h4><div class="well">'+req.statusText+'</div><h4>Response Body <button class="clipboardBtn">Copy</button><span class="clipboardStatus" /></h4><div id="'+fn+'_responseJSON" class="responseBody"></div><div class="rawResponse" style="display:none;">' + JSON.stringify(data) + '</div>';
                     if (content_type.indexOf('image/png') != -1){
                         $('#'+fn+'_responseJSON').html('<img src="data:image/png;base64,' + data + '" />');
                     }

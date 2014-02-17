@@ -11,20 +11,39 @@
 <script src="/static/jquery.base64.js"></script>
 <script src="/static/markdown.min.js"></script>
 <script src="/static/vkbeautify.js"></script>
+<script src="/static/ZeroClipboard.js"></script>
 <script src="/static/spore.js"></script>
+<link rel="shortcut icon" href="static/favicon.png"/>
 <link href="/static/docs.css" rel="stylesheet">
 <link rel="stylesheet" href="http://yandex.st/highlightjs/7.3/styles/zenburn.min.css">
 <script src="http://yandex.st/highlightjs/7.3/highlight.min.js"></script>    
-<script>
+<script type="text/javascript">
 var api;
 $(function() {
    spore.debug(true);
    spore.create('/spore',function(a){api=a;},'','servicelist');
+   ZeroClipboard.setMoviePath( '/static/ZeroClipboard.swf' );
 });
+
+function ClipboardCopyInit(control, text) {
+    var clip = new ZeroClipboard.Client();
+    var status = $('.clipboardStatus', $(control).closest('.restapiholderresponse'));
+    clip.glue(control);
+    clip.setText(text);
+    clip.addEventListener('complete', function(client, text) {
+        if (status) {
+            status.text('copied');
+            status.show();
+            status.fadeOut(2000);
+        } else
+            console.log(title + ' copied to clipboard');
+    });
+}
 
 </script>
 </head>
 <body>
+        <div style="margin: auto; width:300px;">Please, check also <a href="http://mnowotka.github.io/presentations/beaker/">presentation about Beaker</a></div>
         <div class="offset1" id="servicelist"></div>
 </body>
 </html>

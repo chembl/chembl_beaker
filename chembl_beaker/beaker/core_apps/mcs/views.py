@@ -27,7 +27,7 @@ def mcs():
 Returns Maximum Common Substructure of a compound. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return _mcs(data,request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------

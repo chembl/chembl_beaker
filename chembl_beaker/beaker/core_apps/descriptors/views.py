@@ -26,7 +26,7 @@ def getNumAtoms():
 Counts number of atoms of given compounds. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return json.dumps(_getNumAtoms(data))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -49,7 +49,7 @@ def logP():
 Returns the logP value for a molecule. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return json.dumps(_getLogP(data))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -72,7 +72,7 @@ def tpsa():
 Returns the TPSA value for a molecule. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return json.dumps(_getTPSA(data))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -94,7 +94,7 @@ def molWt():
 Returns molecular weight of a compound. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return json.dumps(_getMolWt(data))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -116,7 +116,7 @@ def descriptors():
 Returns descriptors of a compound. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return json.dumps(_getDescriptors(data, request.params))
 
 #-----------------------------------------------------------------------------------------------------------------------

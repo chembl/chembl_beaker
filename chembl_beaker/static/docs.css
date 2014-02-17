@@ -107,3 +107,19 @@ width:97%;
     font: 20pt bold,"Vollkorn";
     min-height: 50px;
 }
+
+.clipboardBtn, .clipboardStatus {
+    font-size: 60%;
+}
+
+.clipboardStatus {
+    padding-left: 0.5em;
+}
+
+a {
+   outline: 0;
+}
+
+object, embed {
+  outline: 0;
+}

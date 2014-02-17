@@ -4,6 +4,7 @@ __author__ = 'mnowotka'
 
 from bottle import request
 import base64
+import os
 from chembl_beaker.beaker import app, config
 from chembl_beaker.beaker.core_apps.osra.impl import _image2ctab
 
@@ -20,7 +21,10 @@ Uses OSRA to convert image to CTAB. Image should be urlsafe_base65 encoded data 
     else:
         img = base64.urlsafe_b64decode(image)
     #TODO: check /usr/local/bin/osra when no explicit value given
-    return _image2ctab(img, config.get('osra_binaries_location', '/usr/bin/osra'))
+    known_location = '/usr/local/bin/osra'
+    if not os.path.exists(known_location):
+        known_location = '/usr/bin/osra'
+    return _image2ctab(img, config.get('osra_binaries_location', known_location))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -33,7 +37,10 @@ Uses OSRA to convert image to CTAB. Image should be 300 DPI png graphic.
     img = request.body.read()
     if img.startswith('data:'):
         img = base64.b64decode(img[img.find(',')+1:])
-    #TODO: check /usr/local/bin/osra when no explicit value given      
-    return _image2ctab(img, config.get('osra_binaries_location', '/usr/bin/osra'))
+    #TODO: check /usr/local/bin/osra when no explicit value given
+    known_location = '/usr/local/bin/osra'
+    if not os.path.exists(known_location):
+        known_location = '/usr/bin/osra'
+    return _image2ctab(img, config.get('osra_binaries_location', known_location))
 
 #-----------------------------------------------------------------------------------------------------------------------

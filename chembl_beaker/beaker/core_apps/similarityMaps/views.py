@@ -30,7 +30,7 @@ def smiles2SimilarityMap():
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     response.content_type = 'image/png'
     ret = _smiles2SimilarityMap(data, request.params)
     if request.is_ajax:
@@ -60,7 +60,7 @@ def sdf2SimilarityMap():
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     response.content_type = 'image/png'
     ret = _sdf2SimilarityMap(data, request.params)
     if request.is_ajax:

@@ -35,7 +35,7 @@ Converts CTAB to PNG image. CTAB is either single molfile or SDF file. Size is t
     """
 
     size = int(request.forms.get('size', 200))
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     legend=request.params.get('legend','')
     response.content_type = 'image/png'
     ret = _ctab2image(data,size,legend)
@@ -74,7 +74,7 @@ Converts SMILES to PNG image. This method accepts single or multiple SMILES or *
 size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     if not data.startswith('SMILES Name'):
         data = "SMILES Name\n" + data
     size = int(request.forms.get('size', 200))

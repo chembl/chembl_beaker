@@ -35,7 +35,7 @@ is the optional size of image in pixels (default value is 200 px). Legend is opt
     """
 
     size = int(request.forms.get('size', 200))
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     legend=request.params.get('legend','')
     response.content_type = 'application/json'
     return _ctab2json(data, size, legend)
@@ -69,7 +69,7 @@ the bottom of image.
     """
 
     size = int(request.forms.get('size', 200))
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     legend=request.params.get('legend','')
     response.content_type = 'application/json'
     return _smiles2json(data, size, legend)

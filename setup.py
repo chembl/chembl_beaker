@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='0.4.1',
+    version='0.4.2',
     scripts=['chembl_beaker/run_beaker.py'],
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',

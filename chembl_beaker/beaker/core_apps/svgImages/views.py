@@ -34,7 +34,7 @@ image in pixels (default value is 200 px). Legend is optional label in the botto
     """
 
     size = int(request.forms.get('size', 200))
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.getvalue()
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     legend=request.params.get('legend','')
     response.content_type = 'image/svg+xml'
     return _ctab2svg(data,size,legend)
@@ -67,7 +67,7 @@ Converts SMILES to SVG vector graphic. This method accepts single or multiple SM
 optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     if not data.startswith('SMILES Name'):
         data = "SMILES Name\n" + data
     size = int(request.forms.get('size', 200))

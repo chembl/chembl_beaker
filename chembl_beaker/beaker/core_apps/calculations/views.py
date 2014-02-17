@@ -25,7 +25,7 @@ def kekulize():
 Performs kekulisation on input compounds. CTAB is either single molfile or SDF file.
     """
 
-    data = request.body.getvalue()
+    data = request.body.read()
     return _kekulize(data)
 
 #-----------------------------------------------------------------------------------------------------------------------

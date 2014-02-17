@@ -30,7 +30,7 @@ Computes fingerprints for given compounds and writes them as fps format. Type is
 can be 'morgan', 'pair' or 'maccs' (default to 'morgan'). CTAB is either single molfile or SDF file.
     """
 
-    params = json.loads(request.body.getvalue())
+    params = json.loads(request.body.read())
     structure = params['structure']
     type = params.get('type', 'morgan')
     radius = params.get('radius', 2)
