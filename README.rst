@@ -118,12 +118,25 @@ Like every good software written in Python, beaker is self-documented. When you 
 
 Development - writing your own extentions
 --------
-Developing new app should be easy. The only required file is `views.py` where you should define your botte `routes`. Since your app is technically speaking a python module, `__init__.py` will be required as well.
-You should wrap your module in PIP package and distribute via `PyPi`. By doing so, a user who want to install your app has to install it via `PIP` and add it to `installed_apps` list.
+Developing new app should be easy. The only required file is ``views.py`` where you should define your botte ``routes``. Since your app is technically speaking a python module, ``__init__.py`` will be required as well.
+You should wrap your module in ``PIP`` package and distribute via ``PyPi``. By doing so, a user who want to install your app has to install it via `PIP` and add it to ``installed_apps`` list.
 
 FAQ
 --------
-TODO
+1. How can I enable HTMl5 canvas support?
+
+ - Current version of ``RDKit`` doesn't include ``JSONCanvas`` so there are two way to get this working. The first one requires a little time and almost no knowlegde, the second one requires little knowledge but it's fast.
+     1. Checkout git branch with JSON Canvas and recompile RDKit:
+     
+::
+
+         git clone -b JSONCanvas_Nov2013 https://github.com/rdkit/rdkit.git
+         cd rdkit/External & ./download-inchi.sh
+         cd rdkit & mkdir build & cd build & cmake  -DRDK_BUILD_INCHI_SUPPORT=ON ..
+
+
+2. Since JSON Canvas is implemented in Python there is no need to recompile, you can just apply a patch: https://github.com/rdkit/rdkit/compare/JSONCanvas_Nov2013 and this should do the trick.     
+         
 
 More info and help
 --------
