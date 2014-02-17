@@ -1,7 +1,7 @@
 chembl_beaker
 ======
 
-.. image:: https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Beaker.svg/200px-Beaker.svg.png
+.. image:: http://s13.postimg.org/k4ja78647/200px_Beaker_svg.png
     :alt: logo
 
 .. image:: https://pypip.in/v/chembl_beaker/badge.png
