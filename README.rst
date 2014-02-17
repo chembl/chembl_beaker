@@ -31,7 +31,7 @@ This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nc
  * `Various other calculation (for example kekulisation) <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/calculations/views.py>`_
  * Marvin 4 JS compilant `webservices <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_
 
-As a portable, lightweight, `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_ ready webserver, speaking REST. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
+As a portable, lightweight, `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_-ready, `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_-speaking, `SPORE <https://github.com/SPORE/specifications>`_-documented webserver. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
 
 Where is it used?
 --------
