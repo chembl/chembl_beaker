@@ -1,7 +1,7 @@
 chembl_beaker
 ======
 
-.. image:: http://s13.postimg.org/k4ja78647/200px_Beaker_svg.png
+.. image:: https://dl.dropboxusercontent.com/u/10967207/static/logo.png
     :alt: logo
 
 .. image:: https://pypip.in/v/chembl_beaker/badge.png
@@ -115,6 +115,9 @@ If you want to run beaker in production you should do this using virtualenv, uWS
 Documentation
 --------
 Like every good software written in Python, beaker is self-documented. When you run beaker, open your browser and go to URL: ``BEAKER_ROOT/docs``. You will see live documentation genrated on the fly from all available webservices, exposed by beaker. You can immediately try them and see results return by the server. Every webservice should be documented - documentation is generated automatically as well, from docstring of every exposed webservice, interpreted as markdown.
+
+.. image:: https://dl.dropboxusercontent.com/u/10967207/static/docs.png
+    :alt: docs screenshot
 
 Development - writing your own extentions
 --------
