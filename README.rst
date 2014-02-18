@@ -134,8 +134,9 @@ FAQ
 ::
 
          git clone -b JSONCanvas_Nov2013 https://github.com/rdkit/rdkit.git
-         cd rdkit/External & ./download-inchi.sh
+         cd rdkit/External/INCHI-API/ & ./download-inchi.sh
          cd rdkit & mkdir build & cd build & cmake  -DRDK_BUILD_INCHI_SUPPORT=ON ..
+         make install
 
 
 2. Since JSON Canvas is implemented in Python there is no need to recompile, you can just apply a patch: https://github.com/rdkit/rdkit/compare/JSONCanvas_Nov2013 and this should do the trick.     
