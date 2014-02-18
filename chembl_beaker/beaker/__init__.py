@@ -26,6 +26,7 @@ DEFAULT_APPS = [
     "chembl_beaker.beaker.core_apps.rasterImages",
     "chembl_beaker.beaker.core_apps.svgImages",
     "chembl_beaker.beaker.core_apps.jsonImages",
+    "chembl_beaker.beaker.core_apps.similarityMaps",
     "chembl_beaker.beaker.core_apps.autoDocs",
     ]
 
