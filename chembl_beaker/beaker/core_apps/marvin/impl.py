@@ -4,7 +4,7 @@ __author__ = 'mnowotka'
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from chembl_beaker.beaker.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
+from chembl_beaker.beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
 
 #-----------------------------------------------------------------------------------------------------------------------
 
