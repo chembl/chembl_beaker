@@ -12,8 +12,7 @@ import base64
 @app.get('/mcs/<ctab>', name="mcs")
 def mcs(ctab):
     """
-Returns Maximum Common Substructure of a compound. CTAB is urlsafe_base64 encoded string containing single molfile or
-concatenation of multiple molfiles.
+Returns Maximum Common Substructure of a set of compounds. CTAB is urlsafe_base64 encoded string containing molfiles.
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -24,7 +23,7 @@ concatenation of multiple molfiles.
 @app.route('/mcs', method=['OPTIONS', 'POST'], name="mcs")
 def mcs():
     """
-Returns Maximum Common Substructure of a compound. CTAB is either single molfile or SDF file.
+Returns Maximum Common Substructure of a set of compounds. This method accepts compounds in SDF format.
     """
 
     data = request.body.read()

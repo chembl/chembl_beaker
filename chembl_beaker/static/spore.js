@@ -381,7 +381,18 @@ var spore = {
                     var content_type = req.getResponseHeader('Content-Type');
                     document.getElementById(fn+'_response').classList.remove('resterror');
                     document.getElementById(fn+'_response').classList.add('restsuccess');
-                    document.getElementById(fn+'_response').innerHTML = '<h4>Request URI</h4><div id="'+fn+'_requestURI" class="mhsy well">'+url+'</div><h4>Response Code</h4><div class="well">'+req.status+'</div><h4>Response</h4><div class="well">'+req.statusText+'</div><h4>Response Body <button class="clipboardBtn">Copy</button><span class="clipboardStatus" /></h4><div id="'+fn+'_responseJSON" class="responseBody"></div><div class="rawResponse" style="display:none;">' + (($.type(data) === "string")? data : JSON.stringify(data)) + '</div>';
+                    var raw_data = '';
+                    if($.type(data) === "string")
+                        raw_data = data;
+                    else if ($.isXMLDoc(data)){
+                        raw_data = (new XMLSerializer()).serializeToString(data);
+                    }
+                    else
+                        raw_data = JSON.stringify(data);
+                    $('#'+fn+'_response').html('<h4>Request URI</h4><div id="'+fn+'_requestURI" class="mhsy well">'+url+'</div><h4>Response Code</h4><div class="well">'+req.status+'</div><h4>Response</h4><div class="well">'+req.statusText+'</div><h4>Response Body <button class="clipboardBtn">Copy</button><span class="clipboardStatus" /></h4><div id="'+fn+'_responseJSON" class="responseBody"></div>');
+                    var raw_response = $('<div class="rawResponse" style="display:none;"></div>');
+                    raw_response.text(raw_data);
+                    $('#'+fn+'_response').append(raw_response);
                     if (content_type.indexOf('image/png') != -1){
                         $('#'+fn+'_responseJSON').html('<img src="data:image/png;base64,' + data + '" />');
                     }

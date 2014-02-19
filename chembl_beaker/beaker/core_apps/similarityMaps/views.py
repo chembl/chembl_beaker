@@ -13,6 +13,7 @@ import base64
 def smiles2SimilarityMap(smiles):
     """
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
+This method requires *exactly two SMILES*
     """
 
     data = base64.urlsafe_b64decode(smiles)
@@ -28,6 +29,7 @@ Generates similarity map, which is a way to visualize the atomic contributions t
 def smiles2SimilarityMap():
     """
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
+This method requires *exactly two SMILES*
     """
 
     data = request.body.read()
@@ -43,6 +45,7 @@ Generates similarity map, which is a way to visualize the atomic contributions t
 def sdf2SimilarityMap(ctab):
     """
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
+This method requires SDF containing *exactly two mols*
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -58,6 +61,7 @@ Generates similarity map, which is a way to visualize the atomic contributions t
 def sdf2SimilarityMap():
     """
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
+This method requires SDF containing *exactly two mols*
     """
 
     data = request.body.read()

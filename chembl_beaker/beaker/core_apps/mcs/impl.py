@@ -10,6 +10,16 @@ from chembl_beaker.beaker.utils.io import _parseMolData
 
 def _mcs(data,params):
     ms = _parseMolData(data)
+    if not ms:
+        return
+    if len(ms) == 1:
+        if bool(int(params.get('asSmiles','0'))):
+            print 'SMARTS'
+            return Chem.MolToSmiles(ms[0])
+        else:
+            print 'SMILES'
+            return Chem.MolToSmarts(ms[0])
+
     atomCompare=params.get('atomCompare','elements')
     bondCompare=params.get('bondCompare','bondtypes')
     ringMatchesRingOnly=bool(int(params.get('ringMatchesRingOnly','0')))
