@@ -4,9 +4,12 @@ __author__ = 'mnowotka'
 
 try:
     import cairo
+    cffi = False
 except ImportError:
     import cairocffi
     cairocffi.install_as_pycairo()
+    cffi = True
+    import io
     import cairo
 
 import StringIO
@@ -25,7 +28,10 @@ def _mols2svg(mols,size,legend):
     molsPerRow=min(len(mols),4)
     totalWidth=molsPerRow*size
     totalHeight=molsPerRow*size
-    imageData = StringIO.StringIO()
+    if cffi and cairocffi.version <= (1,10,0) :
+        imageData = io.BytesIO()
+    else:
+        imageData = StringIO.StringIO()
     surf = cairo.SVGSurface(imageData,totalWidth,totalHeight)
     ctx = cairo.Context(surf)
     for i, mol in enumerate(mols):

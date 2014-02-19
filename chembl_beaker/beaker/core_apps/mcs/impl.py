@@ -17,12 +17,19 @@ def _mcs(data,params):
     threshold=params.get('threshold',None)
     if threshold:
         threshold=float(threshold)
-    mcs = MCS.FindMCS(ms,
-                      atomCompare=atomCompare,
-                      bondCompare=bondCompare,
-                      ringMatchesRingOnly=ringMatchesRingOnly,
-                      completeRingsOnly=completeRingsOnly,
-                      threshold=threshold)
+    try:
+        mcs = MCS.FindMCS(ms,
+                          atomCompare=atomCompare,
+                          bondCompare=bondCompare,
+                          ringMatchesRingOnly=ringMatchesRingOnly,
+                          completeRingsOnly=completeRingsOnly,
+                          threshold=threshold)
+    except TypeError:
+        mcs = MCS.FindMCS(ms,
+                          atomCompare=atomCompare,
+                          bondCompare=bondCompare,
+                          ringMatchesRingOnly=ringMatchesRingOnly,
+                          completeRingsOnly=completeRingsOnly)
     res = mcs.smarts
     if bool(int(params.get('asSmiles','0'))):
         p = Chem.MolFromSmarts(res)

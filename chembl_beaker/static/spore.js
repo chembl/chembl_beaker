@@ -397,7 +397,12 @@ var spore = {
                         $('#'+fn+'_responseJSON').html(importedSVGRootElement);
                     }
                     else if (data[0] == '{' || data[0] == '['){
-                        $('#'+fn+'_responseJSON').html('<pre id="'+fn+'_pre"><code id="'+fn+'_highlight">'+vkbeautify.json(data)+'</code></pre>');
+                        try{
+                           $('#'+fn+'_responseJSON').html('<pre id="'+fn+'_pre"><code id="'+fn+'_highlight">'+vkbeautify.json(data)+'</code></pre>');
+                        }
+                        catch(err){
+                           $('#'+fn+'_responseJSON').html('<pre id="'+fn+'_pre"><code id="'+fn+'_highlight">' + data + '</code></pre>');
+                        }
                     }
 
                     else{
