@@ -510,43 +510,4 @@ spore.api.prototype._call = function (fn, params, onsuccess, onerror) {
         url: url,
         type: method.method,
         data: dta,
-        //dataType: 'text',
-        //contentType: 'json', //this.spec.formats[0]
-        success: function (data, status, req) {
-            spore.log(plog + 'return ' + (data ? "datas" : "nothing"));
-            //call widgets backwards
-            for (var n = self.widgets.length - 1; n >= 0; --n) {
-                var w = self.widgets[n],
-                    wlog = plog + 'widget ' + w.name + ' ';
-                if (w.callback) {
-                    try {
-                        var r = w.callback(data, req);
-                        spore.log(wlog + 'callback returned ' + r);
-                    } catch (e) {
-                        spore.log(wlog + 'callback error! => ' + e);
-                    }
-                    delete w.callback;
-                }
-            }
-            if (onsuccess) onsuccess(data,req,url);
-        },
-        error: function (req, status, err, url) {
-            spore.log(plog + 'server returned '+url+' '+ req.status + ':' + req.statusText);
-            if (onerror) onerror(req,status,err,url);
-        }
-    });
-    return true;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
-
-spore.api.prototype.enable = function (widgetname, params) {
-    if (!spore.widgets[widgetname]) throw 'widget ' + widgetname + ' not found/loaded';
-    this.widgets.push({
-        name: widgetname,
-        obj: new spore.widgets[widgetname](params)
-    });
-    return this;
-};
-
-//----------------------------------------------------------------------------------------------------------------------
+        crossDomain: false,
