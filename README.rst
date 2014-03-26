@@ -78,6 +78,26 @@ If you want to install github version using `PIP`, invoke this command:
 
     ``sudo pip install git+https://github.com/mnowotka/chembl_beaker.git``
 
+Full recipe for Mac users
+--------
+
+So I want to test it, I have a Mac and I don't know what rdkit, tornado and bottle is - how do I start?
+
+First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
+
+      ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)”
+      brew tap edc/homebrew-rdkit
+      brew install rdkit
+      export RDBASE=/usr/local/share/RDKit
+      export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
+      export CFLAGS=-Qunused-arguments
+      export CPPFLAGS=-Qunused-arguments
+      sudo -E pip install cairocffi
+      sudo -E pip install Pillow
+      sudo -E pip install lxml
+      sudo pip install chembl_beaker
+      run_berker.py``
+
 Configuration
 --------
 By default configuration is stored in ``beaker.conf`` file, located in current directory. You can specify location of
@@ -129,10 +149,8 @@ FAQ
 1. How can I enable HTMl5 canvas support?
 
  - Current version of ``RDKit`` doesn't include ``JSONCanvas`` so there are two way to get this working. The first one requires a little time and almost no knowlegde, the second one requires little knowledge but it's fast.
-     1. Checkout git branch with JSON Canvas and recompile RDKit:
+     1. Checkout git branch with JSON Canvas and recompile RDKit::
      
-::
-
          git clone -b JSONCanvas_Nov2013 https://github.com/rdkit/rdkit.git
          cd rdkit/External/INCHI-API/ & ./download-inchi.sh
          cd rdkit & mkdir build & cd build & cmake  -DRDK_BUILD_INCHI_SUPPORT=ON ..
