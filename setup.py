@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='0.4.5',
+    version='0.4.6',
     scripts=['chembl_beaker/run_beaker.py'],
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',
@@ -51,7 +51,7 @@ setup(
                  'Environment :: Web Environment',
                  'Framework :: Django',
                  'Intended Audience :: Developers',
-                 'License :: Creative Commons :: Attribution-ShareAlike 3.0 Unported',
+                 'License :: OSI Approved :: MIT License',
                  'Operating System :: POSIX :: Linux',
                  'Programming Language :: Python :: 2.7',
                  'Topic :: Scientific/Engineering :: Chemistry'],
