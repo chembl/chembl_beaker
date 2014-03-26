@@ -85,7 +85,7 @@ So I want to test it, I have a Mac and I don't know what rdkit, tornado and bott
 
 First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
 
-      ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)”
+      ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
       brew tap edc/homebrew-rdkit
       brew install rdkit
       export RDBASE=/usr/local/share/RDKit
@@ -96,7 +96,7 @@ First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
       sudo -E pip install Pillow
       sudo -E pip install lxml
       sudo pip install chembl_beaker
-      run_berker.py``
+      run_berker.py
 
 Configuration
 --------
