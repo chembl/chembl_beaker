@@ -10,7 +10,7 @@ from chembl_beaker.beaker.core_apps.osra.impl import _image2ctab
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/image2ctab/<image>', name="image2ctab")
+@app.route('/image2ctab/<image>', method=['OPTIONS', 'GET'], name="image2ctab")
 def image2ctab(image):
     """
 Uses OSRA to convert image to CTAB. Image should be urlsafe_base65 encoded data of 300 DPI png graphic.

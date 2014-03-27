@@ -10,8 +10,8 @@ import json
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/sdf2fps/<ctab>', name="sdf2fps")
-@app.get('/sdf2fps/<ctab>/<type>', name="sdf2fps")
+@app.route('/sdf2fps/<ctab>', method=['OPTIONS', 'GET'], name="sdf2fps")
+@app.route('/sdf2fps/<ctab>/<type>', method=['OPTIONS', 'GET'], name="sdf2fps")
 def sdf2fps(ctab, type='morgan'):
     """
 Computes fingerprints for given compounds and writes them as fps format. Type is a optional type of fingerprints,

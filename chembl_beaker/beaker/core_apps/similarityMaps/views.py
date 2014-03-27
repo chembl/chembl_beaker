@@ -9,7 +9,7 @@ import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2SimilarityMap/<smiles>', name="smiles2SimilarityMap")
+@app.route('/smiles2SimilarityMap/<smiles>', method=['OPTIONS', 'GET'], name="smiles2SimilarityMap")
 def smiles2SimilarityMap(smiles):
     """
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.
@@ -41,7 +41,7 @@ This method requires *exactly two SMILES*
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/sdf2SimilarityMap/<ctab>', name="sdf2SimilarityMap")
+@app.route('/sdf2SimilarityMap/<ctab>', method=['OPTIONS', 'GET'], name="sdf2SimilarityMap")
 def sdf2SimilarityMap(ctab):
     """
 Generates similarity map, which is a way to visualize the atomic contributions to the similarity between molecules.

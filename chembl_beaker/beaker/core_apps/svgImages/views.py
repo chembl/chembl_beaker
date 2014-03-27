@@ -9,9 +9,9 @@ import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/ctab2svg/<ctab>', name="ctab2svg")
-@app.get('/ctab2svg/<ctab>/<size>', name="ctab2svg")
-@app.get('/ctab2svg/<ctab>/<size>/<legend>', name="ctab2svg")
+@app.route('/ctab2svg/<ctab>', method=['OPTIONS', 'GET'], name="ctab2svg")
+@app.route('/ctab2svg/<ctab>/<size>', method=['OPTIONS', 'GET'], name="ctab2svg")
+@app.route('/ctab2svg/<ctab>/<size>/<legend>', method=['OPTIONS', 'GET'], name="ctab2svg")
 def ctab2svg(ctab, size=200, legend=''):
     """
 Converts CTAB to SVG vector graphic. CTAB is urlsafe_base64 encoded string containing single molfile or
@@ -41,9 +41,9 @@ image in pixels (default value is 200 px). Legend is optional label in the botto
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2svg/<smiles>', name="smiles2svg")
-@app.get('/smiles2svg/<smiles>/<size>', name="smiles2svg")
-@app.get('/smiles2svg/<smiles>/<size>/<legend>', name="smiles2svg")
+@app.route('/smiles2svg/<smiles>', method=['OPTIONS', 'GET'], name="smiles2svg")
+@app.route('/smiles2svg/<smiles>/<size>', method=['OPTIONS', 'GET'], name="smiles2svg")
+@app.route('/smiles2svg/<smiles>/<size>/<legend>', method=['OPTIONS', 'GET'], name="smiles2svg")
 def smiles2svg(smiles, size=200, legend=''):
     """
 Converts SMILES to SVG vector graphic. This method accepts urlsafe_base64 encoded string containing single or

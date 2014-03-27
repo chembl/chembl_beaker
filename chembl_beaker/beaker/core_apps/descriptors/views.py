@@ -8,7 +8,7 @@ import json
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/getNumAtoms/<ctab>', name="getNumAtoms")
+@app.route('/getNumAtoms/<ctab>', method=['OPTIONS', 'GET'], name="getNumAtoms")
 def getNumAtoms(ctab):
     """
 Counts number of atoms of given compounds. CTAB is urlsafe_base64 encoded string containing single molfile or
@@ -31,7 +31,7 @@ Counts number of atoms of given compounds. CTAB is either single molfile or SDF 
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/logP/<ctab>', name="logP")
+@app.route('/logP/<ctab>', method=['OPTIONS', 'GET'], name="logP")
 def logP(ctab):
     """
 Returns the logP value for a molecule. CTAB is urlsafe_base64 encoded string containing single molfile or
@@ -54,7 +54,7 @@ Returns the logP value for a molecule. CTAB is either single molfile or SDF file
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/tpsa/<ctab>', name="tpsa")
+@app.route('/tpsa/<ctab>', method=['OPTIONS', 'GET'], name="tpsa")
 def tpsa(ctab):
     """
 Returns the TPSA value for a molecule. CTAB is urlsafe_base64 encoded string containing single molfile or
@@ -77,7 +77,7 @@ Returns the TPSA value for a molecule. CTAB is either single molfile or SDF file
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/molWt/<ctab>', name="molWt")
+@app.route('/molWt/<ctab>', method=['OPTIONS', 'GET'], name="molWt")
 def molWt(ctab):
     """
 Returns molecular weight of a compound. CTAB is urlsafe_base64 encoded string containing single molfile or
@@ -99,7 +99,7 @@ Returns molecular weight of a compound. CTAB is either single molfile or SDF fil
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/descriptors/<ctab>', name="descriptors")
+@app.route('/descriptors/<ctab>', method=['OPTIONS', 'GET'], name="descriptors")
 def descriptors(ctab):
     """
 Returns descriptors of a compound. CTAB is urlsafe_base64 encoded string containing single molfile or

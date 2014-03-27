@@ -9,7 +9,7 @@ import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/ctab2smiles/<ctab>', name="ctab2smiles")
+@app.route('/ctab2smiles/<ctab>', method=['OPTIONS', 'GET'], name="ctab2smiles")
 def ctab2smiles(ctab):
     """
 Converts CTAB to SMILES format. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
@@ -32,7 +32,7 @@ Converts CTAB to SMILES format. CTAB is either single molfile or SDF file.
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2ctab/<smiles>', name="smiles2ctab")
+@app.route('/smiles2ctab/<smiles>', method=['OPTIONS', 'GET'], name="smiles2ctab")
 def smiles2ctab(smiles):
     """
 Converts SMILES to CTAB. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
@@ -59,7 +59,7 @@ Converts SMILES to CTAB. This method accepts single or multiple SMILES or *.smi 
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/inchi2ctab/<inchi>', name="inchi2ctab")
+@app.route('/inchi2ctab/<inchi>', method=['OPTIONS', 'GET'], name="inchi2ctab")
 def inchi2ctab(inchi):
     """
 Converts InChi to CTAB. This method accepts urlsafe_base64 encoded string containing one or multiple InChis.
@@ -81,7 +81,7 @@ Converts InChi to CTAB. This method accepts one or multiple InChis.
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/ctab2inchi/<ctab>', name="ctab2inchi")
+@app.route('/ctab2inchi/<ctab>', method=['OPTIONS', 'GET'], name="ctab2inchi")
 def ctab2inchi(ctab):
     """
 Converts CTAB to InChis. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
@@ -104,7 +104,7 @@ Converts CTAB to InChis. CTAB is either single molfile or SDF file.
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/inchi2inchiKey/<inchi>', name="inchi2inchiKey")
+@app.route('/inchi2inchiKey/<inchi>', method=['OPTIONS', 'GET'], name="inchi2inchiKey")
 def inchi2inchiKey(inchi):
     """
 Converts InChis to InChiKeys. This method accepts urlsafe_base64 encoded string containing one or multiple InChis.

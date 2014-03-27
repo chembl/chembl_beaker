@@ -9,7 +9,7 @@ import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/mcs/<ctab>', name="mcs")
+@app.route('/mcs/<ctab>', method=['OPTIONS', 'GET'], name="mcs")
 def mcs(ctab):
     """
 Returns Maximum Common Substructure of a set of compounds. CTAB is urlsafe_base64 encoded string containing molfiles.

@@ -17,7 +17,7 @@ def docs():
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/spore', methods = ['GET'])
+@app.route('/spore', methods = ['OPTIONS', 'GET'])
 def spore():
     """Print available functions."""
 

@@ -9,9 +9,9 @@ import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/ctab2json/<ctab>', name="ctab2json")
-@app.get('/ctab2json/<ctab>/<size>', name="ctab2json")
-@app.get('/ctab2json/<ctab>/<size>/<legend>', name="ctab2json")
+@app.route('/ctab2json/<ctab>', method=['OPTIONS', 'GET'], name="ctab2json")
+@app.route('/ctab2json/<ctab>/<size>', method=['OPTIONS', 'GET'], name="ctab2json")
+@app.route('/ctab2json/<ctab>/<size>/<legend>', method=['OPTIONS', 'GET'], name="ctab2json")
 def ctab2json(ctab, size=200, legend=''):
     """
 Converts CTAB to JSON. Resulting JSON contains data about 2D graphic representation of compounds and can be used
@@ -42,9 +42,9 @@ is the optional size of image in pixels (default value is 200 px). Legend is opt
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2json/<smiles>', name="smiles2json")
-@app.get('/smiles2json/<smiles>/<size>', name="smiles2json")
-@app.get('/smiles2json/<smiles>/<size>/<legend>', name="smiles2json")
+@app.route('/smiles2json/<smiles>', method=['OPTIONS', 'GET'], name="smiles2json")
+@app.route('/smiles2json/<smiles>/<size>', method=['OPTIONS', 'GET'], name="smiles2json")
+@app.route('/smiles2json/<smiles>/<size>/<legend>', method=['OPTIONS', 'GET'], name="smiles2json")
 def smiles2json(smiles, size=200, legend=''):
     """
 Converts SMILES to JSON. Resulting JSON contains data about 2D graphic representation of compounds and can be used

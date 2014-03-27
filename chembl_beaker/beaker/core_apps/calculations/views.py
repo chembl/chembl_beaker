@@ -7,7 +7,7 @@ import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/kekulize/<ctab>', name="kekulize")
+@app.route('/kekulize/<ctab>', method=['OPTIONS', 'GET'], name="kekulize")
 def kekulize(ctab):
     """
 Performs kekulisation on input compounds. CTAB is urlsafe_base64 encoded string containing single molfile or

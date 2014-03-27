@@ -7,9 +7,9 @@ from chembl_beaker.beaker.core_apps.rasterImages.impl import _ctab2image, _smile
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/ctab2image/<ctab>', name="ctab2image")
-@app.get('/ctab2image/<ctab>/<size>', name="ctab2image")
-@app.get('/ctab2image/<ctab>/<size>/<legend>', name="ctab2image")
+@app.route('/ctab2image/<ctab>', method=['OPTIONS', 'GET'], name="ctab2image")
+@app.route('/ctab2image/<ctab>/<size>', method=['OPTIONS', 'GET'], name="ctab2image")
+@app.route('/ctab2image/<ctab>/<size>/<legend>', method=['OPTIONS', 'GET'], name="ctab2image")
 def ctab2image(ctab, size=200, legend=''):
     """
 Converts CTAB to PNG image. CTAB is urlsafe_base64 encoded string containing
@@ -45,9 +45,9 @@ Converts CTAB to PNG image. CTAB is either single molfile or SDF file. Size is t
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.get('/smiles2image/<smiles>', name="smiles2image")
-@app.get('/smiles2image/<smiles>/<size>', name="smiles2image")
-@app.get('/smiles2image/<smiles>/<size>/<legend>', name="smiles2image")
+@app.route('/smiles2image/<smiles>', method=['OPTIONS', 'GET'], name="smiles2image")
+@app.route('/smiles2image/<smiles>/<size>', method=['OPTIONS', 'GET'], name="smiles2image")
+@app.route('/smiles2image/<smiles>/<size>/<legend>', method=['OPTIONS', 'GET'], name="smiles2image")
 def smiles2image(smiles, size=200, legend=''):
     """
 Converts SMILES to PNG image. This method accepts urlsafe_base64 encoded string containing single or multiple
