@@ -133,8 +133,65 @@ class TestServer(unittest.TestCase):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+    def test_break_bonds(self):
+        input_smiles = "[Na]OC(=O)c1ccccc1"
+        r = self.app.post("/smiles2ctab", input_smiles)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/break_bonds", mol)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/ctab2smiles", mol)
+        self.assertEqual(r.status_int, 200)
+        bb_smiles = r.body
+        self.assertEqual('SMILES Name \n[Na+].O=C([O-])c1ccccc1 \n', bb_smiles)
 
+#-----------------------------------------------------------------------------------------------------------------------
 
+    def test_neutralise(self):
+        input_smiles = "C(C(=O)[O-])(Cc1n[n-]nn1)(C[NH3+])(C[N+](=O)[O-])"
+        r = self.app.post("/smiles2ctab", input_smiles)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/neutralise", mol)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/ctab2smiles", mol)
+        self.assertEqual(r.status_int, 200)
+        n_smiles = r.body
+        self.assertEqual('SMILES Name \nNCC(Cc1nn[nH]n1)(C[N+](=O)[O-])C(=O)O \n', n_smiles)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def test_rules(self):
+        input_smiles = "Oc1nccc2cc[nH]c(=N)c12"
+        r = self.app.post("/smiles2ctab", input_smiles)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/rules", mol)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/ctab2smiles", mol)
+        self.assertEqual(r.status_int, 200)
+        r_smiles = r.body
+        self.assertEqual('SMILES Name \nNc1nccc2cc[nH]c(=O)c12 \n', r_smiles)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def test_standardise(self):
+        input_smiles = "[Na]OC(=O)Cc1ccc(C[NH3+])cc1.c1nnn[n-]1.O"
+        r = self.app.post("/smiles2ctab", input_smiles)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/standardise", mol)
+        self.assertEqual(r.status_int, 200)
+        mol = r.body
+        r = self.app.post("/ctab2smiles", mol)
+        self.assertEqual(r.status_int, 200)
+        s_smiles = r.body
+        self.assertEqual('SMILES Name \nNCc1ccc(CC(=O)O)cc1 \n', s_smiles)
+
+#-----------------------------------------------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     unittest.main()

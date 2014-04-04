@@ -2,8 +2,10 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-from rdkit.Chem.Draw import jsonCanvas
-from rdkit.Chem import Draw
+try:
+    from rdkit.Chem.Draw import MolToJSON
+except ImportError:
+    from chembl_beaker.beaker.core_apps.jsonImages.jsonCanvas import MolToJSON
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
@@ -12,7 +14,7 @@ from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 
 def _mol2json(mol, size, legend):
     leg = mol.GetProp("_Name") if mol.HasProp("_Name") else legend
-    return Draw.MolToJSON(_computeCoords(mol), size=(size,size), legend=leg)
+    return MolToJSON(_computeCoords(mol), size=(size,size), legend=leg)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

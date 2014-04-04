@@ -1,6 +1,27 @@
 // SPoRE - jQuery port
 // niko@rtgi
 
+
+Raphael.st.draggable = function() {
+  var me = this,
+      lx = 0,
+      ly = 0,
+      ox = 0,
+      oy = 0,
+      moveFnc = function(dx, dy) {
+          lx = dx + ox;
+          ly = dy + oy;
+          me.transform('t' + lx + ',' + ly);
+      },
+      startFnc = function() {},
+      endFnc = function() {
+          ox = lx;
+          oy = ly;
+      };
+
+  this.drag(moveFnc, startFnc, endFnc);
+};
+
 //----------------------------------------------------------------------------------------------------------------------
 
 var spore = {
@@ -393,7 +414,11 @@ var spore = {
                     var raw_response = $('<div class="rawResponse" style="display:none;"></div>');
                     raw_response.text(raw_data);
                     $('#'+fn+'_response').append(raw_response);
-                    if (content_type.indexOf('image/png') != -1){
+                    console.log('FN = ' + fn);
+                    if(fn.indexOf("23D") != -1){
+                            add_molecule_canvas('', '', raw_data, $('#'+fn+'_responseJSON'));
+                    }
+                    else if (content_type.indexOf('image/png') != -1){
                         $('#'+fn+'_responseJSON').html('<img src="data:image/png;base64,' + data + '" />');
                     }
                     else if(content_type.indexOf('application/json') != -1){
@@ -402,6 +427,17 @@ var spore = {
                         $('#'+fn+'_responseJSON').append(canvas);
                         var paper = Raphael(canvas[0], cell_size, cell_size);
                         var compound = paper.add(data);
+                        compound.draggable();
+                        var curentSize = cell_size;
+                        canvas.bind('mousewheel DOMMouseScroll', function(event) {
+                                            event.preventDefault();
+                                            var delta = event.originalEvent.wheelDelta || -event.originalEvent.detail;
+                                            curentSize *= (1.0 + delta / 100.0);
+                                            var x = (paper.width / 2) - (curentSize /2);
+                                            var y = (paper.height / 2) - (curentSize /2);
+                                            paper.setViewBox(x, y, curentSize, curentSize, false);
+
+                        });
                     }
                     else if (content_type.indexOf('image/svg+xml') != -1){
                         var importedSVGRootElement = document.importNode(data.documentElement,true);
@@ -539,3 +575,16 @@ spore.api.prototype._call = function (fn, params, onsuccess, onerror) {
     });
     return true;
 };
+
+//----------------------------------------------------------------------------------------------------------------------
+
+spore.api.prototype.enable = function (widgetname, params) {
+    if (!spore.widgets[widgetname]) throw 'widget ' + widgetname + ' not found/loaded';
+    this.widgets.push({
+        name: widgetname,
+        obj: new spore.widgets[widgetname](params)
+    });
+    return this;
+};
+
+//----------------------------------------------------------------------------------------------------------------------

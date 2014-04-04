@@ -14,8 +14,11 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='0.4.7',
-    scripts=['chembl_beaker/run_beaker.py'],
+    version='0.4.13',
+    entry_points={
+        'console_scripts': [
+            'run_beaker=chembl_beaker.run_beaker:main']
+    },
     author='Michal Nowotka',
     author_email='mnowotka@ebi.ac.uk',
     description='RDKit in the Bottle on Tornado',
@@ -30,6 +33,8 @@ setup(
               'chembl_beaker.beaker.core_apps.calculations',
               'chembl_beaker.beaker.core_apps.conversions',
               'chembl_beaker.beaker.core_apps.descriptors',
+              'chembl_beaker.beaker.core_apps.standarisation',
+              'chembl_beaker.beaker.core_apps.D3Coords',
               'chembl_beaker.beaker.core_apps.fingerprints',
               'chembl_beaker.beaker.core_apps.jsonImages',
               'chembl_beaker.beaker.core_apps.marvin',
@@ -49,7 +54,7 @@ setup(
     include_package_data=False,
     classifiers=['Development Status :: 2 - Pre-Alpha',
                  'Environment :: Web Environment',
-                 'Framework :: Django',
+                 'Framework :: Bottle',
                  'Intended Audience :: Developers',
                  'License :: OSI Approved :: MIT License',
                  'Operating System :: POSIX :: Linux',

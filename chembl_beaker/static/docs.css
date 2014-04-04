@@ -123,3 +123,110 @@ a {
 object, embed {
   outline: 0;
 }
+
+#header { background:#000 }
+#header h1 { color:#aaa; margin:0 0 0 0.5em; padding:0.5em; font-family:georgia; font-size:1.5em; }
+#header h1 a { color:#fff; letter-spacing:0.05em; font-variant:small-caps; margin:0 2em 0 0 }
+#header h1 a:hover { text-decoration:none; }
+
+.widget { margin:1em; padding:1em; float:left; background:#0a0a0a; }
+
+#info { padding:1em; font-size:0.9em; width:375px; position:absolute; left:220px; top:500px }
+#import { position:absolute; left:650px; top:500px }
+
+#b_import { float:left; color:#fff; margin:10px 0 0 0 }
+#pdbtext { width:300px; height:50px; background:#555; border:0; overflow:hidden }
+
+#touchcontrols { position:absolute; left:650px; top:650px; width:300px; }
+#b_controls { float:left; margin:5px 0 0 0 }
+
+canvas { margin:0 0 -5px 0 }
+
+.molecule { border:solid 0px red; background:#000; float:left; margin:1em; z-index:10 }
+.zcanvas { margin:0 0 -10px 0 }
+
+.dragheader { background:transparent; color:#fff; font-weight:bold; font-size:0.9em; padding:5px 0 5px 0.5em; cursor:move; position:relative; bottom:0px; margin:0 0 -25px 0; z-index:10 }
+.dragheader:hover { }
+.close { color:red; float:right; font-family:arial; font-weight:bold; cursor:pointer; padding:0 0.4em;
+		/* Ugly hack to compensate for Opera's extra right margin */
+		position:relative; right:1em; margin-right:-1em }
+
+.dragheader a { color:orange; cursor:pointer!important }
+
+.widget .close { color:#222; font-size:0.7em; position:relative; top:-1em; left:1em; margin:0 0 -1em 0; padding:0; }
+.widget .close:hover { color:red }
+
+.stats { color:#555; margin-left:3em; font-weight:normal; display:none }
+.b_stats, .b_png { float:right; position:relative; bottom:-1.05em;  }
+.b_png a { color:#B8860B; margin-left:7px }
+
+.button { display:inline; cursor:pointer; color:#555; background:transparent; font-size:0.9em; padding:0.5em 0.25em; position:relative; margin:-20px 0 0 0 }
+.on { color:#aaa }
+
+.touch { display:none }
+.b_up, .b_down, .b_left, .b_right { position:absolute; text-align:center; cursor:pointer; width:50px; height:50px; }
+.b_up { top:10px; left:175px; background:url(arrow_up.png) no-repeat; }
+.b_down { top:360px; left:175px; background:url(arrow_down.png) no-repeat; }
+.b_left { top:175px; background:url(arrow_left.png) no-repeat; }
+.b_right { top:175px; left:365px; background:url(arrow_right.png) no-repeat; }
+
+#colors { font-size:0.9em; position:absolute; left:650px; min-width:640px; }
+#colors div { display:inline; font-weight:bold; text-align:center;
+			padding:5px 5px; margin:0 5px 5px 0; width:20px;
+			float:left;
+			color:#fff; background:transparent;
+			}
+.neutral { color:rgb(50,50,50)!important; text-shadow:0px 0px 4px rgb(50,50,50)!important; }
+
+#mlist { margin-right:1em }
+#mlist li { list-style-type:none; cursor:pointer; }
+#mlist li:hover { color:gold }
+#mlist li.hed, #mlist li.hedtop { font-weight:bold; color:#fff; cursor:default; }
+#mlist li.hed { margin-top:1em }
+#mlist li.hedtop { margin-top:0 }
+
+.xbutton { color:#fff; background:#0a0 url("button-green.png");
+		cursor:pointer;
+
+        padding:0.2em 0.5em;
+		font-size:0.66em;
+        font-weight:bold;
+        font-family:trebuchet ms;
+
+		text-shadow:0px 1px 0px #000;
+
+        box-shadow: 	   2px 2px 5px #000;
+        -o-box-shadow:     2px 2px 5px #000;
+        -icab-box-shadow:  2px 2px 5px #000;
+        -khtml-box-shadow: 2px 2px 5px #000;
+        -moz-box-shadow:   2px 2px 5px #000;
+        -webkit-box-shadow:2px 2px 5px #000;
+
+		border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+}
+
+.shadow {
+	box-shadow:0px 3px 15px rgba(0,0,0,1);
+   -moz-box-shadow:0px 3px 15px rgba(0,0,0,1);
+   -webkit-box-shadow:0px 3px 15px rgba(0,0,0,1);
+   -khtml-box-shadow:0px 3px 15px rgba(0,0,0,1);
+	}
+.clr { clear:both }
+.warning { color:#b00 }
+#log { display:none; color:lime; background:#0a0a0a; font-family:trebuchet ms; width:50%; position:absolute; left:150px; top:685px }
+
+/* Flash */
+.screen { float:left; margin:1em; height:380px; width:400px }
+.screenFlash { z-index:0 }
+.molecule.flash { background:#000; position:relative }
+.flash .dragheader { margin:0 0 0px 0; }
+
+.new { background:red; color:#fff; padding:0.1em 0.5em; font-size:0.75em; font-weight:bold;
+		border-radius: 2px;
+        -moz-border-radius: 2px;
+        -webkit-border-radius: 2px;
+	}
+#debug { margin:0 1em }
+

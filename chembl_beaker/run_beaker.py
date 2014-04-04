@@ -29,9 +29,13 @@ if config.get('enable_cors', 'true') != 'false':
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-if __name__ == "__main__":
+def main():
     run(app=app, host=config.get('bottle_host', 'localhost'), port=config.get('bottle_port', '8080'),
                                 debug=config.get('debug', True), server=config.get('server_middleware', 'tornado'))
+
+if __name__ == "__main__":
+    main()
+
 else:
     application = app
 

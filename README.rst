@@ -28,7 +28,9 @@ This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nc
  * `Descriptors <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/descriptors/views.py>`_
  * `Maximum Common Substructure <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/mcs/views.py>`_
  * `Smiliarity maps <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/similarityMaps/views.py>`_
- * `Various other calculation (for example kekulisation) <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/calculations/views.py>`_
+ * `ChEMBL standardisation process <https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/>`_, consisting of neutralisation, bond breaking, salt removal and applying various rules.
+ * `3D coordinates generation, using Universal Force Field <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/D3Coords/views.py>`_
+ * `Various other calculations (for example kekulisation) <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/calculations/views.py>`_
  * Marvin 4 JS compilant `webservices <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_
 
 As a portable, lightweight, `CORS <https://en.wikipedia.org/wiki/Cross-origin_resource_sharing>`_-ready, `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_-speaking, `SPORE <https://github.com/SPORE/specifications>`_-documented webserver. This particular implementation wraps RDKit in `Bottle <http://bottlepy.org/docs/dev/>`_ on `Tornado <http://www.tornadoweb.org/en/stable/>`_.
@@ -64,6 +66,7 @@ Additional dependencies
  * `pycairo <http://cairographics.org/pycairo/>`_/`cairocffi <https://github.com/SimonSapin/cairocffi>`_ (for `SVG <https://en.wikipedia.org/wiki/Scalable_Vector_Graphics>`_ format support)
  * `lxml <http://lxml.de/>`_ (`mrv <https://www.chemaxon.com/marvin/help/formats/mrv-doc.html>`_ file format)
  * `matplotlib <http://matplotlib.org/>`_ (generating similarity maps)
+ * `standardiser <https://github.com/flatkinson/standardiser>`_ (Molecular standardisation tool used by Beaker standardisation app)
 
 Installation
 --------
@@ -95,6 +98,7 @@ First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
       sudo -E pip install cairocffi
       sudo -E pip install Pillow
       sudo -E pip install lxml
+      sudo pip install standardiser
       sudo pip install chembl_beaker
       run_berker.py
 
@@ -129,7 +133,7 @@ Beaker is distributed with example configuration file named ``beaker.conf.sample
 
 Running
 --------
-If you want to play with beaker run ``python run_beaker.py``
+If you want to play with beaker, type ``run_beaker``
 If you want to run beaker in production you should do this using virtualenv, uWSGI and NGINX as described `here <http://fclef.wordpress.com/2013/01/12/bottle-virtualenv-uwsgi-nginx-installation-on-ubuntu-12-04-1-lts/>`_. Other standard python deployment stacks will work as well.
 
 Documentation
@@ -144,21 +148,6 @@ Development - writing your own extentions
 Developing new app should be easy. The only required file is ``views.py`` where you should define your botte ``routes``. Since your app is technically speaking a python module, ``__init__.py`` will be required as well.
 You should wrap your module in ``PIP`` package and distribute via ``PyPi``. By doing so, a user who want to install your app has to install it via `PIP` and add it to ``installed_apps`` list.
 
-FAQ
---------
-1. How can I enable HTMl5 canvas support?
-
- - Current version of ``RDKit`` doesn't include ``JSONCanvas`` so there are two way to get this working. The first one requires a little time and almost no knowlegde, the second one requires little knowledge but it's fast.
-     1. Checkout git branch with JSON Canvas and recompile RDKit::
-     
-         git clone -b JSONCanvas_Nov2013 https://github.com/rdkit/rdkit.git
-         cd rdkit/External/INCHI-API/ & ./download-inchi.sh
-         cd rdkit & mkdir build & cd build & cmake  -DRDK_BUILD_INCHI_SUPPORT=ON ..
-         make install
-
-
-2. Since JSON Canvas is implemented in Python there is no need to recompile, you can just apply a patch: https://github.com/rdkit/rdkit/compare/JSONCanvas_Nov2013 and this should do the trick.     
-         
 
 More info and help
 --------
