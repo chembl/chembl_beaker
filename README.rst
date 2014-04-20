@@ -102,6 +102,8 @@ First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
       sudo pip install chembl_beaker
       run_berker.py
 
+Alternatively, you can use `this article <http://macinchem.org/reviews/cheminfo/cheminfoMac.php>`_ as an instllation guide.
+
 Configuration
 --------
 By default configuration is stored in ``beaker.conf`` file, located in current directory. You can specify location of
