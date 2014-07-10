@@ -136,9 +136,6 @@ var spore = {
 //----------------------------------------------------------------------------------------------------------------------
 
     api: function (spec, widgets,destination) {
-        if (!spec.base_url) throw 'parameter base_url missing';
-        if (!/https?\:\/\//i.test(spec.base_url)) spec.base_url = 'http://' + spec.base_url;
-        spec.base_url.replace(/\/$/, '');
         this.spec = $.extend({
             api_format: 'json',
             authentication: false,
@@ -494,7 +491,7 @@ var spore = {
 
 spore.api.prototype._call = function (fn, params, onsuccess, onerror) {
     var method = this.spec.methods[fn],
-        url = this.spec.base_url + method.path,
+        url = (this.spec.base_url != undefined) ? this.spec.base_url + method.path : method.path.substring(1),
         prm = $.extend({}, params),
         plog = this.spec.name + '.' + fn + ' ';
     dta = {};

@@ -22,7 +22,6 @@ def spore():
     """Print available functions."""
 
     ret = {
-        "base_url":'http://%s:%s' % (config.get('bottle_host', 'localhost'), config.get('bottle_port', '8080')),
         "version": version,
         "expected_status": [200],
         "name": "ChEMBL Beaker API live documentation",

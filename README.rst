@@ -40,7 +40,7 @@ Where is it used?
 
 Beaker is used in `Clippy <https://github.com/madgpap/chembl_clippy>`_ project but can be used as a standalone web server as well.
 
-It can also be used as web service backend for `Marvin For Java Script <http://www.chemaxon.com/products/marvin/marvin-for-javascript/>`_ as it exposes methods compatible with it's webservice `specification <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_. 
+It can also be used as web service backend for `Marvin For Java Script <http://www.chemaxon.com/products/marvin/marvin-for-javascript/>`_ as it exposes methods compatible with it's webservice `specification <https://marvinjs-demo.chemaxon.com/latest/docs/dev/webservices.html>`_.
 To do this you need to configure marvin sketcher instance:
 
 ::
