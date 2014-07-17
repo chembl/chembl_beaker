@@ -13,7 +13,11 @@ import re
 import json
 from rdkit import Chem
 from rdkit.Chem.Draw.canvasbase import CanvasBase
-from rdkit.Chem.Draw.MolDrawing import MolDrawing, DrawingOptions
+from rdkit.Chem.Draw.MolDrawing import MolDrawing
+try:
+    from rdkit.Chem.Draw.MolDrawing import DrawingOptions
+except ImportError:
+    DrawingOptions = None
 from rdkit.Chem.AllChem import Compute2DCoords
 
 class Canvas(CanvasBase):

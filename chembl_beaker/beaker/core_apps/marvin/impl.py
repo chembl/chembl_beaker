@@ -70,9 +70,14 @@ def _stereoInfo(mrv):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _molExport(structure, input_f, output_f):
+def _molExport(structure, **kwargs):
 
-    if input_f == 'mrv':
+    input_f = kwargs.get('input', None)
+    output_f = kwargs.get('output', None)
+
+    if input_f == None:
+        mol = _autoDetect(structure)
+    elif input_f == 'mrv':
         mol = Chem.MolFromMolBlock(MarvinToMol(structure))
     elif input_f == 'smiles':
         mol = Chem.MolFromSmiles(str(structure))
@@ -100,5 +105,32 @@ def _molExport(structure, input_f, output_f):
         out_structure = MolToMarvin(Chem.MolToMolBlock(mol))
 
     return {"structure": out_structure, "format":output_f, "contentUrl":"","contentBaseUrl":""}
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _autoDetect(structure):
+
+    if (Chem.MolFromSmiles(structure)):
+        return Chem.MolFromSmiles(structure)
+
+    if (Chem.MolFromMolBlock(structure)):
+        return Chem.MolFromMolBlock(structure)
+
+    if (Chem.inchi.MolFromInchi(str(structure), True, True)):
+        return Chem.inchi.MolFromInchi(str(structure), True, True)
+
+    if (Chem.MolFromSmarts(structure)):
+        return Chem.MolFromSmarts(structure)
+
+    if (Chem.MolFromMol2Block(structure)):
+        return Chem.MolFromMol2Block(str(structure))
+
+    if (Chem.MolFromPDBBlock(structure)):
+        return Chem.MolFromPDBBlock(structure)
+
+    if (Chem.MolFromTPLBlock(structure)):
+        return Chem.MolFromTPLBlock(structure)
+
+    return None
 
 #-----------------------------------------------------------------------------------------------------------------------
