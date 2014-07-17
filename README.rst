@@ -141,9 +141,13 @@ If you want to run beaker in production, read section below .
 Deploying on Apache/Nginx
 --------
 Beaker is a Bottle app so it's really easy to deploy it on Apache with mod_wsgi.
-A single line of code is required in your .wsgi file:
+Only 4 lines of code are required in your .wsgi file::
 
-    ``from chembl_beaker.beaker import app as application``
+    from chembl_beaker.beaker.plugins.enableCors import EnableCors
+    from chembl_beaker.beaker import app
+
+    app.install(EnableCors())
+    application = app
 
 That's it! For details, refer to `this document <http://flask.pocoo.org/docs/deploying/mod_wsgi/>`_.
 Everything that can be deployed on Apache with mod_wsgi, can be deployed on Nginx with uWSGI, details `here <http://fclef.wordpress.com/2013/01/12/bottle-virtualenv-uwsgi-nginx-installation-on-ubuntu-12-04-1-lts/>`_.
