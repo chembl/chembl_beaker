@@ -76,7 +76,7 @@ def _molExport(structure, **kwargs):
     output_f = kwargs.get('output', None)
 
     if input_f == None:
-        mol = _autoDetect(structure)
+        mol = _autoDetect(str(structure))
     elif input_f == 'mrv':
         mol = Chem.MolFromMolBlock(MarvinToMol(structure))
     elif input_f == 'smiles':
