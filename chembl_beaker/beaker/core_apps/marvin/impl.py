@@ -5,16 +5,26 @@ __author__ = 'mnowotka'
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from chembl_beaker.beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
+from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
+
+def _hydrogenize(block, hydro):
+    mol = Chem.MolFromMolBlock(block)
+    res = Chem.AddHs(mol) if hydro else Chem.RemoveHs(mol)
+    AllChem.Compute2DCoords(res, bondLength = 0.8)
+    return MolToMarvin(Chem.MolToMolBlock(res))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _clean2D(mrv):
+def _clean(mrv, dim=2):
     block = MarvinToMol(mrv)
     mol = Chem.MolFromMolBlock(block)
     if not mol:
         print "No mol for block:\n %s" % block
         return mrv
     AllChem.Compute2DCoords(mol, bondLength = 0.8)
+    if dim == 3:
+        mol = _2D23D(mol, True)
+        mol = Chem.RemoveHs(mol)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -75,7 +85,7 @@ def _molExport(structure, **kwargs):
     input_f = kwargs.get('input', None)
     output_f = kwargs.get('output', None)
 
-    if input_f == None:
+    if not input_f:
         mol = _autoDetect(str(structure))
     elif input_f == 'mrv':
         mol = Chem.MolFromMolBlock(MarvinToMol(structure))
@@ -98,6 +108,9 @@ def _molExport(structure, **kwargs):
     elif output_f == 'inchikey':
         out_structure = Chem.InchiToInchiKey(Chem.MolToInchi(mol))
 
+    elif output_f == 'mol':
+        out_structure = Chem.MolToMolBlock(mol)
+
     elif output_f == 'sdf':
         out_structure = Chem.MolToMolBlock(mol) + '\n$$$$\n'
 
@@ -110,25 +123,25 @@ def _molExport(structure, **kwargs):
 
 def _autoDetect(structure):
 
-    if (Chem.MolFromSmiles(structure)):
-        return Chem.MolFromSmiles(structure)
+    if Chem.MolFromSmiles(structure):
+        return Chem.MolFromSmiles(structure.strip())
 
-    if (Chem.MolFromMolBlock(structure)):
+    if Chem.MolFromMolBlock(structure):
         return Chem.MolFromMolBlock(structure)
 
-    if (Chem.inchi.MolFromInchi(str(structure), True, True)):
-        return Chem.inchi.MolFromInchi(str(structure), True, True)
+    if Chem.inchi.MolFromInchi(structure.strip(), True, True):
+        return Chem.inchi.MolFromInchi(structure.strip(), True, True)
 
-    if (Chem.MolFromSmarts(structure)):
+    if Chem.MolFromSmarts(structure):
         return Chem.MolFromSmarts(structure)
 
-    if (Chem.MolFromMol2Block(structure)):
-        return Chem.MolFromMol2Block(str(structure))
+    if Chem.MolFromMol2Block(structure):
+        return Chem.MolFromMol2Block(structure)
 
-    if (Chem.MolFromPDBBlock(structure)):
+    if Chem.MolFromPDBBlock(structure):
         return Chem.MolFromPDBBlock(structure)
 
-    if (Chem.MolFromTPLBlock(structure)):
+    if Chem.MolFromTPLBlock(structure):
         return Chem.MolFromTPLBlock(structure)
 
     return None

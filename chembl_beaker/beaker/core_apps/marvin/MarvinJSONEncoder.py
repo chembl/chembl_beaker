@@ -36,6 +36,8 @@ class MarvinJSONEncoder(json.JSONEncoder):
                 return {obj.get("molID"): {"atoms" : obj.find("atomArray"), "bonds": obj.find("bondArray")}}
             if obj.tag == 'bondArray':
                 return [ bond for bond in obj.iterchildren(tag='bond') ]
+            if obj.tag == 'atomArray':
+                return [ atom for atom in obj.iterchildren(tag='atom') ]
         if type(obj) == StringElement:
             if obj.tag == 'atomArray':
                 ids = obj.get('atomID').split()
@@ -59,6 +61,12 @@ class MarvinJSONEncoder(json.JSONEncoder):
             if obj.tag == 'bond':
                 return {"atomRefs" : obj.get('atomRefs2').split(), "order": int(obj.get('order'))}
 
+            if obj.tag == 'atom':
+                if obj.get('x2', False):
+                    return {"id" : obj.get('id'), "elementType": obj.get('elementType'), "x": float(obj.get('x2')), "y": float(obj.get('y2')), "z": 0.0}
+                else:
+                    return {"id" : obj.get('id'), "elementType": obj.get('elementType'), "x": float(obj.get('x3')), "y": float(obj.get('y3')), "z": float(obj.get('z3'))}
+
         return json.JSONEncoder.default(self, obj)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -66,27 +74,51 @@ class MarvinJSONEncoder(json.JSONEncoder):
 def _dict2Mol(obj, scale = 1.0):
     buffer = StringIO()
     buffer.write('\nConverted by chembl_beaker ver. %s\n\n' % version)
-    num_atoms = len(obj['atoms']['atomID'])
+    atoms = obj['atoms']
+    if type(atoms) == dict:
+        num_atoms = len(atoms['atomID'])
+    else:
+        num_atoms = len(atoms)
     zeros = [0] * num_atoms
     buffer.write('{:3}{:3}{:3}{:3}{:3}{:3}          {} V2000\n'.format(
                                                             num_atoms, len(obj['bonds']), 0, 0, 0, 0, 1))
-    for i, atom in enumerate(obj['atoms']['elementType']):
-        buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}\n'.format(
-                      obj['atoms'].get('x', zeros)[i] / scale,
-                      obj['atoms'].get('y', zeros)[i] / scale,
-                      obj['atoms'].get('z', zeros)[i] / scale,
-                      atom, 0, 0 ))
+
+    if type(atoms) == dict:
+        for i, atom in enumerate(atoms['elementType']):
+            buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}\n'.format(
+                          obj['atoms'].get('x', zeros)[i] / scale,
+                          obj['atoms'].get('y', zeros)[i] / scale,
+                          obj['atoms'].get('z', zeros)[i] / scale,
+                          atom, 0, 0 ))
+    else:
+        for i, atom in enumerate(atoms):
+            buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}\n'.format(
+                          atom.get('x', 0) / scale,
+                          atom.get('y', 0) / scale,
+                          atom.get('z', 0) / scale,
+                          atom.get('elementType'), 0, 0 ))
+
     for bond in obj['bonds']:
         first_atom = None
         second_atom = None
         first_id, second_id = bond['atomRefs']
-        for i, atomID in enumerate(obj['atoms']['atomID']):
-            if first_id == atomID:
-                first_atom = i + 1
-            if second_id == atomID:
-                second_atom = i + 1
-            if first_atom is not None and second_atom is not None:
-                break
+        if type(atoms) == dict:
+            for i, atomID in enumerate(atoms['atomID']):
+                if first_id == atomID:
+                    first_atom = i + 1
+                if second_id == atomID:
+                    second_atom = i + 1
+                if first_atom is not None and second_atom is not None:
+                    break
+        else:
+            for i, atom in enumerate(atoms):
+                atomID = atom.get('id')
+                if first_id == atomID:
+                    first_atom = i + 1
+                if second_id == atomID:
+                    second_atom = i + 1
+                if first_atom is not None and second_atom is not None:
+                    break
         buffer.write('{:3}{:3}{:3}{:3}\n'.format(first_atom, second_atom, bond['order'], 0))
     buffer.write('M  END\n')
     return buffer.getvalue()

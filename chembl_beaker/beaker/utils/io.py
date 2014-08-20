@@ -15,7 +15,7 @@ from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 
 def _parseMolData(data):
     suppl = SDMolSupplier()
-    suppl.SetData(data)
+    suppl.SetData(str(data))
     return [x for x in suppl if x]
 
 #-----------------------------------------------------------------------------------------------------------------------

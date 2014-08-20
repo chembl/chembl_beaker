@@ -11,10 +11,15 @@ except ImportError:
     cffi = True
     import io
     import cairo
+    if not hasattr(cairo, 'HAS_PDF_SURFACE'):
+        cairo.HAS_PDF_SURFACE = False
+    if not hasattr(cairo, 'HAS_SVG_SURFACE'):
+        cairo.HAS_SVG_SURFACE = True
+
 
 import StringIO
-from rdkit.Chem.Draw import cairoCanvas
-from rdkit.Chem import Draw
+from chembl_beaker.beaker.draw import cairoCanvas
+from chembl_beaker.beaker import draw
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
@@ -40,7 +45,7 @@ def _mols2svg(mols,size,legend):
         ctx.translate(tx, ty)
         canv = cairoCanvas.Canvas(ctx=ctx, size=(size,size), imageType='svg')
         leg = mol.GetProp("_Name") if mol.HasProp("_Name") else legend
-        Draw.MolToImage(mol, size=(size,size), legend=leg, canvas=canv)
+        draw.MolToImage(mol, size=(size,size), legend=leg, canvas=canv)
         canv.flush()
         ctx.translate(-tx, -ty)
     surf.finish()

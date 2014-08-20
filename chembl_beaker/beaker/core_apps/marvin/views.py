@@ -4,21 +4,42 @@ from bottle import request, response
 import json
 
 from chembl_beaker.beaker import app
-from chembl_beaker.beaker.core_apps.marvin.impl import _clean2D, _stereoInfo, _molExport
+from chembl_beaker.beaker.core_apps.marvin.impl import _clean, _stereoInfo, _molExport, _hydrogenize
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/clean', method=['OPTIONS', 'POST'], name="clean")
-def clean2D():
+def clean():
     """
-Implements Marvin 4 js clean2D web service. Recomputes 2D coordinates of given compound. The compound is in
-Marvin's *.mrv format.
+Implements Marvin 4 js clean2D/3D web service. Recomputes 2D/3D coordinates of given compound. The compound is in
+Marvin's *.mrv format. Dim is an optional parameter specifying if 2D or 3D coordinates should be computed
     """
 
     params = json.loads(request.body.read())
     structure = params['structure']
+    dim = params.get('dim', 2)
     response.content_type = 'text/plain'
-    return _clean2D(structure)
+    return _clean(structure, dim)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/hydrogenize', method=['OPTIONS', 'POST'], name="hydrogenize")
+def hydrogenize():
+    """
+Implements Marvin 4 js Hydrogenize web service. Adds or removes hydrogen atoms. The compound is in
+Marvin's *.mrv format. Dim is an optional parameter specifying if 2D or 3D coordinates should be computed
+    """
+
+    params = json.loads(request.body.read())
+    structure = params['structure']
+    input_format = params.get('inputFormat', 'mrv')
+    parameters = params.get('parameters')
+    method = 'hydrogenize'
+    if parameters:
+        method = parameters.get('method', 'hydrogenize')
+        method = method.lower()
+    response.content_type = 'text/plain'
+    return _hydrogenize(_molExport(structure, input=input_format, output='mol')["structure"], method == 'hydrogenize')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
