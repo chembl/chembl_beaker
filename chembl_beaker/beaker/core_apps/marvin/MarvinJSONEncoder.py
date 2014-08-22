@@ -5,9 +5,19 @@ from lxml import objectify
 from lxml.objectify import ObjectifiedElement, StringElement
 import json
 from chembl_beaker import __version__ as version
+from datetime import datetime, date
+import rdkit
 from rdkit import Chem
+from rdkit.Chem.rdchem import GetPeriodicTable
 from StringIO import StringIO
 import os
+import getpass
+
+USERNAME = ''
+try:
+    USERNAME = getpass.getuser()
+except:
+    pass
 
 MOL_MARVIN_SCALE = 1.8666666517333335
 
@@ -18,6 +28,19 @@ molBondTypes = {
 "AROMATIC" : 4,
 "UNSPECIFIED" : 8,
 }
+
+charges = {
+    0:0,
+    1:3,
+    2:2,
+    3:1,
+    4:0,
+    5:-1,
+    6:-2,
+    7:-3,
+}
+
+PERIODIC_TABLE = GetPeriodicTable()
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -38,6 +61,10 @@ class MarvinJSONEncoder(json.JSONEncoder):
                 return [ bond for bond in obj.iterchildren(tag='bond') ]
             if obj.tag == 'atomArray':
                 return [ atom for atom in obj.iterchildren(tag='atom') ]
+            if obj.tag == 'bond':
+                return {"atomRefs" : obj.get('atomRefs2').split(), "order": int(obj.get('order')), "stereo": obj.find("bondStereo")}
+            if obj.tag == 'bondStereo':
+                print 'ELEM'
         if type(obj) == StringElement:
             if obj.tag == 'atomArray':
                 ids = obj.get('atomID').split()
@@ -49,6 +76,7 @@ class MarvinJSONEncoder(json.JSONEncoder):
                             "x": [float(x) for x in obj.get('x2').split()],
                             'y': [float(y) for y in obj.get('y2').split()],
                             'z': zeros,
+                            'dim': 2,
                             'elementType': obj.get('elementType').split()}
 
                 else:
@@ -56,6 +84,7 @@ class MarvinJSONEncoder(json.JSONEncoder):
                             "x": [float(x) for x in obj.get('x3').split()],
                             'y': [float(y) for y in obj.get('y3').split()],
                             'z': [float(y) for y in obj.get('z3').split()],
+                            'dim':3,
                             'elementType': obj.get('elementType').split()}
 
             if obj.tag == 'bond':
@@ -63,9 +92,38 @@ class MarvinJSONEncoder(json.JSONEncoder):
 
             if obj.tag == 'atom':
                 if obj.get('x2', False):
-                    return {"id" : obj.get('id'), "elementType": obj.get('elementType'), "x": float(obj.get('x2')), "y": float(obj.get('y2')), "z": 0.0}
+                    return {"id" : obj.get('id'),
+                            "elementType": obj.get('elementType'),
+                            "x": float(obj.get('x2')),
+                            "y": float(obj.get('y2')),
+                            "z": 0.0,
+                            'dim':2,
+                            'formalCharge': int(obj.get('formalCharge', 0)),
+                            'isotope':int(obj.get('isotope', 0))
+                    }
                 else:
-                    return {"id" : obj.get('id'), "elementType": obj.get('elementType'), "x": float(obj.get('x3')), "y": float(obj.get('y3')), "z": float(obj.get('z3'))}
+                    return {"id" : obj.get('id'),
+                            "elementType": obj.get('elementType'),
+                            "x": float(obj.get('x3')),
+                            "y": float(obj.get('y3')),
+                            "z": float(obj.get('z3')),
+                            'dim':3,
+                            'formalCharge': int(obj.get('formalCharge', 0)),
+                            'isotope':int(obj.get('isotope', 0))}
+
+            if obj.tag == 'bondStereo':
+                convention = obj.get('convention')
+                if convention and convention.upper() == 'MDL':
+                    return int(obj.get('conventionValue', 0))
+                if not obj.text:
+                    return 0
+                t = obj.text.strip().upper()
+                if t == 'W':
+                    return 1
+                elif t == 'H':
+                    return 6
+                else:
+                    return 0
 
         return json.JSONEncoder.default(self, obj)
 
@@ -73,35 +131,51 @@ class MarvinJSONEncoder(json.JSONEncoder):
 
 def _dict2Mol(obj, scale = 1.0):
     buffer = StringIO()
-    buffer.write('\nConverted by chembl_beaker ver. %s\n\n' % version)
+    data = date.today().strftime("%m%d%y%H%M")
+
     atoms = obj['atoms']
     if type(atoms) == dict:
         num_atoms = len(atoms['atomID'])
     else:
         num_atoms = len(atoms)
+    if type(atoms) == dict:
+        dim = str(atoms.get('dim', 2)) + 'D'
+    else:
+        dim = str(atoms[0].get('dim',2)) + 'D'
+
+    buffer.write('\n')
+    buffer.write('{:2.2}{:^8.8}{:10.10}{:2.2}{:2.2}{:10.10}{:12.12}{:6.6}\n'.format(USERNAME, 'beaker', data, dim, '', '', '', ''))
+    buffer.write('\n')
+
     zeros = [0] * num_atoms
     buffer.write('{:3}{:3}{:3}{:3}{:3}{:3}          {} V2000\n'.format(
                                                             num_atoms, len(obj['bonds']), 0, 0, 0, 0, 1))
 
     if type(atoms) == dict:
         for i, atom in enumerate(atoms['elementType']):
-            buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}\n'.format(
-                          obj['atoms'].get('x', zeros)[i] / scale,
-                          obj['atoms'].get('y', zeros)[i] / scale,
-                          obj['atoms'].get('z', zeros)[i] / scale,
-                          atom, 0, 0 ))
+            buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}\n'.format(
+                          atoms.get('x', zeros)[i] / scale,
+                          atoms.get('y', zeros)[i] / scale,
+                          atoms.get('z', zeros)[i] / scale,
+                          atom,
+                          0 if not atoms.get('isotope') else atoms.get('isotope')[i] - int(PERIODIC_TABLE.GetAtomicWeight(str(atom))),
+                          charges.keys()[charges.values().index(atoms.get('formalCharge', zeros)[i])],0,0,0,0,0,0,0,0,0,0))
     else:
         for i, atom in enumerate(atoms):
-            buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}\n'.format(
+            elementType = atom.get('elementType')
+            buffer.write('{:10,.4f}{:10,.4f}{:10,.4f} {:<2}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}{:3}\n'.format(
                           atom.get('x', 0) / scale,
                           atom.get('y', 0) / scale,
                           atom.get('z', 0) / scale,
-                          atom.get('elementType'), 0, 0 ))
+                          elementType,
+                          0 if not atom.get('isotope') else atom.get('isotope') - int(PERIODIC_TABLE.GetAtomicWeight(str(elementType))),
+                          charges.keys()[charges.values().index(atom.get('formalCharge', 0))],0,0,0,0,0,0,0,0,0,0 ))
 
     for bond in obj['bonds']:
         first_atom = None
         second_atom = None
         first_id, second_id = bond['atomRefs']
+        stereo = bond.get('stereo', 0)
         if type(atoms) == dict:
             for i, atomID in enumerate(atoms['atomID']):
                 if first_id == atomID:
@@ -119,7 +193,7 @@ def _dict2Mol(obj, scale = 1.0):
                     second_atom = i + 1
                 if first_atom is not None and second_atom is not None:
                     break
-        buffer.write('{:3}{:3}{:3}{:3}\n'.format(first_atom, second_atom, bond['order'], 0))
+        buffer.write('{:3}{:3}{:3}{:3}{:3}{:3}{:3}\n'.format(first_atom, second_atom, bond['order'], stereo, 0, 0, 0))
     buffer.write('M  END\n')
     return buffer.getvalue()
 
@@ -131,7 +205,7 @@ def _jsonToMol(obj, scale = 1.0):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def _molToJson(mol, scale = 1.0):
-    atoms = {"atomID":[], "elementType":[], "x":[], "y":[]}
+    atoms = {"atomID":[], "elementType":[], "x":[], "y":[], "formalCharge":[], "isotope":[]}
     conformer = mol.GetConformer()
     is3D = conformer.Is3D()
     if is3D:
@@ -145,11 +219,14 @@ def _molToJson(mol, scale = 1.0):
             atoms['z'].append(point.y * scale)
         atoms["atomID"].append("a%s" % (idx + 1))
         atoms["elementType"].append(atom.GetSymbol())
+        atoms["formalCharge"].append(str(atom.GetFormalCharge()))
+        atoms["isotope"].append(str(atom.GetIsotope()))
     bonds = []
     for bond in mol.GetBonds():
         atomRefs = ["a%s" % (bond.GetBeginAtomIdx() + 1), "a%s" % (bond.GetEndAtomIdx() + 1)]
         order = molBondTypes[str(bond.GetBondType())]
-        bonds.append({"atomRefs": atomRefs, "order":order})
+        stereo = bond.GetBondDir()
+        bonds.append({"atomRefs": atomRefs, "order":order, "stereo":stereo})
     return {"atoms":atoms, "bonds":bonds}
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -185,6 +262,10 @@ def _dictToEtree(data, name=None, depth=0):
             kwargs = {}
             kwargs['atomID'] = ' '.join(data['atomID'])
             kwargs['elementType'] = ' '.join(data['elementType'])
+            if any(data.get('formalCharge')):
+                kwargs['formalCharge'] = ' '.join(data['formalCharge'])
+            if any(data.get('isotope')):
+                kwargs['isotope'] = ' '.join(data['isotope'])
             if 'z' not in data:
                 kwargs['x2'] = ' '.join("%.15f" % x for x in data['x'])
                 kwargs['y2'] = ' '.join("%.15f" % y for y in data['y'])
@@ -203,6 +284,18 @@ def _dictToEtree(data, name=None, depth=0):
         kwargs['atomRefs2'] = ' '.join(data['atomRefs'])
         kwargs['order'] = str(data['order'])
         element = Element('bond', **kwargs)
+        stereo = data.get('stereo')
+        if stereo:
+            element.append(_dictToEtree(stereo, 'bondStereo', depth + 1))
+    elif depth == 6:
+        element = Element('bondStereo')
+        if data == rdkit.Chem.rdchem.BondDir.BEGINWEDGE:
+            element.text = 'W'
+        elif data == rdkit.Chem.rdchem.BondDir.BEGINDASH:
+            element.text = 'H'
+        elif data == rdkit.Chem.rdchem.BondDir.UNKNOWN:
+            element.attrib["convention"] = "MDL"
+            element.attrib["conventionValue"] = "4"
     return element
 
 #-----------------------------------------------------------------------------------------------------------------------

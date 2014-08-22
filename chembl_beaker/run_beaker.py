@@ -11,14 +11,12 @@ from chembl_beaker.beaker.plugins.enableCors import EnableCors
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-if __name__ == "__main__":
-    parser = OptionParser()
-    parser.add_option("-c", "--config", dest="config_path",
-                  help="path to config file", default="beaker.conf")
-    (options, args) = parser.parse_args()
-    conf_path = options.config_path
-else:
-    conf_path = "beaker.conf"
+
+parser = OptionParser()
+parser.add_option("-c", "--config", dest="config_path",
+              help="path to config file", default="beaker.conf")
+(options, args) = parser.parse_args()
+conf_path = options.config_path
 
 config.load_config(conf_path)
 

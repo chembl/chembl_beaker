@@ -9,8 +9,7 @@ from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
 
 def _hydrogenize(block, hydro):
     mol = Chem.MolFromMolBlock(block)
-    res = Chem.AddHs(mol) if hydro else Chem.RemoveHs(mol)
-    AllChem.Compute2DCoords(res, bondLength = 0.8)
+    res = Chem.AddHs(mol, addCoords=True) if hydro else Chem.RemoveHs(mol)
     return MolToMarvin(Chem.MolToMolBlock(res))
 
 #-----------------------------------------------------------------------------------------------------------------------
