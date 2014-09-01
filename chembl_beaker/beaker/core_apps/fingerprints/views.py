@@ -29,9 +29,13 @@ def sdf2fps():
 Computes fingerprints for given compounds and writes them as fps format. Type is a optional type of fingerprints,
 can be 'morgan', 'pair' or 'maccs' (default to 'morgan'). CTAB is either single molfile or SDF file.
     """
-
-    params = json.loads(request.body.read())
-    structure = params['structure']
+    content = request.body.read()
+    try:
+        params = json.loads(content)
+        structure = params['structure']
+    except:
+        params = dict()
+        structure = content
     type = params.get('type', 'morgan')
     radius = params.get('radius', 2)
     n_bits = params.get('n_bits', 2048)

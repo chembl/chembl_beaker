@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='0.5.24',
+    version='0.5.30',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -44,11 +44,17 @@ setup(
               'chembl_beaker.beaker.core_apps.rasterImages',
               'chembl_beaker.beaker.core_apps.similarityMaps',
               'chembl_beaker.beaker.core_apps.svgImages',
+              'chembl_beaker.beaker.cache',
+              'chembl_beaker.beaker.cache.backends',
+              'chembl_beaker.beaker.throttle',
+              'chembl_beaker.beaker.throttle.backends',
               ],
     long_description=open('README.rst').read(),
     tests_require = ['Pillow', 'WebTest'],
     install_requires=['bottle>=0.11.6',
-                      'tornado>=2.4'],
+                      'tornado>=2.4',
+                      'pytz',
+                      'netaddr>=0.7.12'],
     package_data={
         'chembl_beaker': ['samples/*', 'static/*'],
         },

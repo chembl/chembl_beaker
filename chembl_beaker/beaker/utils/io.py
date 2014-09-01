@@ -48,7 +48,7 @@ def _getSDFString(mols):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def _getSMILESStream(f, mols):
-    w = SmilesWriter(f)
+    w = SmilesWriter(f, isomericSmiles=True)
     for mol in mols:
         w.write(mol)
     w.flush()

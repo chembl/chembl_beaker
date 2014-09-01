@@ -21,8 +21,9 @@ def _getFPSStream(f, mols, type='morgan', radius=2, n_bits=2048):
             idx = i
             if mol.HasProp('chembl_id'):
                 idx = mol.GetProp('chembl_id')
-            else:
+            elif Chem.INCHI_AVAILABLE:
                 try:
+                    Chem.SanitizeMol(mol)
                     idx = Chem.InchiToInchiKey(Chem.MolToInchi(mol))
                 except:
                     pass

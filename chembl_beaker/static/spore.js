@@ -184,6 +184,7 @@ var spore = {
         var holder = $('#mainholder');
         holder.append('<div id="title"><h1>'+this.spec.name + ' Explorer</h1><p>Version: ' +
                                                                                 this.spec.version+'</p></div>');
+        holder.append('<div>Your (optional) API Key: <input type="text" name="chembl_api_key" id="chembl_api_key"></div>');
         holder.append('<div class="accordion" id="restaccordian"></div>');
     },
 
@@ -539,12 +540,17 @@ spore.api.prototype._call = function (fn, params, onsuccess, onerror) {
         dta=dta['post'];
     }
 
+    var headers = {'X-Requested-With': 'XMLHttpRequest'};
+    var api_key = $.trim($('#chembl_api_key').val());
+    if(api_key)
+        headers['X-ChEMBL-APIKey'] = api_key;
+
     $.ajax({
         url: url,
         type: method.method,
         data: dta,
 		crossDomain: false,
-		headers: {'X-Requested-With': 'XMLHttpRequest'},	
+		headers: headers,
         //dataType: 'text',
         //contentType: 'json', //this.spec.formats[0]
         success: function (data, status, req) {

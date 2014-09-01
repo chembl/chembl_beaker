@@ -9,6 +9,11 @@ from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+def _canonicalize_smiles(data):
+    return _getSMILESString(_parseSMILESData(data))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
 def _ctab2smiles(data):
     return _getSMILESString(_parseMolData(data))
 

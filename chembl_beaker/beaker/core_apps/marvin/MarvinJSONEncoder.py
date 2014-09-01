@@ -62,7 +62,9 @@ class MarvinJSONEncoder(json.JSONEncoder):
             if obj.tag == 'atomArray':
                 return [ atom for atom in obj.iterchildren(tag='atom') ]
             if obj.tag == 'bond':
-                return {"atomRefs" : obj.get('atomRefs2').split(), "order": int(obj.get('order')), "stereo": obj.find("bondStereo")}
+                return {"atomRefs" : obj.get('atomRefs2').split(),
+                        "order": int(obj.get('order')),
+                        "stereo": obj.find("bondStereo")}
             if obj.tag == 'bondStereo':
                 print 'ELEM'
         if type(obj) == StringElement:
@@ -144,7 +146,8 @@ def _dict2Mol(obj, scale = 1.0):
         dim = str(atoms[0].get('dim',2)) + 'D'
 
     buffer.write('\n')
-    buffer.write('{:2.2}{:^8.8}{:10.10}{:2.2}{:2.2}{:10.10}{:12.12}{:6.6}\n'.format(USERNAME, 'beaker', data, dim, '', '', '', ''))
+    buffer.write('{:2.2}{:^8.8}{:10.10}{:2.2}{:2.2}{:10.10}{:12.12}{:6.6}\n'.format(
+                                                                    USERNAME, 'beaker', data, dim, '', '', '', ''))
     buffer.write('\n')
 
     zeros = [0] * num_atoms
@@ -158,8 +161,10 @@ def _dict2Mol(obj, scale = 1.0):
                           atoms.get('y', zeros)[i] / scale,
                           atoms.get('z', zeros)[i] / scale,
                           atom,
-                          0 if not atoms.get('isotope') else atoms.get('isotope')[i] - int(PERIODIC_TABLE.GetAtomicWeight(str(atom))),
-                          charges.keys()[charges.values().index(atoms.get('formalCharge', zeros)[i])],0,0,0,0,0,0,0,0,0,0))
+                          0 if not atoms.get('isotope') else atoms.get('isotope')[i] -
+                                                             int(PERIODIC_TABLE.GetAtomicWeight(str(atom))),
+                          charges.keys()[charges.values().index(atoms.get('formalCharge', zeros)[i])],
+                                                                                                0,0,0,0,0,0,0,0,0,0))
     else:
         for i, atom in enumerate(atoms):
             elementType = atom.get('elementType')
@@ -168,8 +173,10 @@ def _dict2Mol(obj, scale = 1.0):
                           atom.get('y', 0) / scale,
                           atom.get('z', 0) / scale,
                           elementType,
-                          0 if not atom.get('isotope') else atom.get('isotope') - int(PERIODIC_TABLE.GetAtomicWeight(str(elementType))),
-                          charges.keys()[charges.values().index(atom.get('formalCharge', 0))],0,0,0,0,0,0,0,0,0,0 ))
+                          0 if not atom.get('isotope') else atom.get('isotope') -
+                                                            int(PERIODIC_TABLE.GetAtomicWeight(str(elementType))),
+                          charges.keys()[charges.values().index(atom.get('formalCharge', 0))],
+                                                                                                0,0,0,0,0,0,0,0,0,0 ))
 
     for bond in obj['bonds']:
         first_atom = None
@@ -205,22 +212,32 @@ def _jsonToMol(obj, scale = 1.0):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def _molToJson(mol, scale = 1.0):
-    atoms = {"atomID":[], "elementType":[], "x":[], "y":[], "formalCharge":[], "isotope":[]}
+    atoms = []
     conformer = mol.GetConformer()
     is3D = conformer.Is3D()
-    if is3D:
-        atoms['z'] = []
     for atom in mol.GetAtoms():
+        atom_data = {}
         idx = atom.GetIdx()
         point = conformer.GetAtomPosition(idx)
-        atoms['x'].append(point.x * scale)
-        atoms['y'].append(point.y * scale)
+        x = point.x * scale
+        y = point.y * scale
         if is3D:
-            atoms['z'].append(point.y * scale)
-        atoms["atomID"].append("a%s" % (idx + 1))
-        atoms["elementType"].append(atom.GetSymbol())
-        atoms["formalCharge"].append(str(atom.GetFormalCharge()))
-        atoms["isotope"].append(str(atom.GetIsotope()))
+            z = point.y * scale
+            atom_data['x3'] = str(x)
+            atom_data['y3'] = str(y)
+            atom_data['z3'] = str(z)
+        else:
+            atom_data['x2'] = str(x)
+            atom_data['y2'] = str(y)
+        atom_data['id'] = "a%s" % (idx + 1)
+        atom_data["elementType"] = atom.GetSymbol()
+        formalCharge = atom.GetFormalCharge()
+        if formalCharge:
+            atom_data["formalCharge"] = str(formalCharge)
+        isotope = atom.GetIsotope()
+        if isotope:
+            atom_data["isotope"] = str(isotope)
+        atoms.append(atom_data)
     bonds = []
     for bond in mol.GetBonds():
         atomRefs = ["a%s" % (bond.GetBeginAtomIdx() + 1), "a%s" % (bond.GetEndAtomIdx() + 1)]
@@ -259,34 +276,24 @@ def _dictToEtree(data, name=None, depth=0):
         element.append(_dictToEtree(val['bonds'], 'bonds', depth + 1))
     elif depth == 4:
         if name == 'atoms':
-            kwargs = {}
-            kwargs['atomID'] = ' '.join(data['atomID'])
-            kwargs['elementType'] = ' '.join(data['elementType'])
-            if any(data.get('formalCharge')):
-                kwargs['formalCharge'] = ' '.join(data['formalCharge'])
-            if any(data.get('isotope')):
-                kwargs['isotope'] = ' '.join(data['isotope'])
-            if 'z' not in data:
-                kwargs['x2'] = ' '.join("%.15f" % x for x in data['x'])
-                kwargs['y2'] = ' '.join("%.15f" % y for y in data['y'])
-            else:
-                kwargs['x3'] = ' '.join("%.15f" % x for x in data['x'])
-                kwargs['y3'] = ' '.join("%.15f" % y for y in data['y'])
-                kwargs['z3'] = ' '.join("%.15f" % z for z in data['z'])
-
-            element = Element('atomArray', **kwargs)
+            element = Element('atomArray')
+            for atom in data:
+                element.append(_dictToEtree(atom, 'atom', depth + 1))
         elif name == 'bonds':
             element = Element('bondArray')
             for bond in data:
                 element.append(_dictToEtree(bond, 'bond', depth + 1))
     elif depth == 5:
-        kwargs = {}
-        kwargs['atomRefs2'] = ' '.join(data['atomRefs'])
-        kwargs['order'] = str(data['order'])
-        element = Element('bond', **kwargs)
-        stereo = data.get('stereo')
-        if stereo:
-            element.append(_dictToEtree(stereo, 'bondStereo', depth + 1))
+        if name == 'bond':
+            kwargs = {}
+            kwargs['atomRefs2'] = ' '.join(data['atomRefs'])
+            kwargs['order'] = str(data['order'])
+            element = Element('bond', **kwargs)
+            stereo = data.get('stereo')
+            if stereo:
+                element.append(_dictToEtree(stereo, 'bondStereo', depth + 1))
+        elif name == 'atom':
+            element = Element('atom', **data)
     elif depth == 6:
         element = Element('bondStereo')
         if data == rdkit.Chem.rdchem.BondDir.BEGINWEDGE:

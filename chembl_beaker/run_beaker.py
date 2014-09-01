@@ -4,10 +4,10 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+import json
 from bottle import run
 from optparse import OptionParser
-from chembl_beaker.beaker import app, config
-from chembl_beaker.beaker.plugins.enableCors import EnableCors
+from chembl_beaker.beaker import app, config, loadPlugins, loadApps
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -20,10 +20,11 @@ conf_path = options.config_path
 
 config.load_config(conf_path)
 
-#-----------------------------------------------------------------------------------------------------------------------
+apps = json.loads(config.get('INSTALLED_APPS', '[]'))
+plugins = json.loads(config.get('PLUGINS', '[]'))
 
-if config.get('enable_cors', 'true') != 'false':
-    app.install(EnableCors())
+loadApps(apps)
+loadPlugins(app, plugins)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

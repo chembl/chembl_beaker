@@ -4,7 +4,7 @@ __author__ = 'mnowotka'
 
 from chembl_beaker.beaker import app
 from bottle import request
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2inchi, _inchi2inchiKey
+from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2inchi, _inchi2inchiKey, _canonicalize_smiles
 import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -56,7 +56,32 @@ Converts SMILES to CTAB. This method accepts single or multiple SMILES or *.smi 
     if not data.startswith('SMILES Name'):
         data = "SMILES Name\n" + data
     return _smiles2ctab(data)
+#-----------------------------------------------------------------------------------------------------------------------
 
+@app.route('/canonicalizeSmiles/<smiles>', method=['OPTIONS', 'GET'], name="canonicalizeSmiles")
+def canonicalizeSmiles(smiles):
+    """
+Converts SMILES to canonical SMILES. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
+optionally containing header line, specific to *.smi format.
+    """
+
+    data = base64.urlsafe_b64decode(smiles)
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    return _canonicalize_smiles(data)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/canonicalizeSmiles', method=['OPTIONS', 'POST'], name="canonicalizeSmiles")
+def canonicalizeSmiles():
+    """
+Converts SMILES to canonical SMILES. This method accepts single or multiple SMILES or *.smi file.
+    """
+
+    data = request.body.read()
+    if not data.startswith('SMILES Name'):
+        data = "SMILES Name\n" + data
+    return _canonicalize_smiles(data)
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/inchi2ctab/<inchi>', method=['OPTIONS', 'GET'], name="inchi2ctab")

@@ -3,6 +3,7 @@ __author__ = 'mnowotka'
 import bottle
 from bottle import Bottle
 import chembl_beaker
+from chembl_beaker.beaker.utils import import_class
 import re
 import os
 import sys
@@ -31,6 +32,38 @@ DEFAULT_APPS = [
     "chembl_beaker.beaker.core_apps.similarityMaps",
     "chembl_beaker.beaker.core_apps.autoDocs",
     ]
+
+DEFAULT_PLUGINS = [
+    'chembl_beaker.beaker.plugins.enableCors.EnableCors',
+    'chembl_beaker.beaker.plugins.restrictions.Restrictions',
+    'chembl_beaker.beaker.plugins.throttling.Throttling',
+    'chembl_beaker.beaker.plugins.caching.Caching',
+]
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def loadPlugins(app, plugins):
+    if not plugins:
+        plugins = DEFAULT_PLUGINS
+    for plugin in plugins:
+        try:
+            plugin_class = import_class(plugin)
+            app.install(plugin_class())
+        except Exception as e:
+            print "Failed to load plugin %s because of error %s" % (plugin, e.message)
+            continue
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def loadApps(apps):
+    if not apps:
+        apps = DEFAULT_APPS
+    for module in apps:
+        try:
+            __import__(module + ".views")
+        except Exception as e:
+            print "Loading module %s failed because of error: %s" % (module, e.message)
+            continue
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -71,18 +104,4 @@ if not getattr(config, 'load_config'):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-apps = config.get('INSTALLED_APPS', None)
-if apps:
-    apps = json.loads(apps)
-else:
-    apps = DEFAULT_APPS
-
-for module in apps:
-    try:
-        __import__(module + ".views")
-    except Exception as e:
-        print "Loading module %s failed because of error: %s" % (module, e.message)
-        continue
-
-#-----------------------------------------------------------------------------------------------------------------------
 

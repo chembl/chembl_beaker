@@ -128,19 +128,19 @@ def _autoDetect(structure):
     if Chem.MolFromMolBlock(structure):
         return Chem.MolFromMolBlock(structure)
 
-    if Chem.inchi.MolFromInchi(structure.strip(), True, True):
+    if Chem.INCHI_AVAILABLE and Chem.inchi.MolFromInchi(structure.strip(), True, True):
         return Chem.inchi.MolFromInchi(structure.strip(), True, True)
 
-    if Chem.MolFromSmarts(structure):
+    if hasattr(Chem, 'MolFromSmarts') and Chem.MolFromSmarts(structure):
         return Chem.MolFromSmarts(structure)
 
-    if Chem.MolFromMol2Block(structure):
+    if hasattr(Chem, 'MolFromMol2Block') and Chem.MolFromMol2Block(structure):
         return Chem.MolFromMol2Block(structure)
 
-    if Chem.MolFromPDBBlock(structure):
+    if hasattr(Chem, 'MolFromPDBBlock') and Chem.MolFromPDBBlock(structure):
         return Chem.MolFromPDBBlock(structure)
 
-    if Chem.MolFromTPLBlock(structure):
+    if hasattr(Chem, 'MolFromTPLBlock') and Chem.MolFromTPLBlock(structure):
         return Chem.MolFromTPLBlock(structure)
 
     return None
