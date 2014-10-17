@@ -139,6 +139,7 @@ class Canvas(CanvasBase):
     text = re.sub(r'\<.+?\>','',text)
     print text,orientation
     w,h = font.size * len(text),font.size
+    offset = w*pos[2]
     bw,bh = w,h*1.4
     xp,yp=pos[0],pos[1]
     if orientation=='E':
@@ -166,6 +167,7 @@ class Canvas(CanvasBase):
       backgroundRect['stroke'] = 'rgb' + str(bgColor)
       self.objects.append(backgroundRect)    
     self.objects.append(tex)
+    return (bw, bh, offset)
 
 #------------------------------------------------------------------------------
     

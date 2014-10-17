@@ -2,10 +2,7 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-try:
-    from rdkit.Chem.Draw import MolToJSON
-except ImportError:
-    from chembl_beaker.beaker.core_apps.jsonImages.jsonCanvas import MolToJSON
+from chembl_beaker.beaker.core_apps.jsonImages.jsonCanvas import MolToJSON
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
