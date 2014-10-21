@@ -29,7 +29,10 @@ class Caching(object):
             else:
                 key = json.dumps(args) + json.dumps(kwargs) + request.method + request.path + request.body.read()
                 request.body.seek(0)
-                cached_content, content_type = cache.get(key, (None, None))
+                try:
+                    cached_content, content_type = cache.get(key, (None, None))
+                except:
+                    cached_content, content_type = (None, None)
                 if cached_content:
                     if content_type:
                         response.headers['Content-Type'] = content_type
@@ -40,7 +43,10 @@ class Caching(object):
                     res = fn(*args, **kwargs)
                     if type(res) == str:
                         content_type = response.headers.get('Content-Type')
-                        cache.set(key, (res, content_type))
+                        try:
+                            cache.set(key, (res, content_type))
+                        except:
+                            pass
             if config.get('debug', True):
                 end = time.time()
                 response.headers['X-ChEMBL-in-cache'] = from_cache
