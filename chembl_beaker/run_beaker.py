@@ -20,8 +20,8 @@ conf_path = options.config_path
 
 config.load_config(conf_path)
 
-apps = json.loads(config.get('INSTALLED_APPS', '[]'))
-plugins = json.loads(config.get('PLUGINS', '[]'))
+apps = json.loads(config.get('installed_apps', '[]'))
+plugins = json.loads(config.get('plugins', '[]'))
 
 loadApps(apps)
 loadPlugins(app, plugins)
