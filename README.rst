@@ -96,7 +96,7 @@ So I want to test it, I have a Mac and I don't know what rdkit, tornado and bott
 
 First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
 
-      ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
       brew tap edc/homebrew-rdkit
       brew install rdkit
       export RDBASE=/usr/local/share/RDKit
