@@ -52,6 +52,14 @@ To do this you need to configure marvin sketcher instance:
         "stereoinfows" : <url of Beaker cipStereoInfo>
     }));
 
+Beaker and myChEMBL
+--------
+Beaker is installed on myChEMBL Virtual Machine (currently version 19) so if you want to see how to deploy it for Apache or use it on your laptop or LAN without having to install RDKit and OSRA you can just grab a copy of myChEMBL.
+The easiest way to do so is to install `vagrant <https://www.vagrantup.com/>`_ and type::
+
+    vagrant init chembl/myChEMBL
+    vagrant up
+
 Software dependencies
 --------
 
@@ -88,7 +96,7 @@ So I want to test it, I have a Mac and I don't know what rdkit, tornado and bott
 
 First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
 
-      ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
       brew tap edc/homebrew-rdkit
       brew install rdkit
       export RDBASE=/usr/local/share/RDKit
@@ -141,12 +149,23 @@ If you want to run beaker in production, read section below .
 Deploying on Apache/Nginx
 --------
 Beaker is a Bottle app so it's really easy to deploy it on Apache with mod_wsgi.
-Only 4 lines of code are required in your .wsgi file::
+Only a few lines of code are required in your .wsgi file::
 
-    from chembl_beaker.beaker.plugins.enableCors import EnableCors
-    from chembl_beaker.beaker import app
+    from bottle import debug
+    import json
+    from chembl_beaker.beaker import app, config, loadPlugins, loadApps
 
-    app.install(EnableCors())
+    conf_path = "[path to config. file]"
+    config.load_config(conf_path)
+
+    apps = json.loads(config.get('installed_apps', '[]'))
+    plugins = json.loads(config.get('plugins', '[]'))
+
+    loadApps(apps)
+    loadPlugins(app, plugins)
+
+    debug(True)
+
     application = app
 
 That's it! For details, refer to `this document <http://flask.pocoo.org/docs/deploying/mod_wsgi/>`_.
