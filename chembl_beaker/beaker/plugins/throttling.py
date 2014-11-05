@@ -16,6 +16,7 @@ AES = None
 secret_key = None
 try:
     from Crypto.Cipher import AES
+    from Crypto import Random
     secret_key = config.get('throttling_secret_key')
 except ImportError:
     pass
@@ -25,9 +26,9 @@ except ImportError:
 def verify_key(key):
     if not (AES or secret_key):
         return False
-    aes = AES.new(secret_key, AES.MODE_CBC)
-
     try:
+        iv = Random.new().read(AES.block_size)
+        aes = AES.new(secret_key, AES.MODE_CBC, iv)
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
         decoded_key = base64.standard_b64decode(key)
         decrypted_key = aes.decrypt(decoded_key)
