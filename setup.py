@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='0.5.34',
+    version='0.5.35',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -23,7 +23,7 @@ setup(
     author_email='mnowotka@ebi.ac.uk',
     description='RDKit in the Bottle on Tornado',
     url='https://www.ebi.ac.uk/chembl/',
-    license='CC BY-SA 3.0',
+    license='Apache Software License',
     packages=['chembl_beaker',
               'chembl_beaker.beaker',
               'chembl_beaker.beaker.plugins',
@@ -63,7 +63,7 @@ setup(
                  'Environment :: Web Environment',
                  'Framework :: Bottle',
                  'Intended Audience :: Developers',
-                 'License :: OSI Approved :: MIT License',
+                 'License :: OSI Approved :: Apache Software License',
                  'Operating System :: POSIX :: Linux',
                  'Programming Language :: Python :: 2.7',
                  'Topic :: Scientific/Engineering :: Chemistry'],
