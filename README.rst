@@ -1,6 +1,3 @@
-.. image:: https://badge.waffle.io/chembl/chembl_beaker.png?label=ready&title=Ready 
- :target: https://waffle.io/chembl/chembl_beaker
- :alt: 'Stories in Ready'
 chembl_beaker
 ======
 
@@ -14,6 +11,10 @@ chembl_beaker
 .. image:: https://pypip.in/d/chembl_beaker/badge.png
     :target: https://crate.io/packages/chembl_beaker/
     :alt: Number of PyPI downloads
+
+.. image:: https://badge.waffle.io/chembl/chembl_beaker.png?label=ready&title=Ready 
+ :target: https://waffle.io/chembl/chembl_beaker
+ :alt: 'Stories in Ready'
     
 What is Beaker?
 --------
