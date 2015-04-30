@@ -144,7 +144,7 @@ def _autoDetect(structure):
         return Chem.MolFromTPLBlock(structure)
 
     try:
-        return MarvinToMol(structure)
+        return Chem.MolFromMolBlock(MarvinToMol(structure))
     except:
         pass
 

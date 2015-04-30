@@ -1,0 +1,10 @@
+{"structure":"<cml><MDocument><MChemicalStruct><molecule molID=\"m1\"><atomArray><atom id=\"a1\" elementType
+=\"C\" x2=\"3.583333333333334\" y2=\"0.20666665434666687\"/><atom id=\"a2\" elementType=\"C\" x2=\"2
+.2496000106698673\" y2=\"-0.5633333394933331\"/><atom id=\"a3\" elementType=\"C\" x2=\"2.2496000106698673
+\" y2=\"-2.103519993838507\"/><atom id=\"a4\" elementType=\"C\" x2=\"3.583333333333334\" y2=\"-2.8733333210133334
+\"/><atom id=\"a5\" elementType=\"C\" x2=\"4.917066655996801\" y2=\"-2.103519993838507\"/><atom id=\"a6
+\" elementType=\"C\" x2=\"4.917066655996801\" y2=\"-0.5633333394933331\"/></atomArray><bondArray><bond
+ atomRefs2=\"a1 a2\" order=\"1\"/><bond atomRefs2=\"a1 a6\" order=\"1\"/><bond atomRefs2=\"a2 a3\" order
+=\"1\"/><bond atomRefs2=\"a3 a4\" order=\"1\"/><bond atomRefs2=\"a4 a5\" order=\"1\"/><bond atomRefs2
+=\"a5 a6\" order=\"1\"/></bondArray></molecule></MChemicalStruct></MDocument></cml>", "parameters":"smiles"
+}

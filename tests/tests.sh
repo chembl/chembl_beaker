@@ -1,4 +1,4 @@
-BEAKER_ROOT_URL="https://wwwdev.ebi.ac.uk/chembl/api/utils/"
+BEAKER_ROOT_URL="https://www.ebi.ac.uk/chembl/api/utils/"
 
 !addHs
 curl -X GET ${BEAKER_ROOT_URL}addHs/$(cat addHs.mol | base64 -w 0 | tr "+/" "-_")
@@ -121,6 +121,9 @@ curl -X GET ${BEAKER_ROOT_URL}getNumBonds/$(cat aspirin.mol | base64 -w 0 | tr "
 curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}getNumBonds
 curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}getNumBonds
 
+!hydrogenize
+curl -X POST -H "Content-Type: application/json; charset=UTF-8" -d @metane.json ${BEAKER_ROOT_URL}hydrogenize
+
 !image2ctab
 curl -X POST --data-binary @mol.jpg ${BEAKER_ROOT_URL}image2ctab
 curl -X POST -F "file=@mol.jpg" ${BEAKER_ROOT_URL}image2ctab
@@ -169,6 +172,9 @@ curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}logP
 curl -X GET ${BEAKER_ROOT_URL}mcs/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")
 curl -X POST --data-binary @mcs.sdf ${BEAKER_ROOT_URL}mcs
 curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}mcs
+
+!molExport
+curl -X POST -H "Content-Type: application/json; charset=UTF-8" -d @molExport.json ${BEAKER_ROOT_URL}molExport
 
 !molWt
 curl -X GET ${BEAKER_ROOT_URL}molWt/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
