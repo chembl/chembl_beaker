@@ -9,18 +9,26 @@ from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _canonicalize_smiles(data):
-    return _getSMILESString(_parseSMILESData(data))
+def _canonicalize_smiles(data, computeCoords=False, in_delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True,
+    sanitize=True, out_delimiter=' ', nameHeader='Name', includeHeader=True, isomericSmiles=False, kekuleSmiles=False):
+    return _getSMILESString(_parseSMILESData(data, computeCoords=computeCoords, delimiter=in_delimiter,
+        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize),
+        delimiter=out_delimiter, nameHeader=nameHeader, includeHeader=includeHeader, isomericSmiles=isomericSmiles,
+                     kekuleSmiles=kekuleSmiles)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _ctab2smiles(data):
-    return _getSMILESString(_parseMolData(data))
+def _ctab2smiles(data, sanitize=True, removeHs=True, strictParsing=True, delimiter=' ', nameHeader='Name',
+                 includeHeader=True, isomericSmiles=False, kekuleSmiles=False):
+    return _getSMILESString(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+        delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader, isomericSmiles=isomericSmiles,
+                     kekuleSmiles=kekuleSmiles)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _smiles2ctab(data):
-    return _getSDFString(_parseSMILESData(data, True))
+def _smiles2ctab(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True):
+    return _getSDFString(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
+        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize))
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -31,8 +39,9 @@ def _inchi2ctab(inchis):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _ctab2inchi(data):
-    return '\n'.join(_apply(_parseMolData(data), Chem.MolToInchi))
+def _ctab2inchi(data, sanitize=True, removeHs=True, strictParsing=True):
+    return '\n'.join(_apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+        Chem.MolToInchi))
 
 #-----------------------------------------------------------------------------------------------------------------------
 

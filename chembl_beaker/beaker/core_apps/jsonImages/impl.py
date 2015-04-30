@@ -20,12 +20,15 @@ def _mols2json(mols,size,legend):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _ctab2json(data, size, legend):
-    return _mols2json(_parseMolData(data), size,legend)
+def _ctab2json(data, size, legend, sanitize=True, removeHs=True, strictParsing=True):
+    return _mols2json(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+        size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _smiles2json(data, size, legend):
-    return _mols2json(_parseSMILESData(data), size,legend)
+def _smiles2json(data, size, legend, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
+                 titleLine=True, sanitize=True):
+    return _mols2json(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
+        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize), size,legend)
 
 #-----------------------------------------------------------------------------------------------------------------------

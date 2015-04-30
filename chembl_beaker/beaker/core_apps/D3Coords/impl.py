@@ -25,15 +25,17 @@ def _2D23D(mol, multi, mmff=False):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _ctab23D(data, multi, mmff):
-    mols = _parseMolData(data)
+def _ctab23D(data, multi, mmff, sanitize=True, removeHs=True, strictParsing=True):
+    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     optimisedMols = _apply(mols, _2D23D, multi, mmff)
     return _getSDFString(optimisedMols)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _smiles23D(data, multi, mmff):
-    mols = _parseSMILESData(data)
+def _smiles23D(data, multi, mmff, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
+               titleLine=True, sanitize=True):
+    mols = _parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter, smilesColumn=smilesColumn,
+        nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize)
     optimisedMols = _apply(mols, _2D23D, multi, mmff)
     return _getSDFString(optimisedMols)
 

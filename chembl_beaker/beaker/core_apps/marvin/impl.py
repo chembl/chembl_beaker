@@ -143,6 +143,11 @@ def _autoDetect(structure):
     if hasattr(Chem, 'MolFromTPLBlock') and Chem.MolFromTPLBlock(structure):
         return Chem.MolFromTPLBlock(structure)
 
+    try:
+        return MarvinToMol(structure)
+    except:
+        pass
+
     return None
 
 #-----------------------------------------------------------------------------------------------------------------------

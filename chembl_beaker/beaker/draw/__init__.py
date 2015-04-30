@@ -4,7 +4,14 @@
 #  All Rights Reserved
 #
 import os
-from chembl_beaker.beaker.draw.molDrawing import MolDrawing,DrawingOptions
+from chembl_beaker.beaker.draw.molDrawing import MolDrawing, DrawingOptions
+
+def CoordsAreAllZero(m, confId=-1):
+    conf = m.GetConformer(confId)
+    for i in range(m.GetNumAtoms()):
+        if list(conf.GetAtomPosition(i))!=[0.0,0.0,0.0]:
+            return False
+    return True
 
 def _getCanvas():
   useAGG=False
@@ -37,20 +44,24 @@ def MolToImage(mol, size=(300,300), kekulize=True, wedgeBonds=True,
     img,canvas=_createCanvas(size)
   else:
     img=None
-    
+
+  fontSize = int(min(size) / 33)
+  if min(size) < 200:
+        fontSize = 1
+
   if options is None:
     options = DrawingOptions()
   if fitImage:
       options.dotsPerAngstrom = int(min(size) / 10)
   options.wedgeDashedBonds = wedgeBonds
+  options.atomLabelFontSize = fontSize
   drawer = MolDrawing(canvas=canvas,drawingOptions=options)
 
   if kekulize:
     from rdkit import Chem
-    mol = Chem.Mol(mol.ToBinary())
     Chem.Kekulize(mol)
     
-  if not mol.GetNumConformers():
+  if not mol.GetNumConformers() or CoordsAreAllZero(mol):
     from rdkit.Chem import AllChem
     AllChem.Compute2DCoords(mol)
   
@@ -63,7 +74,7 @@ def MolToImage(mol, size=(300,300), kekulize=True, wedgeBonds=True,
   drawer.AddMol(mol,**kwargs)
 
   if legend:
-    from chembl_beaker.beaker.Draw.MolDrawing import Font
+    from chembl_beaker.beaker.draw.molDrawing import Font
     bbox = drawer.boundingBoxes[mol]
     pos = size[0]/2,int(.94*size[1]),0 # the 0.94 is extremely empirical
     # canvas.addCanvasPolygon(((bbox[0],bbox[1]),(bbox[2],bbox[1]),(bbox[2],bbox[3]),(bbox[0],bbox[3])),
@@ -203,7 +214,7 @@ def MolsToGridImage(mols,molsPerRow=3,subImgSize=(200,200),legends=None,
     highlights=None
     if highlightAtomLists and highlightAtomLists[i]:
       highlights=highlightAtomLists[i]
-    res.paste(MolToImage(mol,subImgSize,legend=legends[i],highlightAtoms=highlights,
+    res.paste(MolToImage(mol,subImgSize,legend=legends[i],highlightAtoms=highlights,fitImage=True,
                          **kwargs),(col*subImgSize[0],row*subImgSize[1]))
   return res
 

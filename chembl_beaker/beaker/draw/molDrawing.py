@@ -28,14 +28,14 @@ class Font(object):
 
 class DrawingOptions(object):
   dotsPerAngstrom= 30
-  useFraction= 0.85
+  useFraction= 0.90
   
   atomLabelFontFace= "sans"
   atomLabelFontSize= 12
   atomLabelMinFontSize= 7
 
   bondLineWidth= 1.2
-  dblBondOffset= .25
+  dblBondOffset= .20
   dblBondLengthFrac= .8
 
   defaultColor= (1,0,0)

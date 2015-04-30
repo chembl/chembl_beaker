@@ -23,30 +23,34 @@ def _desc_list(mol, names):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _getNumAtoms(data):
-    return _call(_parseMolData(data), "GetNumAtoms")
+def _getNumAtoms(data, sanitize=True, removeHs=True, strictParsing=True):
+    return _call(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing), "GetNumAtoms")
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _getLogP(data):
-    return _apply(_parseMolData(data), _desc, 'MolLogP')
+def _getNumBonds(data, sanitize=True, removeHs=True, strictParsing=True):
+    return _call(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing), "GetNumBonds")
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _getTPSA(data):
-    return _apply(_parseMolData(data), _desc, 'TPSA')
+def _getLogP(data, sanitize=True, removeHs=True, strictParsing=True):
+    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing), _desc, 'MolLogP')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _getMolWt(data):
-    return _apply(_parseMolData(data), _desc, 'MolWt')
+def _getTPSA(data, sanitize=True, removeHs=True, strictParsing=True):
+    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing), _desc, 'TPSA')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _getDescriptors(data, params={}):
-    ds=params.get('descrs','')
-    if ds!='':
+def _getMolWt(data, sanitize=True, removeHs=True, strictParsing=True):
+    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing), _desc, 'MolWt')
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _getDescriptors(data, ds, sanitize=True, removeHs=True, strictParsing=True):
+    if ds:
         ds = ds.split(',')
-    return _apply(_parseMolData(data), _desc_list, ds)
+    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing), _desc_list, ds)
 
 #-----------------------------------------------------------------------------------------------------------------------

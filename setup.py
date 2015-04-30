@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='0.5.35',
+    version='1.1.0',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -38,6 +38,7 @@ setup(
               'chembl_beaker.beaker.core_apps.D3Coords',
               'chembl_beaker.beaker.core_apps.fingerprints',
               'chembl_beaker.beaker.core_apps.jsonImages',
+              'chembl_beaker.beaker.core_apps.ringInfo',
               'chembl_beaker.beaker.core_apps.marvin',
               'chembl_beaker.beaker.core_apps.mcs',
               'chembl_beaker.beaker.core_apps.osra',
@@ -59,7 +60,7 @@ setup(
         'chembl_beaker': ['samples/*', 'static/*'],
         },
     include_package_data=False,
-    classifiers=['Development Status :: 2 - Pre-Alpha',
+    classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Web Environment',
                  'Framework :: Bottle',
                  'Intended Audience :: Developers',

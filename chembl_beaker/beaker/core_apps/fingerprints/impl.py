@@ -44,7 +44,8 @@ def _getFPSString(mols, type='morgan', radius=2, n_bits=2048):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _sdf2fps(sdf, type='morgan', radius=2, n_bits=2048):
-    return _getFPSString(_parseMolData(sdf), type, radius, n_bits)
+def _sdf2fps(sdf, type='morgan', radius=2, n_bits=2048, sanitize=True, removeHs=True, strictParsing=True):
+    return _getFPSString(_parseMolData(sdf, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+        type, radius, n_bits)
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -127,6 +127,9 @@ class MarvinJSONEncoder(json.JSONEncoder):
                 else:
                     return 0
 
+            if obj.tag == 'bondArray':
+                return []
+
         return json.JSONEncoder.default(self, obj)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -323,10 +326,10 @@ def MolToMarvin(mol):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def SDFToMarvin(mol):
+def SDFToMarvin(mol, removeHs=True):
     mols = []
     if mol.endswith('.sdf') and os.path.exists(mol):
-        suppl = Chem.SDMolSupplier('mol')
+        suppl = Chem.SDMolSupplier('mol', removeHs=removeHs)
         mols = [mol for mol in suppl]
 
     js = _molsToJson(mols, MOL_MARVIN_SCALE)

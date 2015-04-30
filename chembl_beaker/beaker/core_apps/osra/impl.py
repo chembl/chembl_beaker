@@ -13,7 +13,6 @@ def _recogniseImage(img, osra, frmt='smi'):
     os.write(fd, img)
     os.close(fd)
     arguments = [osra, '-ij', '-f', frmt, fpath]
-    print ' '.join(arguments)
     p = Popen(arguments, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     result, err = p.communicate(input=img)
     os.remove(fpath)

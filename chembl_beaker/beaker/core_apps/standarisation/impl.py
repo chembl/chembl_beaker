@@ -25,36 +25,36 @@ def unsalt(mol):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _break_bonds(data):
-    mols = _parseMolData(data)
+def _break_bonds(data, sanitize=True, removeHs=True, strictParsing=True):
+    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     res = _apply(mols, break_bonds)
     return _getSDFString(res)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _neutralise(data, balance):
-    mols = _parseMolData(data)
+def _neutralise(data, balance, sanitize=True, removeHs=True, strictParsing=True):
+    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     res = _apply(mols, neutralise, balance)
     return _getSDFString(res)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _rules(data):
-    mols = _parseMolData(data)
+def _rules(data, sanitize=True, removeHs=True, strictParsing=True):
+    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     res = _apply(mols, rules)
     return _getSDFString(res)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _unsalt(data):
-    mols = _parseMolData(data)
+def _unsalt(data, sanitize=True, removeHs=True, strictParsing=True):
+    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     res = _apply(mols, unsalt)
     return _getSDFString(res)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _standardise(data):
-    mols = _parseMolData(data)
+def _standardise(data, sanitize=True, removeHs=True, strictParsing=True):
+    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     res = _apply(mols, standardise)
     return _getSDFString(res)
 

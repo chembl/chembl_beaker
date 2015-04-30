@@ -2,6 +2,7 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+import base64
 import time
 import json
 from bottle import request, response
@@ -27,7 +28,8 @@ class Caching(object):
                 from_cache = False
                 res = fn(*args, **kwargs)
             else:
-                key = json.dumps(args) + json.dumps(kwargs) + request.method + request.path + request.body.read()
+                key = json.dumps(args) + json.dumps(kwargs) + json.dumps([(base64.b64encode(k), base64.b64encode(v))
+                        for k,v in request.params.items()]) + request.method + request.path + request.body.read()
                 request.body.seek(0)
                 try:
                     cached_content, content_type = cache.get(key, (None, None))

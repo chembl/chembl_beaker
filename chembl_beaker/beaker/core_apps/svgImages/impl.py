@@ -18,17 +18,22 @@ except ImportError:
 
 
 import StringIO
+from rdkit import Chem
 from chembl_beaker.beaker.draw import cairoCanvas
 from chembl_beaker.beaker import draw
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
-from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
+from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _mols2svg(mols,size,legend):
+def _mols2svg(mols, size, legend, kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False, computeCoords=False):
 
-    _apply(mols, _computeCoords)
+    if computeCoords:
+        _apply(mols, _computeCoords, True)
+
+    if atomMapNumber:
+        _apply(mols, _atomMapNumber)
 
     molsPerRow=min(len(mols),4)
     totalWidth=molsPerRow*size
@@ -44,8 +49,9 @@ def _mols2svg(mols,size,legend):
         ty = size*(i//molsPerRow)
         ctx.translate(tx, ty)
         canv = cairoCanvas.Canvas(ctx=ctx, size=(size,size), imageType='svg')
-        leg = mol.GetProp("_Name") if mol.HasProp("_Name") else legend
-        draw.MolToImage(mol, size=(size,size), legend=leg, canvas=canv)
+        leg = mol.GetProp("_Name") if (mol.HasProp("_Name") and mol.GetProp("_Name")) else legend
+        draw.MolToImage(mol, size=(size,size), legend=leg, canvas=canv, kekulize=kekulize, wedgeBonds=wedgeBonds,
+               fitImage=fitImage)
         canv.flush()
         ctx.translate(-tx, -ty)
     surf.finish()
@@ -53,12 +59,27 @@ def _mols2svg(mols,size,legend):
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _ctab2svg(data,size,legend):
-    return _mols2svg(_parseMolData(data), size, legend)
+def _ctab2svg(data, size, legend, sanitize=True, removeHs=True, strictParsing=True, kekulize=True, wedgeBonds=True,
+              fitImage=True, atomMapNumber=False, computeCoords=False):
+    return _mols2svg(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+        size, legend, kekulize=kekulize, wedgeBonds=wedgeBonds, fitImage=fitImage, atomMapNumber=atomMapNumber,
+        computeCoords=computeCoords)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _smiles2svg(data,size,legend):
-    return _mols2svg(_parseSMILESData(data), size, legend)
+def _smiles2svg(data, size, legend, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
+                titleLine=True, sanitize=True, kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False):
+    return _mols2svg(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
+        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize), size, legend,
+        kekulize=kekulize, wedgeBonds=wedgeBonds, fitImage=fitImage, atomMapNumber=atomMapNumber,
+        computeCoords=computeCoords)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _inchi2svg(inchis,size,legend, kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False, computeCoords=False):
+    mols = _apply(inchis.split(), Chem.MolFromInchi)
+    _apply(mols, _computeCoords)
+    return _mols2svg(mols, size, legend, kekulize=kekulize, wedgeBonds=wedgeBonds, fitImage=fitImage,
+                        atomMapNumber=atomMapNumber, computeCoords=computeCoords)
 
 #-----------------------------------------------------------------------------------------------------------------------

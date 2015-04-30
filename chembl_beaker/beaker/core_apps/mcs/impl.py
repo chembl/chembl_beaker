@@ -8,23 +8,19 @@ from chembl_beaker.beaker.utils.io import _parseMolData
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _mcs(data,params):
-    ms = _parseMolData(data)
+def _mcs(data, asSmiles, atomCompare, bondCompare, threshold, ringMatchesRingOnly, completeRingsOnly, sanitize=True,
+         removeHs=True, strictParsing=True, isomericSmiles=False, canonical=True, kekuleSmiles=False):
+    ms = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     if not ms:
         return
     if len(ms) == 1:
-        if bool(int(params.get('asSmiles','0'))):
+        if asSmiles:
             print 'SMARTS'
             return Chem.MolToSmiles(ms[0])
         else:
             print 'SMILES'
             return Chem.MolToSmarts(ms[0])
 
-    atomCompare=params.get('atomCompare','elements')
-    bondCompare=params.get('bondCompare','bondtypes')
-    ringMatchesRingOnly=bool(int(params.get('ringMatchesRingOnly','0')))
-    completeRingsOnly=bool(int(params.get('completeRingsOnly','0')))
-    threshold=params.get('threshold',None)
     if threshold:
         threshold=float(threshold)
     try:
@@ -41,12 +37,13 @@ def _mcs(data,params):
                           ringMatchesRingOnly=ringMatchesRingOnly,
                           completeRingsOnly=completeRingsOnly)
     res = mcs.smarts
-    if bool(int(params.get('asSmiles','0'))):
+    if asSmiles:
         p = Chem.MolFromSmarts(res)
         for m in ms:
             if m.HasSubstructMatch(p):
                 match = m.GetSubstructMatch(p)
-                res = Chem.MolFragmentToSmiles(m,atomsToUse=match,isomericSmiles=True,canonical=False)
+                res = Chem.MolFragmentToSmiles(m, atomsToUse=match, isomericSmiles=isomericSmiles, canonical=canonical,
+                kekuleSmiles=kekuleSmiles)
                 break
     return res
 

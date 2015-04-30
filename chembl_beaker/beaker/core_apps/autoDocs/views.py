@@ -38,7 +38,6 @@ def spore():
         if not name or method not in ('GET', 'POST'):
             continue
 #        if uname in ret["methods"]:
-#            #print "powtorka dla %s" % uname
 #            params = map(lambda x: x[1:-1].upper(), PARAM_REGEX.findall(route.rule))
 #            intersection = list(set(params) & set(ret["methods"][uname]["required_params"]))
 #            #print "intersection = %s" % intersection

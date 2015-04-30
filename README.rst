@@ -39,6 +39,7 @@ This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nc
  * `HTML5 ready compound representation <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/jsonImages/views.py>`_
  * `Fingerprints <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/fingerprints/views.py>`_
  * `Descriptors <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/descriptors/views.py>`_
+ * `Ring information <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/ringInfo/views.py>`_
  * `Maximum Common Substructure <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/mcs/views.py>`_
  * `Smiliarity maps <https://github.com/mnowotka/chembl_beaker/blob/master/chembl_beaker/beaker/core_apps/similarityMaps/views.py>`_
  * `ChEMBL standardisation process <https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/>`_, consisting of neutralisation, bond breaking, salt removal and applying various rules.
@@ -149,6 +150,7 @@ Beaker is distributed with example configuration file named ``beaker.conf.sample
     "chembl_beaker.beaker.core_apps.mcs",
     "chembl_beaker.beaker.core_apps.osra",
     "chembl_beaker.beaker.core_apps.rasterImages",
+    "chembl_beaker.beaker.core_apps.ringInfo",
     "chembl_beaker.beaker.core_apps.svgImages",
     "chembl_beaker.beaker.core_apps.jsonImages",
     "chembl_beaker.beaker.core_apps.autoDocs",

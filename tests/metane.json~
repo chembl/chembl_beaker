@@ -1,0 +1,6 @@
+{"structure":"<cml><MDocument><MChemicalStruct><molecule molID=\"m1\"><atomArray><atom id=\"a1\" elementType
+=\"C\" x2=\"-1.0833333333333333\" y2=\"1.8333333333333333\"/></atomArray><bondArray><bond atomRefs2=\"a1 a2
+\" order=\"1\"/><bond atomRefs2=\"a1 a6\" order=\"1\"/><bond atomRefs2=\"a2 a3\" order=\"1\"/><bond atomRefs2
+=\"a3 a4\" order=\"1\"/><bond atomRefs2=\"a4 a5\" order=\"1\"/><bond atomRefs2=\"a5 a6\" order=\"1\"
+/></bondArray></molecule></MChemicalStruct
+></MDocument></cml>", "parameters":{"method":"HYDROGENIZE"}}

@@ -4,49 +4,82 @@ __author__ = 'mnowotka'
 
 from chembl_beaker.beaker import app
 from bottle import request, response
+from chembl_beaker.beaker.utils.io import _parseFlag
 from chembl_beaker.beaker.core_apps.standarisation.impl import _break_bonds, _neutralise, _rules, _unsalt, _standardise
 import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/break_bonds/<ctab>', method=['OPTIONS', 'GET'], name="break_bonds")
-def break_bonds(ctab):
+def breakBondsView(data, params):
+
+    kwargs = dict()
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    return _break_bonds(data, **kwargs)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/breakBonds/<ctab>', method=['OPTIONS', 'GET'], name="breakBonds")
+def breakBonds(ctab):
     """
 Break covalent bonds between oxygen or nitrogen atoms and Group I and II metal atoms.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/01\_break\_bonds.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/01_break_bonds.html)
 CTAB is urlsafe_base64 encoded string containing single molfile or concatenation of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}breakBonds/$(cat breakBonds.mol | base64 -w 0 | tr "+/" "-_")
+
     """
 
     data = base64.urlsafe_b64decode(ctab)
-    return _break_bonds(data)
+    return breakBondsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/break_bonds', method=['OPTIONS', 'POST'], name="break_bonds")
-def break_bonds():
+@app.route('/breakBonds', method=['OPTIONS', 'POST'], name="breakBonds")
+def breakBonds():
     """
 Break covalent bonds between oxygen or nitrogen atoms and Group I and II metal atoms.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/01\_break\_bonds.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/01_break_bonds.html)
 CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @breakBonds.mol ${BEAKER_ROOT_URL}breakBonds
+    curl -X POST -F "file=@breakBonds.mol" ${BEAKER_ROOT_URL}breakBonds
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
-    return _break_bonds(data)
+    return breakBondsView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def neutraliseView(data, params):
+
+    kwargs = dict()
+    kwargs['balance'] = int(params.get('balance', False))
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+
+    return _neutralise(data, **kwargs)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/neutralise/<ctab>', method=['OPTIONS', 'GET'], name="neutralise")
-@app.route('/neutralise/<ctab>/<balance>', method=['OPTIONS', 'GET'], name="neutralise")
-def neutralise(ctab, balance=False):
+def neutralise(ctab):
     """
 Neutralise charges.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/02\_neutralise.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/02_neutralise.html)
 CTAB is urlsafe_base64 encoded string containing single molfile or
 concatenation of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}neutralise/$(cat neutralise.mol | base64 -w 0 | tr "+/" "-_")
     """
 
     data = base64.urlsafe_b64decode(ctab)
-    return _neutralise(data, balance)
+    return neutraliseView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -56,11 +89,24 @@ def neutralise():
 Neutralise charges.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/02\_neutralise.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/02_neutralise.html)
 CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @neutralise.mol ${BEAKER_ROOT_URL}neutralise
+    curl -X POST -F "file=@neutralise.mol" ${BEAKER_ROOT_URL}neutralise
     """
 
-    balance = int(request.forms.get('balance', False))
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
-    return _neutralise(data, balance)
+    return neutraliseView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def unsaltView(data, params):
+
+    kwargs = dict()
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    return _unsalt(data, **kwargs)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -71,10 +117,14 @@ Remove counterions and solvate components.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/04\_unsalt.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/04_unsalt.html)
 CTAB is urlsafe_base64 encoded string containing single molfile or
 concatenation of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}unsalt/$(cat unsalt.mol | base64 -w 0 | tr "+/" "-_")
+
     """
 
     data = base64.urlsafe_b64decode(ctab)
-    return _unsalt(data)
+    return unsaltView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -84,10 +134,24 @@ def unsalt():
 Remove salt/solvates.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/04\_unsalt.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/04_unsalt.html)
 CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @unsalt.mol ${BEAKER_ROOT_URL}unsalt
+    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}unsalt
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
-    return _unsalt(data)
+    return unsaltView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def rulesView(data, params):
+
+    kwargs = dict()
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    return _rules(data, **kwargs)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -98,10 +162,14 @@ Apply structure-normalisation transformations.
 List of rules and further documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/03\_rules.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/03_rules.html)
 CTAB is urlsafe_base64 encoded string containing single molfile or
 concatenation of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}rules/$(cat rules.mol | base64 -w 0 | tr "+/" "-_")
+
     """
 
     data = base64.urlsafe_b64decode(ctab)
-    return _rules(data)
+    return rulesView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -111,10 +179,24 @@ def rules():
 Apply structure-normalisation transformations.
 List of rules and further documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/03\_rules.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/03_rules.html)
 CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @rules.mol ${BEAKER_ROOT_URL}rules
+    curl -X POST -F "file=@rules.mol" ${BEAKER_ROOT_URL}rules
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
-    return _rules(data)
+    return rulesView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def standardiseView(data, params):
+
+    kwargs = dict()
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    return _standardise(data, **kwargs)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -125,10 +207,14 @@ Get standardised parent.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/05\_standardise.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/05_standardise.html)
 CTAB is urlsafe_base64 encoded string containing single molfile or
 concatenation of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}standardise/$(cat standardise.mol | base64 -w 0 | tr "+/" "-_")
+
     """
 
     data = base64.urlsafe_b64decode(ctab)
-    return _standardise(data)
+    return standardiseView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -138,9 +224,13 @@ def standardise():
 Get standardised parent.
 Examples and documentation: [https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/05\_standardise.html](https://wwwdev.ebi.ac.uk/chembl/extra/francis/standardiser/05_standardise.html)
 CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @standardise.mol ${BEAKER_ROOT_URL}standardise
+    curl -X POST -F "file=@standardise.mol" ${BEAKER_ROOT_URL}standardise
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
-    return _standardise(data)
+    return standardiseView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
