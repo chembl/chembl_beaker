@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='1.1.1',
+    version='1.1.2',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -57,7 +57,7 @@ setup(
                       'pytz',
                       'netaddr>=0.7.12'],
     package_data={
-        'chembl_beaker': ['samples/*', 'static/*'],
+        'chembl_beaker': ['samples/*', 'static/*', 'tests/*'],
         },
     include_package_data=False,
     classifiers=['Development Status :: 4 - Beta',

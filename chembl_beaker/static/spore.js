@@ -276,6 +276,9 @@ var spore = {
         holder_widget.append('<div class="restapiholderresponse" id="'+fn+'_response"></div>');
         method_widget.append('<p><h4>Description</h4><div class="well" id="'+fn+'_method_description"></div></p>');
 
+        var base_url = (this.spec.base_url != undefined) ? this.spec.base_url : window.location.href.substr(0, window.location.href.lastIndexOf('/')+1);
+        description = description.replace(/\$\{BEAKER_ROOT_URL\}/g, base_url);
+
         $('#'+fn+'_method_description').html(markdown.toHTML(description));
 
         if(required_params != undefined){

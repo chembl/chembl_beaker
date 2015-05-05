@@ -5,7 +5,9 @@ __author__ = 'mnowotka'
 from chembl_beaker.beaker import app
 from bottle import request
 from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey, _canonicalize_smiles
+from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey
+from chembl_beaker.beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
+from chembl_beaker.beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
 from chembl_beaker.beaker.utils.io import _parseFlag
 import base64
 
@@ -66,7 +68,7 @@ cURL examples:
 
 def smiles2ctabView(data, params):
     kwargs = dict()
-    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['delimiter'] = params.get('delimiter', ' ')
     kwargs['smilesColumn'] = int(params.get('smilesColumn', 0))
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
@@ -90,7 +92,7 @@ cURL examples:
 
     curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
     curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET "${BEAKER_ROOT_URL}smiles2ctab/"$(cat rules.smi | base64 -w 0 | tr "+/" "-_")"?computeCoords=1"
+    curl -X GET "${BEAKER_ROOT_URL}smiles2ctab/"$(cat rules.smi | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
     curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
     curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
     """
@@ -108,7 +110,7 @@ cURL examples:
 
     curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2ctab
     curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2ctab
-    curl -X POST -F "file=@rules.smi" -F "computeCoords=1"  ${BEAKER_ROOT_URL}smiles2ctab
+    curl -X POST -F "file=@rules.smi" -F "computeCoords=0"  ${BEAKER_ROOT_URL}smiles2ctab
     curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2ctab
     curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2ctab
     """
@@ -118,6 +120,108 @@ cURL examples:
 
 #-----------------------------------------------------------------------------------------------------------------------
 
+def smiles2inchiView(data, params):
+    kwargs = dict()
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
+    kwargs['delimiter'] = params.get('delimiter', ' ')
+    kwargs['smilesColumn'] = int(params.get('smilesColumn', 0))
+    kwargs['nameColumn'] = int(params.get('nameColumn', 1))
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+
+    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+        kwargs['titleLine'] = False
+    else:
+        kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
+
+    return _smiles2inchi(data, **kwargs)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/smiles2inchi/<smiles>', method=['OPTIONS', 'GET'], name="smiles2inchi")
+def smiles2inchi(smiles):
+    """
+Converts SMILES to InChi. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
+optionally containing header line, specific to *.smi format.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
+    """
+
+    data = base64.urlsafe_b64decode(smiles)
+    return smiles2inchiView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/smiles2inchi', method=['OPTIONS', 'POST'], name="smiles2inchi")
+def smiles2inchi():
+    """
+Converts SMILES to InChi. This method accepts single or multiple SMILES or *.smi file.
+cURL examples:
+
+    curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+    curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+    curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2inchi
+    curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return smiles2inchiView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+def smiles2inchiKeyView(data, params):
+    kwargs = dict()
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
+    kwargs['delimiter'] = params.get('delimiter', ' ')
+    kwargs['smilesColumn'] = int(params.get('smilesColumn', 0))
+    kwargs['nameColumn'] = int(params.get('nameColumn', 1))
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+
+    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+        kwargs['titleLine'] = False
+    else:
+        kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
+
+    return _smiles2inchiKey(data, **kwargs)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/smiles2inchiKey/<smiles>', method=['OPTIONS', 'GET'], name="smiles2inchiKey")
+def smiles2inchiKey(smiles):
+    """
+Converts SMILES to InChi Key. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
+optionally containing header line, specific to *.smi format.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
+    """
+
+    data = base64.urlsafe_b64decode(smiles)
+    return smiles2inchiKeyView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/smiles2inchiKey', method=['OPTIONS', 'POST'], name="smiles2inchiKey")
+def smiles2inchiKey():
+    """
+Converts SMILES to InChi Key. This method accepts single or multiple SMILES or *.smi file.
+cURL examples:
+
+    curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
+    curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+    curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
+    curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return smiles2inchiKeyView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
 def canonicalizeSmilesView(data, params):
     kwargs = dict()
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
@@ -246,6 +350,45 @@ cURL examples:
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2inchiView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def ctab2inchiKeyView(data, params):
+    kwargs = dict()
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    return _ctab2inchiKey(data, **kwargs)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/ctab2inchiKey/<ctab>', method=['OPTIONS', 'GET'], name="ctab2inchiKey")
+def ctab2inchiKey(ctab):
+    """
+Converts CTAB to InChi Keys. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
+of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}ctab2inchiKey/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
+    """
+
+    data = base64.urlsafe_b64decode(ctab)
+    return ctab2inchiKeyView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/ctab2inchiKey', method=['OPTIONS', 'POST'], name="ctab2inchiKey")
+def ctab2inchiKey():
+    """
+Converts CTAB to InChi Keys. CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2inchiKey
+    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2inchiKey
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return ctab2inchiKeyView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

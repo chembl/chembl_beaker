@@ -77,6 +77,11 @@ curl -X GET ${BEAKER_ROOT_URL}ctab2inchi/$(cat aspirin.mol | base64 -w 0 | tr "+
 curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2inchi
 curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2inchi
 
+!ctab2inchiKey
+curl -X GET ${BEAKER_ROOT_URL}ctab2inchiKey/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
+curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2inchiKey
+curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2inchiKey
+
 !ctab2json
 !
 
@@ -257,8 +262,8 @@ curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat aspirin_with_header.smi | base64
 curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2ctab
 curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
 curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2ctab
-curl -X GET "${BEAKER_ROOT_URL}smiles2ctab/"$(cat rules.smi | base64 -w 0 | tr "+/" "-_")"?computeCoords=1"
-curl -X POST -F "file=@rules.smi" -F "computeCoords=1"  ${BEAKER_ROOT_URL}smiles2ctab
+curl -X GET "${BEAKER_ROOT_URL}smiles2ctab/"$(cat rules.smi | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
+curl -X POST -F "file=@rules.smi" -F "computeCoords=0"  ${BEAKER_ROOT_URL}smiles2ctab
 curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
 curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2ctab
 curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
@@ -289,6 +294,26 @@ curl -X POST -F "file=@mcs.smi" -F "legend=foo" ${BEAKER_ROOT_URL}smiles2image >
 curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo" ${BEAKER_ROOT_URL}smiles2image > out.png
 curl -X POST -F "file=@mcs.smi" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}smiles2image > out.png
 curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}smiles2image > out.png
+
+!smiles2inchi
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2inchi
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+
+!smiles2inchiKey
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
+curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
 
 !smiles2json
 !

@@ -26,7 +26,7 @@ def _ctab2smiles(data, sanitize=True, removeHs=True, strictParsing=True, delimit
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-def _smiles2ctab(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True):
+def _smiles2ctab(data, computeCoords=True, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True):
     return _getSDFString(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
         smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize))
 
@@ -42,6 +42,26 @@ def _inchi2ctab(inchis):
 def _ctab2inchi(data, sanitize=True, removeHs=True, strictParsing=True):
     return '\n'.join(_apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
         Chem.MolToInchi))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _ctab2inchiKey(data, sanitize=True, removeHs=True, strictParsing=True):
+    inchis = _ctab2inchi(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
+    return _inchi2inchiKey(inchis)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _smiles2inchi(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True):
+    return '\n'.join(_apply(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
+        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize),
+        Chem.MolToInchi))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _smiles2inchiKey(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True):
+    inchis = _smiles2inchi(data, computeCoords=computeCoords, delimiter=delimiter, smilesColumn=smilesColumn,
+        nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize)
+    return _inchi2inchiKey(inchis)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

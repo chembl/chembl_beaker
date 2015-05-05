@@ -1,6 +1,6 @@
 
 .restloadingDiv {
-background:url("/static/ajax-loader.gif") no-repeat center center;
+background:url("ajax-loader.gif") no-repeat center center;
 background-color: transparent;
 height: 100px;
 width: 100px;
