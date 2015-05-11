@@ -3,7 +3,7 @@ __author__ = 'mnowotka'
 #-----------------------------------------------------------------------------------------------------------------------
 
 import json
-from bottle import request, response
+from bottle import BaseRequest, request, response
 from netaddr import IPNetwork, IPAddress
 from chembl_beaker.beaker import config
 
@@ -30,6 +30,10 @@ except:
 class Restrictions(object):
     name = 'restrictions'
     api = 2
+
+    def __init__(self):
+        if config.get('request_max_size'):
+            BaseRequest.MEMFILE_MAX = int(config['request_max_size'])
 
     def apply(self, fn, context):
         def _check_restrictions(*args, **kwargs):

@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl_beaker',
-    version='1.1.2',
+    version='1.1.3',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -52,7 +52,7 @@ setup(
               ],
     long_description=open('README.rst').read(),
     tests_require = ['Pillow', 'WebTest'],
-    install_requires=['bottle>=0.11.6',
+    install_requires=['bottle>=0.12.7',
                       'tornado>=2.4',
                       'pytz',
                       'netaddr>=0.7.12'],
