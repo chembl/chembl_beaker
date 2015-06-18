@@ -45,7 +45,7 @@ def MolToImage(mol, size=(300,300), kekulize=True, wedgeBonds=True,
   else:
     img=None
 
-  fontSize = int(min(size) / 33)
+  fontSize = int(min(size) / 20)
   if min(size) < 200:
         fontSize = 1
 
