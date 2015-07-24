@@ -66,7 +66,7 @@ class MarvinJSONEncoder(json.JSONEncoder):
                         "order": int(obj.get('order')),
                         "stereo": obj.find("bondStereo")}
             if obj.tag == 'bondStereo':
-                print 'ELEM'
+                pass
         if type(obj) == StringElement:
             if obj.tag == 'atomArray':
                 ids = obj.get('atomID').split()
