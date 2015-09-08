@@ -5,6 +5,7 @@ __author__ = 'mnowotka'
 from rdkit import Chem
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData, _getSMILESString, _getSDFString
+from chembl_beaker.beaker.utils.io import _getSMARTSString
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -15,6 +16,12 @@ def _canonicalize_smiles(data, computeCoords=False, in_delimiter=' ', smilesColu
         smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize),
         delimiter=out_delimiter, nameHeader=nameHeader, includeHeader=includeHeader, isomericSmiles=isomericSmiles,
                      kekuleSmiles=kekuleSmiles)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _ctab2smarts(data, sanitize=True, removeHs=True, strictParsing=True, isomericSmiles=False):
+    return _getSMARTSString(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+        isomericSmiles=isomericSmiles)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

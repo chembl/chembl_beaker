@@ -4,7 +4,7 @@ __author__ = 'mnowotka'
 
 from chembl_beaker.beaker import app
 from bottle import request
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab
+from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2smarts
 from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
@@ -63,6 +63,55 @@ cURL examples:
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2smilesView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def ctab2smartsView(data, params):
+    kwargs = dict()
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
+    return _ctab2smarts(data, **kwargs)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/ctab2smarts/<ctab>', method=['OPTIONS', 'GET'], name="ctab2smarts")
+def ctab2smarts(ctab):
+    """
+Converts CTAB to SMARTS format. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
+of multiple molfiles.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_"
+    curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")?isomericSmiles=1
+    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=1"
+    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=0"
+    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=1&sanitize=1"
+    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat explicitHs.mol | base64 -w 0 | tr "+/" "-_")"?removeHs=0"
+    """
+
+    data = base64.urlsafe_b64decode(ctab)
+    return ctab2smartsView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/ctab2smarts', method=['OPTIONS', 'POST'], name="ctab2smarts")
+def ctab2smarts():
+    """
+Converts CTAB to SMILES format. CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST -F "file=@isomeric.mol" ${BEAKER_ROOT_URL}ctab2smiles
+    curl -X POST -F "file=@isomeric.mol" -F "isomericSmiles=1" ${BEAKER_ROOT_URL}ctab2smarts
+    curl -X POST -F "file=@non_kekule.mol" -F "kekuleSmiles=0" -F "sanitize=1" ${BEAKER_ROOT_URL}ctab2smarts
+    curl -X POST -F "file=@non_kekule.mol" -F "kekuleSmiles=0" -F "sanitize=0" ${BEAKER_ROOT_URL}ctab2smarts
+    curl -X POST -F "file=@non_kekule.mol" -F "kekuleSmiles=1" -F "sanitize=1" ${BEAKER_ROOT_URL}ctab2smarts
+    curl -X POST -F "file=@explicitHs.mol" -F "removeHs=0" ${BEAKER_ROOT_URL}ctab2smarts
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return ctab2smartsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

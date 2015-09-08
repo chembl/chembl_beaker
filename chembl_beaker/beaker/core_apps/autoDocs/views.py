@@ -9,6 +9,16 @@ from chembl_beaker.beaker import app, config
 from chembl_beaker.beaker import STATIC_ROOT
 from chembl_beaker.beaker import PARAM_REGEX
 
+EXCLUDED_METHODS = config.get('excluded_methods')
+
+try:
+    if EXCLUDED_METHODS:
+        EXCLUDED_METHODS = json.loads(EXCLUDED_METHODS) or []
+    else:
+        EXCLUDED_METHODS = []
+except:
+    EXCLUDED_METHODS = []
+
 #-----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/docs')
@@ -35,7 +45,7 @@ def spore():
         name = route.name
         method = route.method.upper()
         uname = "%s_%s" % (method, name)
-        if not name or method not in ('GET', 'POST'):
+        if not name or method not in ('GET', 'POST') or uname in EXCLUDED_METHODS:
             continue
 #        if uname in ret["methods"]:
 #            params = map(lambda x: x[1:-1].upper(), PARAM_REGEX.findall(route.rule))

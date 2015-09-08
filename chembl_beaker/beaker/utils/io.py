@@ -8,6 +8,7 @@ import StringIO
 from rdkit.Chem import SDMolSupplier
 from rdkit.Chem import SmilesMolSupplier
 from rdkit.Chem import MolFromSmiles
+from rdkit.Chem import MolToSmarts
 from rdkit.Chem import SDWriter
 from rdkit.Chem import SmilesWriter
 from rdkit.Chem import SanitizeMol
@@ -92,6 +93,14 @@ def _getSMILESString(mols, delimiter=' ', nameHeader='Name', includeHeader=True,
     sio = StringIO.StringIO()
     _getSMILESStream(sio, mols, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
         isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
+    return sio.getvalue()
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _getSMARTSString(mols, isomericSmiles=False):
+    sio = StringIO.StringIO()
+    for mol in mols:
+        sio.write(MolToSmarts(mol, isomericSmiles) + '\n')
     return sio.getvalue()
 
 #-----------------------------------------------------------------------------------------------------------------------
