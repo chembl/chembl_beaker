@@ -1,23 +1,23 @@
 chembl_beaker
 ======
 
-.. image:: https://pypip.in/version/chembl_beaker/badge.svg
+.. image:: https://img.shields.io/pypi/v/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: Latest Version
 
-.. image:: https://pypip.in/download/chembl_beaker/badge.svg
+.. image:: https://img.shields.io/pypi/dm/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: Downloads
 
-.. image:: https://pypip.in/py_versions/chembl_beaker/badge.svg
+.. image:: https://img.shields.io/pypi/pyversions/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: Supported Python versions
 
-.. image:: https://pypip.in/status/chembl_beaker/badge.svg
+.. image:: https://img.shields.io/pypi/status/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: Development Status
 
-.. image:: https://pypip.in/license/chembl_beaker/badge.svg
+.. image:: https://img.shields.io/pypi/l/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: License
 
