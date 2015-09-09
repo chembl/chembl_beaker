@@ -74,3 +74,22 @@ Implements Marvin 4 js MolConvert web service. Converts compound from one format
     return json.dumps(res)
 
 #-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/reactionExport' , method=['OPTIONS', 'POST'], name="reactionExport")
+def reactionExport():
+    """
+Not implemented yet
+    """
+    response.status = 501
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/reactionConverter' , method=['OPTIONS', 'POST'], name="reactionConverter")
+def reactionConverter():
+    """
+Not implemented yet
+    """
+
+    response.status = 501
+
+#-----------------------------------------------------------------------------------------------------------------------

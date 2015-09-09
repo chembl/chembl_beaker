@@ -46,19 +46,9 @@ def _stereoInfo(mrv):
         return ret
     Chem.AssignStereochemistry(mol, flagPossibleStereoCenters=True, force=True)
     for atom in mol.GetAtoms():
-        stereo = str(atom.GetChiralTag())
         atomIndex = atom.GetIdx()
-        if str(atom.GetChiralTag()) != "CHI_UNSPECIFIED":
-            if stereo == "CHI_TETRAHEDRAL_CW":
-                chirality = "R"
-            elif stereo == "CHI_TETRAHEDRAL_CCW":
-                chirality = "S"
-            else:
-                chirality = "R/S"
-            ret["tetraHedral"].append({"atomIndex":atomIndex,"chirality":chirality})
-        elif atom.HasProp('_ChiralityPossible'):
-            chirality = "R/S"
-            ret["tetraHedral"].append({"atomIndex":atomIndex,"chirality":chirality})
+        if atom.HasProp('_CIPCode'):
+            ret["tetraHedral"].append({"atomIndex":atomIndex, "chirality":atom.GetProp('_CIPCode')})
 
 
     for bond in mol.GetBonds():
