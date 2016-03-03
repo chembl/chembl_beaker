@@ -51,6 +51,10 @@ curl -X GET ${BEAKER_ROOT_URL}ctab23D/$(cat no_coords.mol | base64 -w 0 | tr "+/
 curl -X POST --data-binary @no_coords.mol ${BEAKER_ROOT_URL}ctab23D
 curl -X POST -F "file=@no_coords.mol" ${BEAKER_ROOT_URL}ctab23D
 
+!ctab2xyz
+curl -X GET ${BEAKER_ROOT_URL}ctab2xyz/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
+curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2xyz
+
 !ctab2image
 curl -X GET ${BEAKER_ROOT_URL}ctab2image/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_") > aspirin.png
 curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2image > aspirin.png

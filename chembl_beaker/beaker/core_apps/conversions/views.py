@@ -5,7 +5,7 @@ __author__ = 'mnowotka'
 from chembl_beaker.beaker import app
 from bottle import request
 from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2smarts
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey
+from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey, _ctab2xyz
 from chembl_beaker.beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
 from chembl_beaker.beaker.utils.io import _parseFlag
@@ -112,6 +112,32 @@ cURL examples:
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2smartsView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def ctab2xyzView(data, params):
+    # for now it ignores the parameters
+
+    return _ctab2xyz(data)
+
+@app.route('/ctab2xyz/<ctab>', method=['OPTIONS', 'GET'], name="ctab2xyz")
+def ctab2xyz(ctab):
+    """
+Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
+
+    """
+    data = base64.urlsafe_b64decode(ctab)
+    return ctab2xyzView(data, request.params)
+
+@app.route('/ctab2xyz', method=['OPTIONS', 'POST'], name="ctab2xyz")
+def ctab2xyz():
+    """
+Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
+
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return ctab2xyzView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
 

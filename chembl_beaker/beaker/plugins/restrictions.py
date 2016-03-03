@@ -35,22 +35,23 @@ class Restrictions(object):
         if config.get('request_max_size'):
             BaseRequest.MEMFILE_MAX = int(config['request_max_size'])
 
-    def apply(self, fn, context):
+    def apply(self, fn, _):
         def _check_restrictions(*args, **kwargs):
             if config.get('request_max_size') and request.content_length > int(config['request_max_size']):
                 response.status = 413
                 response.body = 'Request size larger than %s bytes' % config['request_max_size']
                 return response
 
-            ip = IPAddress(request.remote_addr)
-            if IP_WHITELIST:
-                if not any([ip in white for white in IP_WHITELIST]):
-                    response.status = 403
-                    return response
-            elif IP_BLACKLIST:
-                if any([ip in black for black in IP_BLACKLIST]):
-                    response.status = 403
-                    return response
+            if request.remote_addr:
+                ip = IPAddress(request.remote_addr)
+                if IP_WHITELIST:
+                    if not any([ip in white for white in IP_WHITELIST]):
+                        response.status = 403
+                        return response
+                elif IP_BLACKLIST:
+                    if any([ip in black for black in IP_BLACKLIST]):
+                        response.status = 403
+                        return response
 
             return fn(*args, **kwargs)
 

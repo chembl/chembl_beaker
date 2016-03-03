@@ -5,7 +5,7 @@ __author__ = 'mnowotka'
 from rdkit import Chem
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData, _getSMILESString, _getSDFString
-from chembl_beaker.beaker.utils.io import _getSMARTSString
+from chembl_beaker.beaker.utils.io import _getSMARTSString, _getXYZ
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -36,6 +36,11 @@ def _ctab2smiles(data, sanitize=True, removeHs=True, strictParsing=True, delimit
 def _smiles2ctab(data, computeCoords=True, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True):
     return _getSDFString(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
         smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _ctab2xyz(data):
+    return _getXYZ(_parseMolData(data))
 
 #-----------------------------------------------------------------------------------------------------------------------
 

@@ -6,12 +6,15 @@ import chembl_beaker
 from chembl_beaker.run_beaker import app as beaker
 import base64
 from webtest import TestApp
+import bottle
+import re
 
 #-----------------------------------------------------------------------------------------------------------------------
 
 class TestServer(unittest.TestCase):
 
     def setUp(self):
+        bottle.debug(True)
         self.app = TestApp(beaker)
         dir = os.path.dirname(chembl_beaker.__file__)
         f = open(os.path.join(dir, 'samples', 'sample.sdf'))
@@ -39,9 +42,16 @@ class TestServer(unittest.TestCase):
     def test_ctab2smiles(self):
         r = self.app.post("/ctab2smiles", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
-        self.assertEqual(r.body, 'SMILES Name \nC=CC(NCNNC(=O)c1ccncc1)C(=O)c1ccncc1 \nCN1CCC2(C)c3cc(O)ccc3CC1C2[CH4+] '
-                                 '\nCC(CC(=O)c1ccc(-c2ccccc2)cc1)C(=O)O \nC[*]CN(CC)CC#CC.Nc1cc(C2(C=O)CCCC2)ccc1N1CC1 '
-                                 '\n')
+
+        allsmiles = r.body.splitlines()[1:]
+        self.assertRegexpMatches(allsmiles[0], 'C=CC\(NCNNC\(=O\)c1ccncc1\)C\(=O\)c1ccncc1 [0]?')
+
+        # If accepts either [CH2+]C1C2Cc3ccc(O)cc3C1(C)CCN2C or CN1CCC2(C)c3cc(O)ccc3CC1C2[CH4+]
+        self.assertTrue(re.search('\[CH2\+\]C1C2Cc3ccc\(O\)cc3C1\(C\)CCN2C [1]?', allsmiles[1]) or
+                        re.search('N1CCC2\(C\)c3cc\(O\)ccc3CC1C2\[CH4\+\] [1]?', allsmiles[1]))
+
+        self.assertRegexpMatches(allsmiles[2], 'CC\(CC\(=O\)c1ccc\(-c2ccccc2\)cc1\)C\(=O\)O [2]?')
+        self.assertRegexpMatches(allsmiles[3], 'C\[\*\]CN\(CC\)CC#CC\.Nc1cc\(C2\(C=O\)CCCC2\)ccc1N1CC1 [3]?')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -49,7 +59,20 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2json", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
         self.assertEqual(r.content_type, 'application/json')
-        r.mustcontain('M96.3780274809,109.985416295L83.8772809167,130.335345966')
+        self.assertTrue(('M96.3780274809,109.985416295L83.8772809167,130.335345966' in r) or
+                        ('M96.1649702739,110.572793724L82.9288856765,132.119778082' in r))
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+    def test_ctab2xyz(self):
+        r = self.app.post("/ctab2xyz", self.sample_mol_data)
+        self.assertEqual(r.status_int, 200)
+        # it must contain the number of atoms of each of the molecules in the mol data
+        # followed by an empty line
+        r.mustcontain("40\n\n")
+        r.mustcontain("37\n\n")
+        r.mustcontain("36\n\n")
+        r.mustcontain("60\n\n")
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -71,14 +94,22 @@ class TestServer(unittest.TestCase):
     def test_MolWt(self):
         r = self.app.post("/molWt", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
-        self.assertEqual(r.body, '[311.345, 232.347, 268.312, 355.5260000000001]')
+        weights = [float(w) for w in r.body.strip('[]').split(',')]
+        self.assertAlmostEquals(weights[0], 311, delta=2.5)
+        self.assertAlmostEquals(weights[1], 232, delta=2.5)
+        self.assertAlmostEquals(weights[2], 268, delta=2.5)
+        self.assertAlmostEquals(weights[3], 355, delta=2.5)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
     def test_logP(self):
         r = self.app.post("/logP", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
-        self.assertEqual(r.body, '[0.6955999999999999, 2.6692, 3.6471, 3.5217]')
+        logps = [float(w) for w in r.body.strip('[]').split(',')]
+        self.assertAlmostEquals(logps[0], 0.69559, places=4)
+        self.assertAlmostEquals(logps[1], 2.6692, places=0)
+        self.assertAlmostEquals(logps[2], 3.6471, places=4)
+        self.assertAlmostEquals(logps[3], 3.5217, places=4)
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -138,13 +169,17 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/smiles2ctab", input_smiles)
         self.assertEqual(r.status_int, 200)
         mol = r.body
-        r = self.app.post("/break_bonds", mol)
+        r = self.app.post("/breakBonds", mol)
         self.assertEqual(r.status_int, 200)
         mol = r.body
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         bb_smiles = r.body
-        self.assertEqual('SMILES Name \n[Na+].O=C([O-])c1ccccc1 \n', bb_smiles)
+
+        # accepts either [Na+].O=C([O-])c1ccccc1 or 'O=C([O-])c1ccccc1.[Na+]'
+        self.assertTrue(re.match('SMILES Name \n\[Na\+\]\.O=C\(\[O\-\]\)c1ccccc1 [0]?\n', bb_smiles) or
+                        re.match('SMILES Name \nO=C\(\[O\-\]\)c1ccccc1\.\[Na\+\] [0]?\n', bb_smiles),
+                        msg="Response body doesn't match any of the valid regular expressions")
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -159,7 +194,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         n_smiles = r.body
-        self.assertEqual('SMILES Name \nNCC(Cc1nn[nH]n1)(C[N+](=O)[O-])C(=O)O \n', n_smiles)
+        self.assertRegexpMatches(n_smiles, 'SMILES Name \nNCC\(Cc1nn\[nH\]n1\)\(C\[N\+\]\(=O\)\[O\-\]\)C\(=O\)O [0]?\n' )
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -174,7 +209,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         r_smiles = r.body
-        self.assertEqual('SMILES Name \nNc1nccc2cc[nH]c(=O)c12 \n', r_smiles)
+        self.assertRegexpMatches(r_smiles, 'SMILES Name \nNc1nccc2cc\[nH\]c\(=O\)c12 [0]?\n')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -189,7 +224,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         s_smiles = r.body
-        self.assertEqual('SMILES Name \nNCc1ccc(CC(=O)O)cc1 \n', s_smiles)
+        self.assertRegexpMatches(s_smiles, 'SMILES Name \nNCc1ccc\(CC\(=O\)O\)cc1 [0]?\n')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
