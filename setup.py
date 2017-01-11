@@ -13,8 +13,8 @@ except ImportError:
     from setuptools import setup
 
 setup(
-    name='chembl_beaker',
-    version='1.1.12',
+    name='chembl-beaker',
+    version='1.1.14',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
