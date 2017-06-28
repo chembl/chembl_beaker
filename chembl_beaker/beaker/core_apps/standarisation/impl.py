@@ -1,11 +1,11 @@
 __author__ = 'mnowotka'
 
 from rdkit import Chem
-from standardiser.break_bonds import apply as break_bonds
-from standardiser.neutralise import apply as neutralise
-from standardiser.rules import apply as rules
+from standardiser.break_bonds import run as break_bonds
+from standardiser.neutralise import run as neutralise
+from standardiser.rules import run as rules
 from standardiser.unsalt import is_nonorganic, is_salt
-from standardiser.standardise import apply as standardise
+from standardiser.standardise import run as standardise
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _getSDFString
 
