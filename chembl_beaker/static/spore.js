@@ -347,7 +347,7 @@ var spore = {
        else if(required_params) {
         $.each(required_params,function(key,value){
             var input = $('#'+fn+'_input_'+value);
-            if($.inArray(value, ['CTAB', 'SMILES', 'INCHI']) != -1 && method == 'GET'){
+            if($.inArray(value, ['CTAB', 'SMILES', 'INCHI', 'SMARTS']) != -1 && method == 'GET'){
                 params[value]= $.base64.urlsafe_encode(input.val());
             }
             else if(value == 'IMAGE'){

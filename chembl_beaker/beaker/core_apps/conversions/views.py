@@ -1,6 +1,6 @@
 __author__ = 'mnowotka'
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 from chembl_beaker.beaker import app
 from bottle import request
@@ -8,10 +8,12 @@ from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smile
 from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey, _ctab2xyz
 from chembl_beaker.beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
+from chembl_beaker.beaker.core_apps.conversions.impl import _smarts2ctab
 from chembl_beaker.beaker.utils.io import _parseFlag
 import base64
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def ctab2smilesView(data, params):
     kwargs = dict()
@@ -25,7 +27,8 @@ def ctab2smilesView(data, params):
     kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))
     return _ctab2smiles(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2smiles/<ctab>', method=['OPTIONS', 'GET'], name="ctab2smiles")
 def ctab2smiles(ctab):
@@ -45,7 +48,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(ctab)
     return ctab2smilesView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2smiles', method=['OPTIONS', 'POST'], name="ctab2smiles")
 def ctab2smiles():
@@ -64,7 +68,8 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2smilesView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def ctab2smartsView(data, params):
     kwargs = dict()
@@ -74,7 +79,8 @@ def ctab2smartsView(data, params):
     kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
     return _ctab2smarts(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2smarts/<ctab>', method=['OPTIONS', 'GET'], name="ctab2smarts")
 def ctab2smarts(ctab):
@@ -94,7 +100,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(ctab)
     return ctab2smartsView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2smarts', method=['OPTIONS', 'POST'], name="ctab2smarts")
 def ctab2smarts():
@@ -113,12 +120,16 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2smartsView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def ctab2xyzView(data, params):
     # for now it ignores the parameters
 
     return _ctab2xyz(data)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2xyz/<ctab>', method=['OPTIONS', 'GET'], name="ctab2xyz")
 def ctab2xyz(ctab):
@@ -128,6 +139,9 @@ Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
     """
     data = base64.urlsafe_b64decode(ctab)
     return ctab2xyzView(data, request.params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2xyz', method=['OPTIONS', 'POST'], name="ctab2xyz")
 def ctab2xyz():
@@ -139,7 +153,8 @@ Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2xyzView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def smiles2ctabView(data, params):
     kwargs = dict()
@@ -156,7 +171,8 @@ def smiles2ctabView(data, params):
 
     return _smiles2ctab(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2ctab/<smiles>', method=['OPTIONS', 'GET'], name="smiles2ctab")
 def smiles2ctab(smiles):
@@ -175,7 +191,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(smiles)
     return smiles2ctabView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2ctab', method=['OPTIONS', 'POST'], name="smiles2ctab")
 def smiles2ctab():
@@ -193,7 +210,52 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return smiles2ctabView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def smarts2ctabView(data, params):
+    kwargs = dict()
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['delimiter'] = params.get('delimiter', ' ')
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+
+    return _smarts2ctab(data, **kwargs)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+@app.route('/smarts2ctab/<smarts>', method=['OPTIONS', 'GET'], name="smarts2ctab")
+def smarts2ctab(smarts):
+    """
+Converts SMARTS to CTAB. This method accepts urlsafe_base64 encoded string containing single or multiple SMARTS.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}smarts2ctab/$(echo '[CH2X4][CX3](=[OX1])[NX3H2]' | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}smarts2ctab/$(cat amino.sma | base64 -w 0 | tr "+/" "-_")
+    curl -X GET "${BEAKER_ROOT_URL}smarts2ctab/"$(cat amino.sma | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
+    """
+
+    data = base64.urlsafe_b64decode(smarts)
+    return smarts2ctabView(data, request.params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+@app.route('/smarts2ctab', method=['OPTIONS', 'POST'], name="smarts2ctab")
+def smarts2ctab():
+    """
+Converts SMARTS to CTAB. This method accepts single or multiple SMARTS.
+cURL examples:
+
+    curl -X POST -F "file=@amino.sma" ${BEAKER_ROOT_URL}smarts2ctab
+    curl -X POST -F "file=@amino.sma" -F "computeCoords=0"  ${BEAKER_ROOT_URL}smarts2ctab
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return smarts2ctabView(data, request.params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def smiles2inchiView(data, params):
     kwargs = dict()
@@ -210,7 +272,8 @@ def smiles2inchiView(data, params):
 
     return _smiles2inchi(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2inchi/<smiles>', method=['OPTIONS', 'GET'], name="smiles2inchi")
 def smiles2inchi(smiles):
@@ -228,7 +291,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(smiles)
     return smiles2inchiView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2inchi', method=['OPTIONS', 'POST'], name="smiles2inchi")
 def smiles2inchi():
@@ -245,7 +309,9 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return smiles2inchiView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 def smiles2inchiKeyView(data, params):
     kwargs = dict()
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
@@ -261,7 +327,8 @@ def smiles2inchiKeyView(data, params):
 
     return _smiles2inchiKey(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2inchiKey/<smiles>', method=['OPTIONS', 'GET'], name="smiles2inchiKey")
 def smiles2inchiKey(smiles):
@@ -279,7 +346,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(smiles)
     return smiles2inchiKeyView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2inchiKey', method=['OPTIONS', 'POST'], name="smiles2inchiKey")
 def smiles2inchiKey():
@@ -296,7 +364,9 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return smiles2inchiKeyView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 def canonicalizeSmilesView(data, params):
     kwargs = dict()
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
@@ -316,7 +386,8 @@ def canonicalizeSmilesView(data, params):
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
 
     return _canonicalize_smiles(data, **kwargs)
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/canonicalizeSmiles/<smiles>', method=['OPTIONS', 'GET'], name="canonicalizeSmiles")
 def canonicalizeSmiles(smiles):
@@ -337,7 +408,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(smiles)
     return canonicalizeSmilesView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/canonicalizeSmiles', method=['OPTIONS', 'POST'], name="canonicalizeSmiles")
 def canonicalizeSmiles():
@@ -358,7 +430,8 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return canonicalizeSmilesView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/inchi2ctab/<inchi>', method=['OPTIONS', 'GET'], name="inchi2ctab")
 def inchi2ctab(inchi):
@@ -372,7 +445,8 @@ cURL examples:
     inchis = base64.urlsafe_b64decode(inchi)
     return _inchi2ctab(inchis)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/inchi2ctab', method=['OPTIONS', 'POST'], name="inchi2ctab")
 def inchi2ctab():
@@ -387,7 +461,8 @@ cURL examples:
     inchis = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return _inchi2ctab(inchis)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def ctab2inchiView(data, params):
     kwargs = dict()
@@ -396,7 +471,8 @@ def ctab2inchiView(data, params):
     kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
     return _ctab2inchi(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2inchi/<ctab>', method=['OPTIONS', 'GET'], name="ctab2inchi")
 def ctab2inchi(ctab):
@@ -411,7 +487,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(ctab)
     return ctab2inchiView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2inchi', method=['OPTIONS', 'POST'], name="ctab2inchi")
 def ctab2inchi():
@@ -426,7 +503,8 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2inchiView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def ctab2inchiKeyView(data, params):
     kwargs = dict()
@@ -435,7 +513,8 @@ def ctab2inchiKeyView(data, params):
     kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
     return _ctab2inchiKey(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2inchiKey/<ctab>', method=['OPTIONS', 'GET'], name="ctab2inchiKey")
 def ctab2inchiKey(ctab):
@@ -450,7 +529,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(ctab)
     return ctab2inchiKeyView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2inchiKey', method=['OPTIONS', 'POST'], name="ctab2inchiKey")
 def ctab2inchiKey():
@@ -465,7 +545,8 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2inchiKeyView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/inchi2inchiKey/<inchi>', method=['OPTIONS', 'GET'], name="inchi2inchiKey")
 def inchi2inchiKey(inchi):
@@ -479,7 +560,8 @@ cURL examples:
     inchis = base64.urlsafe_b64decode(inchi)
     return _inchi2inchiKey(inchis)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/inchi2inchiKey', method=['OPTIONS', 'POST'], name="inchi2inchiKey")
 def inchi2inchiKey():
@@ -494,4 +576,5 @@ cURL examples:
     inchis = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return _inchi2inchiKey(inchis)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+

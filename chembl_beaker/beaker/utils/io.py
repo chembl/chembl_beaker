@@ -1,22 +1,22 @@
 __author__ = 'mnowotka'
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 import os
 import tempfile
 import StringIO
 from rdkit.Chem import SDMolSupplier
 from rdkit.Chem import SmilesMolSupplier
-from rdkit.Chem import MolFromSmiles
 from rdkit.Chem import MolToSmarts
+from rdkit.Chem import MolFromSmarts
 from rdkit.Chem import SDWriter
 from rdkit.Chem import SmilesWriter
-from rdkit.Chem import SanitizeMol
-from rdkit.Chem import SanitizeFlags as sf
 from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
+from chembl_beaker.beaker.utils.chemical_transformation import _getSubstructMatch
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _parseFlag(data):
     try:
@@ -32,7 +32,8 @@ def _parseFlag(data):
             return False
         return None
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True):
     fd, fpath = tempfile.mkstemp(text=True)
@@ -43,7 +44,8 @@ def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True):
     os.remove(fpath)
     return res
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _parseSMILESData(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True,
                      sanitize=True):
@@ -51,7 +53,7 @@ def _parseSMILESData(data, computeCoords=False, delimiter=' ', smilesColumn=0, n
     os.write(fd, data)
     os.close(fd)
     suppl = SmilesMolSupplier(fpath, delimiter=delimiter, smilesColumn=smilesColumn, nameColumn=nameColumn,
-        titleLine=titleLine, sanitize=sanitize)
+                              titleLine=titleLine, sanitize=sanitize)
     mols = [x for x in suppl if x]
 #    if not mols:
 #        mols = [MolFromSmiles(data, sanitize=sanitize)]
@@ -61,7 +63,8 @@ def _parseSMILESData(data, computeCoords=False, delimiter=' ', smilesColumn=0, n
     os.remove(fpath)
     return mols
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _getSDFStream(f, mols):
     w = SDWriter(f)
@@ -69,33 +72,37 @@ def _getSDFStream(f, mols):
         w.write(m)
     w.flush()
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _getSDFString(mols):
     sio = StringIO.StringIO()
     _getSDFStream(sio, mols)
     return sio.getvalue()
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _getSMILESStream(f, mols, delimiter=' ', nameHeader='Name', includeHeader=True, isomericSmiles=False,
                      kekuleSmiles=False):
     w = SmilesWriter(f, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
-        isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
+                     isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
     for mol in mols:
         w.write(mol)
     w.flush()
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _getSMILESString(mols, delimiter=' ', nameHeader='Name', includeHeader=True, isomericSmiles=False,
                      kekuleSmiles=False):
     sio = StringIO.StringIO()
     _getSMILESStream(sio, mols, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
-        isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
+                     isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
     return sio.getvalue()
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _getSMARTSString(mols, isomericSmiles=False):
     sio = StringIO.StringIO()
@@ -103,7 +110,14 @@ def _getSMARTSString(mols, isomericSmiles=False):
         sio.write(MolToSmarts(mol, isomericSmiles) + '\n')
     return sio.getvalue()
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _molFromSmarts(smarts):
+    return MolFromSmarts(str(smarts))
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _getXYZ(mols):
 
@@ -131,3 +145,13 @@ def _getXYZ(mols):
                 i += 1
 
     return sio.getvalue()
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _getMatches(mols, smarts):
+    _call(mols, 'UpdatePropertyCache', strict=False)
+    return _apply(mols, _getSubstructMatch, _molFromSmarts(smarts))
+
+# ----------------------------------------------------------------------------------------------------------------------
+

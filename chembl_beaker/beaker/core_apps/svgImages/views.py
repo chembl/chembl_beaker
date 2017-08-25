@@ -1,14 +1,16 @@
 __author__ = 'mnowotka'
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 from chembl_beaker.beaker import app
 from bottle import request, response
 from chembl_beaker.beaker.core_apps.svgImages.impl import _ctab2svg, _smiles2svg, _inchi2svg
+from chembl_beaker.beaker.core_apps.svgImages.impl import _highlightCtabFragmentSVG, _highlightSmilesFragmentSVG
 from chembl_beaker.beaker.utils.io import _parseFlag
 import base64
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def ctab2svgView(data, params):
 
@@ -27,7 +29,8 @@ def ctab2svgView(data, params):
     response.content_type = 'image/svg+xml'
     return _ctab2svg(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2svg/<ctab>', method=['OPTIONS', 'GET'], name="ctab2svg")
 def ctab2svg(ctab):
@@ -47,7 +50,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(ctab)
     return ctab2svgView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/ctab2svg', method=['OPTIONS', 'POST'], name="ctab2svg")
 def ctab2svg():
@@ -66,7 +70,8 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return ctab2svgView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def smiles2svgView(data, params):
 
@@ -91,7 +96,8 @@ def smiles2svgView(data, params):
     response.content_type = 'image/svg+xml'
     return _smiles2svg(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2svg/<smiles>', method=['OPTIONS', 'GET'], name="smiles2svg")
 def smiles2svg(smiles):
@@ -113,7 +119,8 @@ cURL examples:
     data = base64.urlsafe_b64decode(smiles)
     return smiles2svgView(data, params=request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/smiles2svg', method=['OPTIONS', 'POST'], name="smiles2svg")
 def smiles2svg():
@@ -134,7 +141,147 @@ cURL examples:
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return smiles2svgView(data, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def highlightSmilesFragmentSvgView(data, params):
+
+    kwargs = dict()
+    smarts = params.get('smarts', '')
+    kwargs['legend'] = params.get('legend', '')
+    kwargs['size'] = int(params.get('size', 200))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['delimiter'] = params.get('delimiter', ' ')
+    kwargs['smilesColumn'] = int(params.get('smilesColumn', 0))
+    kwargs['nameColumn'] = int(params.get('nameColumn', 1))
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
+    kwargs['wedgeBonds'] = _parseFlag(params.get('wedgeBonds', True))
+    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
+    kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
+
+    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+        kwargs['titleLine'] = False
+    else:
+        kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
+
+    response.content_type = 'image/svg+xml'
+    return _highlightSmilesFragmentSVG(data, smarts, **kwargs)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/highlightSmilesFragmentSvg/<smarts>/<smiles>', method=['OPTIONS', 'GET'], name="highlightSmilesFragmentSvg")
+def highlightSmilesFragmentSvg(smarts, smiles):
+    """
+Converts SMILES to SVG vector graphic. This method accepts urlsafe_base64 encoded string containing single or
+multiple SMILES optionally containing header line, specific to *.smi format. Size is the optional size of image in
+pixels (default value is 200 px). Legend is optional label in the bottom of image.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    """
+
+    data = base64.urlsafe_b64decode(smiles)
+
+    params = request.params
+    params['smarts'] = base64.urlsafe_b64decode(smarts)
+
+    return highlightSmilesFragmentSvgView(data, params=params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+@app.route('/highlightSmilesFragmentSvg', method=['OPTIONS', 'POST'], name="highlightSmilesFragmentSvg")
+def highlightSmilesFragmentSvg():
+    """
+Converts SMILES to SVG vector graphic. This method accepts single or multiple SMILES or *.smi file. Size is the
+optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+cURL examples:
+
+    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return highlightSmilesFragmentSvgView(data, request.params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def highlightCtabFragmentSvgView(data, params):
+
+    kwargs = dict()
+    smarts = params.get('smarts', '')
+    kwargs['size'] = int(params.get('size', 200))
+    kwargs['legend'] = params.get('legend', '')
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
+    kwargs['wedgeBonds'] = _parseFlag(params.get('wedgeBonds', True))
+    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
+    kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+
+    response.content_type = 'image/svg+xml'
+    return _highlightCtabFragmentSVG(data, smarts, **kwargs)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+@app.route('/highlightCtabFragmentSvg/<smarts>/<ctab>', method=['OPTIONS', 'GET'], name="highlightCtabFragmentSvg")
+def highlightCtabFragmentSvg(smarts, ctab):
+    """
+Converts CTAB to SVG vector graphic. CTAB is urlsafe_base64 encoded string containing single molfile or
+concatenation of multiple molfiles. Size is the optional size of image in pixels (default value is 200 px).
+Legend is optional label in the bottom of image.
+cURL examples:
+
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_") > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?computeCoords=0 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    """
+
+    data = base64.urlsafe_b64decode(ctab)
+
+    params = request.params
+    params['smarts'] = base64.urlsafe_b64decode(smarts)
+
+    return highlightCtabFragmentSvgView(data, params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+@app.route('/highlightCtabFragmentSvg', method=['OPTIONS', 'POST'], name="highlightCtabFragmentSvg")
+def highlightCtabFragmentSvg():
+    """
+Converts CTAB to SVG vector graphic. CTAB is either single molfile or SDF file. Size is the optional size of
+image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+cURL examples:
+
+    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "computeCoords=0" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    """
+
+    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    return highlightCtabFragmentSvgView(data, request.params)
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 def inchi2svgView(data, params):
 
@@ -150,7 +297,8 @@ def inchi2svgView(data, params):
     response.content_type = 'image/svg+xml'
     return _inchi2svg(data, **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/inchi2svg/<inchi>', method=['OPTIONS', 'GET'], name="inchi2svg")
 def inchi2svg(inchi):
@@ -168,7 +316,8 @@ cURL examples:
     inchis = base64.urlsafe_b64decode(inchi)
     return inchi2svgView(inchis, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/inchi2svg', method=['OPTIONS', 'POST'], name="inchi2svg")
 def inchi2svg():
@@ -185,4 +334,5 @@ cURL examples:
     inchis = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     return inchi2svgView(inchis, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
