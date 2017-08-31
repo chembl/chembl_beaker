@@ -173,18 +173,19 @@ def highlightSmilesFragmentSvgView(data, params):
 @app.route('/highlightSmilesFragmentSvg/<smarts>/<smiles>', method=['OPTIONS', 'GET'], name="highlightSmilesFragmentSvg")
 def highlightSmilesFragmentSvg(smarts, smiles):
     """
-Converts SMILES to SVG vector graphic. This method accepts urlsafe_base64 encoded string containing single or
-multiple SMILES optionally containing header line, specific to *.smi format. Size is the optional size of image in
-pixels (default value is 200 px). Legend is optional label in the bottom of image.
+Converts SMILES to SVG vector graphic with a highlighted fragment described as SMARTS. 
+This method accepts urlsafe_base64 encoded string containing SMARTS with a fragment to be highlighted, urlsafe_base64 
+encoded string containing single or multiple SMILES optionally containing header line, specific to *.smi format. 
+Size is the optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
     """
 
     data = base64.urlsafe_b64decode(smiles)
@@ -200,7 +201,8 @@ cURL examples:
 @app.route('/highlightSmilesFragmentSvg', method=['OPTIONS', 'POST'], name="highlightSmilesFragmentSvg")
 def highlightSmilesFragmentSvg():
     """
-Converts SMILES to SVG vector graphic. This method accepts single or multiple SMILES or *.smi file. Size is the
+Converts SMILES to SVG vector graphic with a highlighted fragment described as SMARTS. 
+This method accepts SMARTS and single or multiple SMILES or *.smi file. Size is the
 optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
 cURL examples:
 
@@ -242,16 +244,18 @@ def highlightCtabFragmentSvgView(data, params):
 @app.route('/highlightCtabFragmentSvg/<smarts>/<ctab>', method=['OPTIONS', 'GET'], name="highlightCtabFragmentSvg")
 def highlightCtabFragmentSvg(smarts, ctab):
     """
-Converts CTAB to SVG vector graphic. CTAB is urlsafe_base64 encoded string containing single molfile or
-concatenation of multiple molfiles. Size is the optional size of image in pixels (default value is 200 px).
+Converts SMILES to SVG vector graphic with a highlighted fragment described as SMARTS. 
+SMARTS is urlsafe_base64 encoded string containing fragment ot ge highlighted.
+CTAB is urlsafe_base64 encoded string containing single molfile or concatenation of multiple molfiles. 
+Size is the optional size of image in pixels (default value is 200 px).
 Legend is optional label in the bottom of image.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_") > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?computeCoords=0 > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?computeCoords=0 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -267,7 +271,9 @@ cURL examples:
 @app.route('/highlightCtabFragmentSvg', method=['OPTIONS', 'POST'], name="highlightCtabFragmentSvg")
 def highlightCtabFragmentSvg():
     """
-Converts CTAB to SVG vector graphic. CTAB is either single molfile or SDF file. Size is the optional size of
+Converts SMILES to SVG vector graphic with a highlighted fragment described as SMARTS.
+SMARTS describes the fragment to be highlighted. 
+CTAB is either single molfile or SDF file. Size is the optional size of
 image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
 cURL examples:
 

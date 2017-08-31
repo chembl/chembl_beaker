@@ -37,7 +37,7 @@ Converts CTAB to SMILES format. CTAB is urlsafe_base64 encoded string containing
 of multiple molfiles.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}ctab2smiles/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_"
+    curl -X GET ${BEAKER_ROOT_URL}ctab2smiles/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")
     curl -X GET ${BEAKER_ROOT_URL}ctab2smiles/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")?isomericSmiles=1
     curl -X GET "${BEAKER_ROOT_URL}ctab2smiles/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=1"
     curl -X GET "${BEAKER_ROOT_URL}ctab2smiles/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=0"
@@ -89,7 +89,7 @@ Converts CTAB to SMARTS format. CTAB is urlsafe_base64 encoded string containing
 of multiple molfiles.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_"
+    curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")
     curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")?isomericSmiles=1
     curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=1"
     curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=0"
@@ -135,7 +135,10 @@ def ctab2xyzView(data, params):
 def ctab2xyz(ctab):
     """
 Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
+cURL examples:
 
+    curl -X GET ${BEAKER_ROOT_URL}ctab2xyz/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
+    curl -X GET "${BEAKER_ROOT_URL}ctab2xyz/"$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")
     """
     data = base64.urlsafe_b64decode(ctab)
     return ctab2xyzView(data, request.params)
@@ -147,7 +150,11 @@ Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
 def ctab2xyz():
     """
 Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
+cURL examples:
 
+    curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2xyz
+    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2xyz
+    curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}ctab2xyz
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
@@ -439,7 +446,7 @@ def inchi2ctab(inchi):
 Converts InChi to CTAB. This method accepts urlsafe_base64 encoded string containing one or multiple InChis.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}inchi2ctab/$(cat aspirin.inchi | base64 -w 0 | tr "+/" "-_")tab
+    curl -X GET ${BEAKER_ROOT_URL}inchi2ctab/$(cat aspirin.inchi | base64 -w 0 | tr "+/" "-_")
     """
 
     inchis = base64.urlsafe_b64decode(inchi)

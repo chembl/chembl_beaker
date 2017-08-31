@@ -38,10 +38,11 @@ cURL examples:
 @app.route('/align', method=['OPTIONS', 'POST'], name="align")
 def align():
     """
-Performs kekulisation on input compounds. CTAB is either single molfile or SDF file.
+Generate a depiction for a molecules. Expects to CTABS - one with a template fragment and another one with al least
+two molecules to be aligned.
 cURL examples:
 
-    curl -X POST -F "file=@pattern.mol" -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}align
+    curl -X POST -F "template=@pattern.mol" -F "ctab=@mcs.sdf" ${BEAKER_ROOT_URL}align
     """
 
     if len(request.files) == 2:

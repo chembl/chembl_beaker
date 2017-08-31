@@ -19,13 +19,15 @@ try:
 except:
     EXCLUDED_METHODS = []
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/docs')
 def docs():
     return static_file('docs.html', root=STATIC_ROOT)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/spore', methods = ['OPTIONS', 'GET'])
 def spore():
@@ -47,16 +49,6 @@ def spore():
         uname = "%s_%s" % (method, name)
         if not name or method not in ('GET', 'POST') or uname in EXCLUDED_METHODS:
             continue
-#        if uname in ret["methods"]:
-#            params = map(lambda x: x[1:-1].upper(), PARAM_REGEX.findall(route.rule))
-#            intersection = list(set(params) & set(ret["methods"][uname]["required_params"]))
-#            #print "intersection = %s" % intersection
-#            diff = list(set(params) ^ set(ret["methods"][uname]["required_params"]))
-#            #print "diff = %s" % diff
-#            #print "optional params = %s" % list(set(ret["methods"][uname].get("optional_params", []) + diff))
-#            ret["methods"][uname]["required_params"] = intersection
-#            ret["methods"][uname]["optional_params"] = list(set(ret["methods"][uname].get("optional_params", []) + diff))
-#            continue
         method_info = dict()
         method_info["description"] = route.callback.__doc__
         method_info["method"] = method
@@ -72,4 +64,4 @@ def spore():
     response.content_type = 'application/json'
     return json.dumps(ret)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------

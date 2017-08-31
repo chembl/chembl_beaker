@@ -142,6 +142,7 @@ Converts SMILES to PNG image. This method accepts single or multiple SMILES or *
 size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
 cURL examples:
 
+    curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2image > aspirin.png
     curl -X POST -F "file=@aspirin_no_header.smi" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}smiles2image > aspirin.png
     curl -X POST --data-binary @aspirin_with_header.smi ${BEAKER_ROOT_URL}smiles2image > aspirin.png
     curl -X POST --data-binary @aspirin_no_header.smi ${BEAKER_ROOT_URL}smiles2image > aspirin.png
@@ -194,23 +195,23 @@ def highlightSmilesFragmentView(data, params):
 @app.route('/highlightSmilesFragment/<smarts>/<smiles>', method=['OPTIONS', 'GET'], name="highlightSmilesFragment")
 def highlightSmilesFragment(smarts, smiles):
     """
-Converts SMILES to PNG image and highlight the fragment described by smarts. 
-This method accepts urlsafe_base64 encoded string containing single or multiple SMILES optionally containing header line, 
-specific to *.smi format. Size is the optional size of image in pixels (default value is 200 px). Legend is optional 
-label in the bottom of image.
+Converts SMILES to PNG image and highlight the fragment described by SMARTS. 
+This method accepts urlsafe_base64 encoded string containing single or multiple SMILES optionally containing 
+header line, specific to *.smi format. Size is the optional size of image in pixels (default value is 200 px). 
+Legend is optional label in the bottom of image.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.png
-    curl -X GET "${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/"$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
-    curl -X GET "${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/"$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")?legend=foo > out_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=foo > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.png
+    curl -X GET "${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/"$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
+    curl -X GET "${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/"$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")?legend=foo > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=foo > out_highlighted.png
     """
 
     data = base64.urlsafe_b64decode(smiles)
@@ -226,10 +227,12 @@ cURL examples:
 @app.route('/highlightSmilesFragment', method=['OPTIONS', 'POST'], name="highlightSmilesFragment")
 def highlightSmilesFragment():
     """
-Converts SMILES to PNG image. This method accepts single or multiple SMILES or *.smi file. Size is the optional
+Converts SMILES to PNG image and highlight the fragment described by SMARTS.
+This method accepts single or multiple SMILES or *.smi file. Size is the optional
 size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
 cURL examples:
 
+    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragment > aspirin_highlighted.png
     curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}highlightSmilesFragment > aspirin_highlighted.png
     curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragment > aspirin_highlighted.png
     curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragment > aspirin_highlighted.png
@@ -274,18 +277,19 @@ def highlightCtabFragmentView(data, params):
 @app.route('/highlightCtabFragment/<smarts>/<ctab>', method=['OPTIONS', 'GET'], name="highlightCtabFragment")
 def highlightCtabFragment(smarts, ctab):
     """
-Converts CTAB to PNG image. CTAB is urlsafe_base64 encoded string containing
-single molfile or concatenation of multiple molfiles. Size is the optional size of image in pixels (default value
-is 200 px). Legend is optional label in the bottom of image.
+Converts CTAB to PNG image highlighting the fragment described by SMARTS. 
+CTAB is urlsafe_base64 encoded string containing single molfile or concatenation of multiple molfiles. 
+Size is the optional size of image in pixels (default value is 200 px). 
+Legend is optional label in the bottom of image.
 cURL examples:
 
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_") > out_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?computeCoords=0 > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -b 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -b 0 | tr "+/" "-_")"?legend=foo|bar|bla&computeCoords=0" > out_highlighted.png
-    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -b 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -b 0 | tr "+/" "-_")?size=500 > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_") > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?computeCoords=0 > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla&computeCoords=0" > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?size=500 > out_highlighted.png
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -301,7 +305,8 @@ cURL examples:
 @app.route('/highlightCtabFragment', method=['OPTIONS', 'POST'], name="highlightCtabFragment")
 def highlightCtabFragment():
     """
-Converts CTAB to PNG image. CTAB is either single molfile or SDF file. Size is the optional size of image in pixels
+Converts CTAB to PNG image highlighting the fragment described by SMARTS. 
+CTAB is either single molfile or SDF file. Size is the optional size of image in pixels
 (default value is 200 px). Legend is optional label in the bottom of image.
 cURL examples:
 

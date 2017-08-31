@@ -50,8 +50,12 @@ def _mols2svg(mols, size, legend, kekulize=True, wedgeBonds=True, fitImage=True,
         if kekulize:
             _apply(mols, _kekulize)
 
+        hl = None
+        if highlightAtomLists:
+            hl = highlightAtomLists[0]
+
         drawer = rdMolDraw2D.MolDraw2DSVG(size, size)
-        drawer.DrawMolecule(mols[0], highlightAtoms=highlightAtomLists[0], legend=legend)
+        drawer.DrawMolecule(mols[0], highlightAtoms=hl, legend=legend)
         drawer.FinishDrawing()
         return drawer.GetDrawingText()
 
