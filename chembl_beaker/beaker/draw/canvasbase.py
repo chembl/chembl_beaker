@@ -11,8 +11,13 @@
 
 import math
 
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 class CanvasBase:
     """Base class for specialized canvas backends"""
+
+# ----------------------------------------------------------------------------------------------------------------------
 
     def addCanvasLine(self, p1, p2, color=(0, 0, 0), color2=None, **kwargs):
         """Draw a single line on the canvas
@@ -24,6 +29,8 @@ class CanvasBase:
         """
         raise NotImplementedError('This should be implemented')
 
+# ----------------------------------------------------------------------------------------------------------------------
+
     def addCanvasText(self, text, pos, font, color=(0, 0, 0), **kwargs):
         """Draw some text
 
@@ -32,7 +39,9 @@ class CanvasBase:
         """
         raise NotImplementedError('This should be implemented')
 
-    def addCanvasPolygon(self, ps, color=(0, 0 ,0), **kwargs):
+# ----------------------------------------------------------------------------------------------------------------------
+
+    def addCanvasPolygon(self, ps, color=(0, 0, 0), **kwargs):
         """Draw a polygon
 
            Draw a polygon identified by vertexes given in `ps` using
@@ -40,7 +49,9 @@ class CanvasBase:
         """
         raise NotImplementedError('This should be implemented')
 
-    def addCanvasDashedWedge(self, p1, p2, p3, dash=(2, 2), 
+# ----------------------------------------------------------------------------------------------------------------------
+
+    def addCanvasDashedWedge(self, p1, p2, p3, dash=(2, 2),
                              color=(0, 0, 0), color2=None, **kwargs):
         """Draw a dashed wedge
 
@@ -53,6 +64,8 @@ class CanvasBase:
         """
         raise NotImplementedError('This should be implemented')
 
+# ----------------------------------------------------------------------------------------------------------------------
+
     def flush(self):
         """Complete any remaining draw operation
 
@@ -60,6 +73,8 @@ class CanvasBase:
            saving it
         """
         raise NotImplementedError('This should be implemented')
+
+# ----------------------------------------------------------------------------------------------------------------------
 
     def _getLinePoints(self, p1, p2, dash):
         x1, y1 = p1
@@ -77,10 +92,13 @@ class CanvasBase:
         currDash = 0
         while dist < lineLen:
             currL = dash[currDash % len(dash)]
-            if (dist + currL > lineLen): currL = lineLen - dist
+            if dist + currL > lineLen:
+                currL = lineLen - dist
             endP = (pos[0] + currL * cosT, pos[1] + currL * sinT)
             pts.append(endP)
             pos = endP
             dist += currL
             currDash += 1
         return pts
+
+# ----------------------------------------------------------------------------------------------------------------------
