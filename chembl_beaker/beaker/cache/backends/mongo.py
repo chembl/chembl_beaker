@@ -38,7 +38,7 @@ class MongoDBCache(BaseCache):
         self._socket_timeout_ms = config.get('mongo_socket_timeout_ms', None)
         self._connect_timeout_ms = config.get('mongo_connect_timeout_ms', 20000)
         self.compression_level = config.get('mongo_compression_level', 6)
-        self._tag_sets = json.loads(config.get('mongo_tag_sets', []))
+        self._tag_sets = json.loads(config.get('mongo_tag_sets', '[]'))
         self._read_preference = config.get("mongo_read_preference")
         self._collection = config.get('mongo_collection', 'cache')
         self.log = logging.getLogger(__name__)
