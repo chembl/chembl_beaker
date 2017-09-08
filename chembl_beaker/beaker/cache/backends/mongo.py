@@ -36,6 +36,7 @@ class MongoDBCache(BaseCache):
         self._server_selection_timeout_ms = config.get('mongo_server_selection_timeout_ms', 30000)
         self._password = config.get('mongo_pass', None)
         self._socket_timeout_ms = config.get('mongo_socket_timeout_ms', None)
+        self._max_time_ms = config.get('mongo_max_time_ms', 2000)
         self._connect_timeout_ms = config.get('mongo_connect_timeout_ms', 20000)
         self.compression_level = config.get('mongo_compression_level', 6)
         self._tag_sets = json.loads(config.get('mongo_tag_sets', '[]'))
@@ -90,12 +91,8 @@ class MongoDBCache(BaseCache):
     def get(self, key, default=None):
         coll = self._get_collection()
         key = self.make_key(key)
-        now = datetime.utcnow()
-        data = coll.find_one({'_id': key})
+        data = coll.find_one({'_id': key}, max_time_ms=self._max_time_ms)
         if not data:
-            return default
-        if data['expires'] < now:
-            coll.remove(data['_id'])
             return default
         raw = data.get('data')
         if not raw:
@@ -103,7 +100,7 @@ class MongoDBCache(BaseCache):
             if chunks:
                 raw = ''
                 for chunk in chunks:
-                    raw += coll.find_one({'_id': chunk})['data']
+                    raw += coll.find_one({'_id': chunk}, max_time_ms=self._max_time_ms)['data']
             else:
                 return default
         return self._decode(raw)
