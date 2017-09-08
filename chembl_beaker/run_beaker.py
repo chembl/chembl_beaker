@@ -13,7 +13,7 @@ from chembl_beaker.beaker import app, config, loadPlugins, loadApps
 
 
 parser = OptionParser()
-parser.add_option("-c", "--config", dest="config_path", help="path to config file", default="beaker.conf")
+parser.add_option("--beaker_config", dest="config_path", help="path to config file", default="beaker.conf")
 (options, args) = parser.parse_args()
 conf_path = options.config_path
 
