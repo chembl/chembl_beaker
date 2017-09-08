@@ -1,6 +1,6 @@
 __author__ = 'mnowotka'
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 import base64
 import time
@@ -15,13 +15,14 @@ if not cache:
 if cache and config.get('clear_cache_on_start', False):
     cache.clear()
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 class Caching(object):
     name = 'caching'
     api = 2
 
-    def apply(self, fn, context):
+    def apply(self, fn, _):
         def _caching(*args, **kwargs):
             start = time.time()
             if not cache:
@@ -29,11 +30,13 @@ class Caching(object):
                 res = fn(*args, **kwargs)
             else:
                 key = json.dumps(args) + json.dumps(kwargs) + json.dumps([(base64.b64encode(k), base64.b64encode(v))
-                        for k,v in request.params.items()]) + request.method + request.path + request.body.read()
+                                                                          for k, v in request.params.items()]) + \
+                      request.method + request.path + request.body.read()
                 request.body.seek(0)
                 try:
                     cached_content, content_type = cache.get(key, (None, None))
-                except:
+                except Exception as e:
+                    print e.message
                     cached_content, content_type = (None, None)
                 if cached_content:
                     if content_type:
@@ -47,8 +50,8 @@ class Caching(object):
                         content_type = response.headers.get('Content-Type')
                         try:
                             cache.set(key, (res, content_type))
-                        except:
-                            pass
+                        except Exception as e:
+                            print e.message
             if config.get('debug', True):
                 end = time.time()
                 response.headers['X-ChEMBL-in-cache'] = from_cache
@@ -57,4 +60,5 @@ class Caching(object):
 
         return _caching
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
