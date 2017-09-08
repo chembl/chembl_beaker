@@ -57,35 +57,23 @@ class MongoDBCache(BaseCache):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-    def _base_set(self, mode, key, value, timeout=None):
-        if not timeout:
-            timeout = self.default_timeout
-        now = datetime.utcnow()
-        expires = now + timedelta(seconds=timeout)
+    def _base_set(self, mode, key, value, **_):
         coll = self._get_collection()
         encoded = self._encode(value)
         document_size = len(encoded)
-        count = coll.count()
-        if count > self._max_entries:
-            self._cull()
         data = coll.find_one({'_id': key})
-        if data and (mode == 'set' or (mode == 'add' and data['expires'] > now)):
-            raw = data.get('data')
-            if raw and raw == encoded:
-                coll.update({'_id': data['_id']}, {'$set': {'expires': expires}})
-                return
-            else:
-                self._delete([key] + data.get('chunks', []))
+        if data and (mode == 'set' or mode == 'add'):
+            pass
         if document_size <= MAX_SIZE:
-            coll.insert({'_id': key, 'data': encoded, 'expires': expires})
+            coll.insert_one({'_id': key, 'data': encoded})
         else:
             chunks = []
             for i in xrange(0, document_size, MAX_SIZE):
                 chunk = encoded[i:i+MAX_SIZE]
                 aux_key = self.make_key(chunk)
-                coll.insert({'_id': aux_key, 'data': chunk})
+                coll.insert_one({'_id': aux_key, 'data': chunk})
                 chunks.append(aux_key)
-            coll.insert({'_id': key, 'chunks': chunks, 'expires': expires})
+            coll.insert_one({'_id': key, 'chunks': chunks})
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -138,18 +126,12 @@ class MongoDBCache(BaseCache):
 # ----------------------------------------------------------------------------------------------------------------------
 
     def clear(self):
-        coll = self._get_collection()
-        coll.remove({})
+        pass
 
 # ----------------------------------------------------------------------------------------------------------------------
 
     def _cull(self):
-        if self._cull_frequency == 0:
-            self.clear()
-            return
-        coll = self._get_collection()
-        coll.remove({'expires': {'$lte': datetime.utcnow()}})
-        # TODO: implement more agressive cull
+        pass
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -167,30 +149,17 @@ class MongoDBCache(BaseCache):
         except ImportError:
             pass
 
-        if hasattr(pymongo, 'MongoClient'):
-            self.connection = pymongo.MongoClient(connect=False,
-                                                  host=self._host,
-                                                  port=self._port,
-                                                  replicaset=self._rsname,
-                                                  sockettimeoutms=self._socket_timeout_ms,
-                                                  connecttimeoutms=self._connect_timeout_ms,
-                                                  serverselectiontimeoutms=self._server_selection_timeout_ms,
-                                                  read_preference=getattr(pymongo.ReadPreference,
-                                                                          self._read_preference,
-                                                                          'PRIMARY'))
 
-        else:
-            if self._rsname:
-                self.connection = pymongo.MongoReplicaSetClient(self._rshosts,
-                                                                replicaSet=self._rsname,
-                                                                read_preference=getattr(pymongo.ReadPreference,
-                                                                                        self._read_preference,
-                                                                                        'PRIMARY'),
-                                                                socketTimeoutMS=self._socket_timeout_ms,
-                                                                connectTimeoutMS=self._connect_timeout_ms,
-                                                                tag_sets=self._tag_sets)
-            else:
-                self.connection = pymongo.Connection(self._host, self._port)
+        self.connection = pymongo.MongoClient(connect=False,
+                                              host=self._host,
+                                              port=self._port,
+                                              replicaset=self._rsname,
+                                              sockettimeoutms=self._socket_timeout_ms,
+                                              connecttimeoutms=self._connect_timeout_ms,
+                                              serverselectiontimeoutms=self._server_selection_timeout_ms,
+                                              read_preference=getattr(pymongo.ReadPreference,
+                                                                      self._read_preference,
+                                                                      'PRIMARY'))
 
         self._db = self.connection[self._database]
         if self._user and self._password:
