@@ -36,7 +36,7 @@ def main():
         try:
             kwargs['workers'] = int(config.get('workers', '4'))
         except Exception as e:
-            print e.message
+            print e
             kwargs['workers'] = 4
 
     run(app=app, host=config.get('bottle_host', 'localhost'), port=config.get('bottle_port', '8080'),

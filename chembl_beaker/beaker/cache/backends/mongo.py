@@ -72,20 +72,20 @@ class MongoDBCache(BaseCache):
         if data and (mode == 'set' or (mode == 'add' and data['expires'] > now)):
             raw = data.get('data')
             if raw and raw == encoded:
-                coll.update({'_id': data['_id']}, {'$set': {'expires': expires}}, safe=True)
+                coll.update({'_id': data['_id']}, {'$set': {'expires': expires}})
                 return
             else:
                 self._delete([key] + data.get('chunks', []))
         if document_size <= MAX_SIZE:
-            coll.insert({'_id': key, 'data': encoded, 'expires': expires}, safe=True)
+            coll.insert({'_id': key, 'data': encoded, 'expires': expires})
         else:
             chunks = []
             for i in xrange(0, document_size, MAX_SIZE):
                 chunk = encoded[i:i+MAX_SIZE]
                 aux_key = self.make_key(chunk)
-                coll.insert({'_id': aux_key, 'data': chunk}, safe=True)
+                coll.insert({'_id': aux_key, 'data': chunk})
                 chunks.append(aux_key)
-            coll.insert({'_id': key, 'chunks': chunks, 'expires': expires}, safe=True)
+            coll.insert({'_id': key, 'chunks': chunks, 'expires': expires})
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -133,7 +133,7 @@ class MongoDBCache(BaseCache):
 
     def _delete(self, ids_to_remove):
         coll = self._get_collection()
-        coll.remove({'_id': {'$in':ids_to_remove}})
+        coll.remove({'_id': {'$in': ids_to_remove}})
 
 # ----------------------------------------------------------------------------------------------------------------------
 

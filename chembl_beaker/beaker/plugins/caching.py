@@ -36,7 +36,7 @@ class Caching(object):
                 try:
                     cached_content, content_type = cache.get(key, (None, None))
                 except Exception as e:
-                    print e.message
+                    print e
                     cached_content, content_type = (None, None)
                 if cached_content:
                     if content_type:
@@ -51,7 +51,7 @@ class Caching(object):
                         try:
                             cache.set(key, (res, content_type))
                         except Exception as e:
-                            print e.message
+                            print e
             if config.get('debug', True):
                 end = time.time()
                 response.headers['X-ChEMBL-in-cache'] = from_cache
