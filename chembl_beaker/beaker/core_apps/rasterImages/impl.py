@@ -84,19 +84,20 @@ def _smiles2image(data, size, legend, computeCoords=False, delimiter=' ', smiles
 
 
 def _highlightSmilesFragment(data, smarts, size, legend, computeCoords=False, delimiter=' ', smilesColumn=0, 
-                             nameColumn=1, titleLine=True, sanitize=True, atomMapNumber=False, kekulize=True):
+                             nameColumn=1, titleLine=True, sanitize=True, atomMapNumber=False, kekulize=True,
+                             force=False):
     mols = _parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
                             smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize)
-    matches = _getMatches(mols, smarts)
+    matches = _getMatches(mols, smarts, force)
     return _mols2imageString(mols, size, legend, 'PNG', atomMapNumber, computeCoords, matches, kekulize=kekulize)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
 def _highlightCtabFragment(data, smarts, size, legend, sanitize=True, removeHs=True, strictParsing=True,
-                           atomMapNumber=False, computeCoords=False, kekulize=True):
+                           atomMapNumber=False, computeCoords=False, kekulize=True, force=False):
     mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
-    matches = _getMatches(mols, smarts)
+    matches = _getMatches(mols, smarts, force)
     return _mols2imageString(mols, size, legend, 'PNG', atomMapNumber, computeCoords, matches, kekulize=kekulize)
 
 # ----------------------------------------------------------------------------------------------------------------------

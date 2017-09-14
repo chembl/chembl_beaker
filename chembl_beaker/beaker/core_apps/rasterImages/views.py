@@ -179,6 +179,7 @@ def highlightSmilesFragmentView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
+    kwargs['force'] = _parseFlag(params.get('force', True))
 
     if params.get('titleLine') is None and not data.startswith('SMILES Name'):
         kwargs['titleLine'] = False
@@ -214,6 +215,7 @@ cURL examples:
     curl -X GET "${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/"$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
     curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")?legend=foo > out_highlighted.png
     curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")?legend=foo > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragment/$(cat aspirin.sma | base64 -w 0 | tr "+/" "-_")/$(cat CHEMBL1999443.smi | base64 -w 0 | tr "+/" "-_")?force=true > out_highlighted_forced.png
     """
 
     data = base64.urlsafe_b64decode(smiles)
@@ -246,9 +248,21 @@ cURL examples:
     curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" -F "legend=foo" ${BEAKER_ROOT_URL}highlightSmilesFragment > out_highlighted.png
     curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragment > out_highlighted.png
     curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragment > out_highlighted.png
+    curl -X POST -F "file=@CHEMBL1999443.smi" -F "smarts=[#6]1:[#6]:[#6]:[#6]:[#6](:[#6]:1-[#6](-[#8])=[#8])-[#8]-[#6](-[#6])=[#8]" -F "force=true" ${BEAKER_ROOT_URL}highlightSmilesFragment > out_highlighted_forced.png
+    curl -X POST -F "file=@CHEMBL1999443.smi" -F "smarts=@aspirin.sma" -F "force=true" ${BEAKER_ROOT_URL}highlightSmilesFragment > out_highlighted_forced.png
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    number_of_files = len(request.files)
+    data = None
+    if number_of_files:
+        if number_of_files == 1:
+            data = request.files.values()[0].file.read()
+        elif number_of_files == 2:
+            data = request.files['file'].file.read()
+            smarts = request.files['smarts'].file.read()
+            request.params['smarts'] = smarts
+    else:
+        data = request.body.read()
     return highlightSmilesFragmentView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -267,6 +281,7 @@ def highlightCtabFragmentView(data, params):
     kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['force'] = _parseFlag(params.get('force', True))
 
     response.content_type = 'image/png'
     ret = _highlightCtabFragment(data, smarts, **kwargs)
@@ -293,6 +308,7 @@ cURL examples:
     curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla" > out_highlighted.png
     curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")"?legend=foo|bar|bla&computeCoords=0" > out_highlighted.png
     curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?size=500 > out_highlighted.png
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragment/$(cat aspirin.sma | base64 -w 0 | tr "+/" "-_")/$(cat CHEMBL1999443.mol | base64 -w 0 | tr "+/" "-_")?force=true > out_highlighted_forced.png
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -323,9 +339,21 @@ cURL examples:
     curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "legend=foo" ${BEAKER_ROOT_URL}highlightCtabFragment > out_highlighted.png
     curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragment > out_highlighted.png
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragment > aspirin_highlighted.png
+    curl -X POST -F "file=@CHEMBL1999443.mol" -F "smarts=[#6]1:[#6]:[#6]:[#6]:[#6](:[#6]:1-[#6](-[#8])=[#8])-[#8]-[#6](-[#6])=[#8]" -F "force=true" ${BEAKER_ROOT_URL}highlightCtabFragment > out_highlighted_forced.png
+    curl -X POST -F "file=@CHEMBL1999443.mol" -F "smarts=@aspirin.sma" -F "force=true" ${BEAKER_ROOT_URL}highlightCtabFragment > out_highlighted_forced.png    
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    number_of_files = len(request.files)
+    data = None
+    if number_of_files:
+        if number_of_files == 1:
+            data = request.files.values()[0].file.read()
+        elif number_of_files == 2:
+            data = request.files['file'].file.read()
+            smarts = request.files['smarts'].file.read()
+            request.params['smarts'] = smarts
+    else:
+        data = request.body.read()
     return highlightCtabFragmentView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

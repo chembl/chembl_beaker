@@ -119,14 +119,16 @@ def _molFromSmarts(smarts):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _getXYZ(mols):
+def _getXYZ(mols, computeCoords=True):
 
     sio = StringIO.StringIO()
 
     for i, mol in enumerate(mols):
 
-        from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
-        molH = _2D23D(mol, None)
+        molH = mol
+        if computeCoords:
+            from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
+            molH = _2D23D(mol, None)
 
         atoms = molH.GetAtoms()
         sio.write(str(len(atoms)) + '\n')
@@ -149,9 +151,9 @@ def _getXYZ(mols):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _getMatches(mols, smarts):
+def _getMatches(mols, smarts, force=False):
     _call(mols, 'UpdatePropertyCache', strict=False)
-    return _apply(mols, _getSubstructMatch, _molFromSmarts(smarts))
+    return _apply(mols, _getSubstructMatch, _molFromSmarts(smarts), force)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

@@ -67,8 +67,8 @@ def _smarts2ctab(data, computeCoords=True, delimiter=' ', sanitize=True):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2xyz(data):
-    return _getXYZ(_parseMolData(data))
+def _ctab2xyz(data, computeCoords=True):
+    return _getXYZ(_parseMolData(data), computeCoords)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

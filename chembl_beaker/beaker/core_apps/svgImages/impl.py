@@ -118,20 +118,21 @@ def _inchi2svg(inchis,size,legend, kekulize=True, wedgeBonds=True, fitImage=True
 
 def _highlightSmilesFragmentSVG(data, smarts, size, legend, computeCoords=False, delimiter=' ', smilesColumn=0,
                                 nameColumn=1, titleLine=True, sanitize=True, kekulize=True, wedgeBonds=True,
-                                fitImage=True, atomMapNumber=False):
+                                fitImage=True, atomMapNumber=False, force=False):
     mols = _parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
                             smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize)
-    matches = _getMatches(mols, smarts)
+    matches = _getMatches(mols, smarts, force)
     return _mols2svg(mols, size, legend, kekulize=kekulize, wedgeBonds=wedgeBonds, fitImage=fitImage,
                      atomMapNumber=atomMapNumber, computeCoords=computeCoords, highlightAtomLists=matches)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _highlightCtabFragmentSVG(data, smarts, size, legend, sanitize=True, removeHs=True, strictParsing=True, kekulize=True,
-                                wedgeBonds=True, fitImage=True, atomMapNumber=False, computeCoords=False):
+def _highlightCtabFragmentSVG(data, smarts, size, legend, sanitize=True, removeHs=True, strictParsing=True,
+                              kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False, computeCoords=False,
+                              force=False):
     mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
-    matches = _getMatches(mols, smarts)
+    matches = _getMatches(mols, smarts, force)
     return _mols2svg(mols, size, legend, kekulize=kekulize, wedgeBonds=wedgeBonds, fitImage=fitImage,
                      atomMapNumber=atomMapNumber, computeCoords=computeCoords, highlightAtomLists=matches)
 

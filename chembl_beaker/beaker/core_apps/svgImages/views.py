@@ -159,6 +159,7 @@ def highlightSmilesFragmentSvgView(data, params):
     kwargs['wedgeBonds'] = _parseFlag(params.get('wedgeBonds', True))
     kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
+    kwargs['force'] = _parseFlag(params.get('force', True))
 
     if params.get('titleLine') is None and not data.startswith('SMILES Name'):
         kwargs['titleLine'] = False
@@ -186,6 +187,7 @@ cURL examples:
     curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_") > aspirin_highlighted.svg
     curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
     curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg/$(cat aspirin.sma | base64 -w 0 | tr "+/" "-_")/$(cat CHEMBL1999443.smi | base64 -w 0 | tr "+/" "-_")?force=true > out_highlighted_forced.svg
     """
 
     data = base64.urlsafe_b64decode(smiles)
@@ -212,9 +214,21 @@ cURL examples:
     curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@CHEMBL1999443.smi" -F "smarts=[#6]1:[#6]:[#6]:[#6]:[#6](:[#6]:1-[#6](-[#8])=[#8])-[#8]-[#6](-[#6])=[#8]" -F "force=true" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted_forced.svg
+    curl -X POST -F "file=@CHEMBL1999443.smi" -F "smarts=@aspirin.sma" -F "force=true" ${BEAKER_ROOT_URL}highlightSmilesFragment > highlightSmilesFragmentSvg.svg
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    number_of_files = len(request.files)
+    data = None
+    if number_of_files:
+        if number_of_files == 1:
+            data = request.files.values()[0].file.read()
+        elif number_of_files == 2:
+            data = request.files['file'].file.read()
+            smarts = request.files['smarts'].file.read()
+            request.params['smarts'] = smarts
+    else:
+        data = request.body.read()
     return highlightSmilesFragmentSvgView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -234,6 +248,7 @@ def highlightCtabFragmentSvgView(data, params):
     kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['force'] = _parseFlag(params.get('force', True))
 
     response.content_type = 'image/svg+xml'
     return _highlightCtabFragmentSVG(data, smarts, **kwargs)
@@ -256,6 +271,7 @@ cURL examples:
     curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?atomMapNumber=1 > aspirin_highlighted.svg
     curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?legend=aspirin > aspirin_highlighted.svg
     curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(echo c1ccccc1 | base64 -w 0 | tr "+/" "-_")/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")?size=400 > aspirin_highlighted.svg
+    curl -X GET ${BEAKER_ROOT_URL}highlightCtabFragmentSvg/$(cat aspirin.sma | base64 -w 0 | tr "+/" "-_")/$(cat CHEMBL1999443.mol | base64 -w 0 | tr "+/" "-_")?force=true > out_highlighted_forced.svg
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -282,9 +298,21 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@CHEMBL1999443.mol" -F "smarts=[#6]1:[#6]:[#6]:[#6]:[#6](:[#6]:1-[#6](-[#8])=[#8])-[#8]-[#6](-[#6])=[#8]" -F "force=true" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted_forced.svg
+    curl -X POST -F "file=@CHEMBL1999443.mol" -F "smarts=@aspirin.sma" -F "force=true" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted_forced.svg
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    number_of_files = len(request.files)
+    data = None
+    if number_of_files:
+        if number_of_files == 1:
+            data = request.files.values()[0].file.read()
+        elif number_of_files == 2:
+            data = request.files['file'].file.read()
+            smarts = request.files['smarts'].file.read()
+            request.params['smarts'] = smarts
+    else:
+        data = request.body.read()
     return highlightCtabFragmentSvgView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

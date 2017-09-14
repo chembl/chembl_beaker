@@ -11,8 +11,14 @@ import json
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def alignView(data, template):
-    return _align(data, template)
+
+def alignView(data, template, params):
+    force = _parseFlag(params.get('force', False))
+    ret = _align(data, template, force)
+    if ret:
+        return ret
+    response.status = 404
+    response.body = 'No template found in any of structures given.'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -26,11 +32,12 @@ CTAB is urlsafe_base64 encoded string containing concatenation of multiple molfi
 cURL examples:
 
     curl -X GET ${BEAKER_ROOT_URL}align/$(cat pattern.mol | base64 -w 0 | tr "+/" "-_")/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}align/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")/$(cat chembl_1999443.mol | base64 -w 0 | tr "+/" "-_")?force=true
     """
 
     data = base64.urlsafe_b64decode(ctab)
     t = base64.urlsafe_b64decode(template)
-    return alignView(data, t)
+    return alignView(data, t, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -38,21 +45,29 @@ cURL examples:
 @app.route('/align', method=['OPTIONS', 'POST'], name="align")
 def align():
     """
-Generate a depiction for a molecules. Expects to CTABS - one with a template fragment and another one with al least
-two molecules to be aligned.
+Generate a depiction for a molecules. Expects either two CTABS - one with a template fragment and another one with 
+molecules to be aligned or a single CTAB with the first molecule being a template and others so be aligned.
 cURL examples:
 
     curl -X POST -F "template=@pattern.mol" -F "ctab=@mcs.sdf" ${BEAKER_ROOT_URL}align
+    curl -X POST -F "template=@aspirin.mol" -F "ctab=@chembl_1999443.mol"  -F "force=true" ${BEAKER_ROOT_URL}align
+    curl -X POST -F "ctab=@pattern_and_mcs.sdf" ${BEAKER_ROOT_URL}align
     """
 
-    if len(request.files) == 2:
-        ctab1 = request.files.values()[0].file.read()
-        ctab2 = request.files.values()[1].file.read()
-        return alignView(ctab1, ctab2)
+    number_of_files = len(request.files)
+
+    if number_of_files == 1:
+        ctab = request.files['ctab'].file.read()
+        return alignView(ctab, None, request.params)
+
+    elif number_of_files == 2:
+        template = request.files['template'].file.read()
+        ctab = request.files['ctab'].file.read()
+        return alignView(ctab, template, request.params)
 
     response.status = 400
-    response.body = 'This method expects two ctabs, one with a single template molecule and another one with at least ' \
-                    'two molecules to align'
+    response.body = 'This method expects one ot two ctabs.'
+    print 'this should be error 400'
     return response
 
 # ----------------------------------------------------------------------------------------------------------------------

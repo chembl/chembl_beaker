@@ -58,20 +58,17 @@ def _symmsssr(data, sanitize=True, removeHs=True, strictParsing=True):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _align(data, template):
-    mol1 = _parseMolData(data)
-    mol2 = _parseMolData(template)
-    pattern = None
-    mols = None
-    if len(mol1) == 1:
-        pattern = mol1[0]
-        mols = mol2
-    elif len(mol2) == 1:
-        pattern = mol2[0]
-        mols = mol1
-    if not pattern or len(mols) < 2:
-        return
-    _apply(mols, ct._align, pattern)
-    return _getSDFString(mols)
+def _align(data, template, force=False):
+    mols = _parseMolData(data)
+    if template:
+        pattern = _parseMolData(template)
+    else:
+        pattern = [mols[0]]
+        mols = mols[1:]
+    if not pattern or not mols or len(pattern) != 1:
+        return 'Wrong arguments'
+    aligned_mols = ct._align(mols, pattern[0], force)
+    if aligned_mols:
+        return _getSDFString(aligned_mols)
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -124,9 +124,8 @@ cURL examples:
 
 
 def ctab2xyzView(data, params):
-    # for now it ignores the parameters
-
-    return _ctab2xyz(data)
+    computeCoords = _parseFlag(params.get('computeCoords', True))
+    return _ctab2xyz(data, computeCoords)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -139,6 +138,7 @@ cURL examples:
 
     curl -X GET ${BEAKER_ROOT_URL}ctab2xyz/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
     curl -X GET "${BEAKER_ROOT_URL}ctab2xyz/"$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")
+    curl -X GET ${BEAKER_ROOT_URL}ctab2xyz/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
     """
     data = base64.urlsafe_b64decode(ctab)
     return ctab2xyzView(data, request.params)
@@ -155,6 +155,7 @@ cURL examples:
     curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2xyz
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2xyz
     curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}ctab2xyz
+    curl -X POST -F "file=@aspirin.mol" -F "computeCoords=0"  ${BEAKER_ROOT_URL}ctab2xyz
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
