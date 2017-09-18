@@ -23,6 +23,7 @@ def smiles2SimilarityMapView(data, params):
     kwargs['height'] = int(params.get('height', 100))
     kwargs['radius'] = int(params.get('radius', 2))
     kwargs['fingerprint'] = params.get('fingerprint', 'morgan')
+    kwargs['format'] = params.get('format', 'png')
 
     if params.get('titleLine') is None and not data.startswith('SMILES Name'):
         kwargs['titleLine'] = False
@@ -86,6 +87,7 @@ def sdf2SimilarityMapView(data, params):
     kwargs['height'] = int(params.get('height', 100))
     kwargs['radius'] = int(params.get('radius', 2))
     kwargs['fingerprint'] = params.get('fingerprint', 'morgan')
+    kwargs['format'] = params.get('format', 'png')
 
     response.content_type = 'image/png'
     ret = _sdf2SimilarityMap(data, **kwargs)
