@@ -14,7 +14,7 @@ except ImportError:
 
 setup(
     name='chembl-beaker',
-    version='1.2.13',
+    version='1.2.14',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']

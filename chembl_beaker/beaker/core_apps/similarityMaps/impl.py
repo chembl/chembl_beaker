@@ -17,7 +17,7 @@ except:
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _similarityMap(ms, width=100, height=100, radius=2, fingerprint='morgan', format='png'):
+def _similarityMap(ms, width=500, height=500, radius=2, fingerprint='morgan', format='png'):
     if matplotlib is None:
         raise ValueError('matplotlib not useable')
 
@@ -38,7 +38,7 @@ def _similarityMap(ms, width=100, height=100, radius=2, fingerprint='morgan', fo
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _smiles2SimilarityMap(data, width=100, height=100, radius=2, fingerprint='morgan', computeCoords=False,
+def _smiles2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='morgan', computeCoords=False,
                           delimiter=' ', smilesColumn=0, nameColumn=1, titleLine=True, sanitize=True, format='png'):
     return _similarityMap(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
         smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize),
@@ -47,7 +47,7 @@ def _smiles2SimilarityMap(data, width=100, height=100, radius=2, fingerprint='mo
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _sdf2SimilarityMap(data, width=100, height=100, radius=2, fingerprint='morgan', sanitize=True, removeHs=True,
+def _sdf2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='morgan', sanitize=True, removeHs=True,
                        strictParsing=True, format='png'):
     return _similarityMap(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
         width=width, height=height, radius=radius, fingerprint=fingerprint, format=format)
