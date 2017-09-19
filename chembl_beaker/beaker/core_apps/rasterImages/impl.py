@@ -27,25 +27,36 @@ def _mols2imageStream(mols, f, format, size, legend, highlightAtomLists=None, ke
     legends = [x.GetProp("_Name") if (x.HasProp("_Name") and x.GetProp("_Name")) else labels[idx]
                for idx, x in enumerate(mols)]
 
-    if len(mols) == 1 and NEW_RENDER_ENGINE:
+    molsPerRow = min(len(mols), 4)
+    nRows = len(mols) // molsPerRow
+    if len(mols) % molsPerRow:
+        nRows += 1
+
+    if NEW_RENDER_ENGINE:
         if kekulize:
             _apply(mols, _kekulize)
-        mol = mols[0]
-        highlightAtoms = None
-        if highlightAtomLists:
-            highlightAtoms = highlightAtomLists[0]
-        leg = ''
-        if legends:
-            leg = legends[0]
-        drawer = rdMolDraw2D.MolDraw2DCairo(size, size)
-        drawer.DrawMolecule(mol, highlightAtoms=highlightAtoms, legend=leg)
+
+        highlightBondLists = []
+        for mol, highlightAtomList in zip(mols, highlightAtomLists):
+            highlightBondList = []
+            for bnd in mol.GetBonds():
+                if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
+                    highlightBondList.append(bnd.GetIdx())
+            highlightBondLists.append(highlightBondList)
+
+        panelx = size
+        panely = size
+        canvasx = panelx * molsPerRow
+        canvasy = panely * nRows
+        drawer = rdMolDraw2D.MolDraw2DCairo(canvasx, canvasy, panelx, panely)
+        drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
         drawer.FinishDrawing()
         f.write(drawer.GetDrawingText())
-        return
 
-    image = draw.MolsToGridImage(mols, molsPerRow=min(len(mols), 4), subImgSize=(size, size), legends=legends,
-                                 highlightAtomLists=highlightAtomLists)
-    image.save(f, format)
+    else:
+        image = draw.MolsToGridImage(mols, molsPerRow=molsPerRow, subImgSize=(size, size), legends=legends,
+                                     highlightAtomLists=highlightAtomLists)
+        image.save(f, format)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

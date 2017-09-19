@@ -5,10 +5,17 @@ from rdkit.Chem import AllChem
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _getSDFString, _parseSMILESData
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
-def _2D23D(mol, multi, mmff=False):
+
+def _2D23D(mol, multi, mmff=False, embed=None):
     molH = Chem.AddHs(mol)
+    if embed:
+        if embed == 'ETKDG':
+            AllChem.EmbedMolecule(molH, AllChem.ETKDG())
+        elif embed == 'KDG':
+            AllChem.EmbedMolecule(molH, AllChem.KDG())
+        return molH
     if mmff:
         optiFunc = AllChem.MMFFOptimizeMolecule
     else:
@@ -20,17 +27,18 @@ def _2D23D(mol, multi, mmff=False):
     else:
         AllChem.EmbedMolecule(molH)
         optiFunc(molH)
-
     return molH
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _ctab23D(data, multi, mmff, sanitize=True, removeHs=True, strictParsing=True):
     mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
     optimisedMols = _apply(mols, _2D23D, multi, mmff)
     return _getSDFString(optimisedMols)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _smiles23D(data, multi, mmff, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
                titleLine=True, sanitize=True):
@@ -39,4 +47,4 @@ def _smiles23D(data, multi, mmff, computeCoords=False, delimiter=' ', smilesColu
     optimisedMols = _apply(mols, _2D23D, multi, mmff)
     return _getSDFString(optimisedMols)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------

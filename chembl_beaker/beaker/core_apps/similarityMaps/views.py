@@ -50,6 +50,7 @@ cURL examples:
     curl -X GET "${BEAKER_ROOT_URL}smiles2SimilarityMap/"$(cat sim.smi | base64 -w 0 | tr "+/" "-_")"?width=500&height=500" > sim.png
     curl -X GET "${BEAKER_ROOT_URL}smiles2SimilarityMap/"$(cat sim.smi | base64 -w 0 | tr "+/" "-_")"?width=500&height=500&fingerprint=tt" > sim.png
     curl -X GET "${BEAKER_ROOT_URL}smiles2SimilarityMap/"$(cat sim.smi | base64 -w 0 | tr "+/" "-_")"?width=500&height=500&fingerprint=ap" > sim.png
+    curl -X GET "${BEAKER_ROOT_URL}smiles2SimilarityMap/"$(cat sim.smi | base64 -w 0 | tr "+/" "-_")"?format=svg" > sim.svg
 
     """
 
@@ -69,6 +70,7 @@ cURL examples:
     curl -X POST --data-binary @sim.smi ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.png
     curl -X POST -F "file=@sim.smi" -F "width=500" -F "height=500" -F "fingerprint=tt" ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.png
     curl -X POST -F "file=@sim.smi" -F "width=500" -F "height=500" -F "fingerprint=ap" ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.png
+    curl -X POST -F "file=@sim.smi" -F "format=svg" ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.svg
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
@@ -109,6 +111,7 @@ cURL examples:
     curl -X GET "${BEAKER_ROOT_URL}sdf2SimilarityMap/"$(cat sim.sdf | base64 -w 0 | tr "+/" "-_")"?width=500&height=500" > sim.png
     curl -X GET "${BEAKER_ROOT_URL}sdf2SimilarityMap/"$(cat sim.sdf | base64 -w 0 | tr "+/" "-_")"?width=500&height=500&fingerprint=tt" > sim.png
     curl -X GET "${BEAKER_ROOT_URL}sdf2SimilarityMap/"$(cat sim.sdf | base64 -w 0 | tr "+/" "-_")"?width=500&height=500&fingerprint=ap" > sim.png
+    curl -X GET "${BEAKER_ROOT_URL}sdf2SimilarityMap/"$(cat sim.sdf | base64 -w 0 | tr "+/" "-_")"?format=svg" > sim.svg
     """
 
     data = base64.urlsafe_b64decode(ctab)
@@ -127,6 +130,7 @@ cURL examples:
     curl -X POST --data-binary @sim.sdf ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.png
     curl -X POST -F "file=@sim.sdf" -F "width=500" -F "height=500" -F "fingerprint=tt" ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.png
     curl -X POST -F "file=@sim.sdf" -F "width=500" -F "height=500" -F "fingerprint=ap" ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.png
+    curl -X POST -F "file=@sim.sdf" -F "width=500" -F "format=svg" ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.svg
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
