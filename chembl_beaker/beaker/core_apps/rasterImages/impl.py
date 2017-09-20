@@ -37,12 +37,15 @@ def _mols2imageStream(mols, f, format, size, legend, highlightAtomLists=None, ke
             _apply(mols, _kekulize)
 
         highlightBondLists = []
-        for mol, highlightAtomList in zip(mols, highlightAtomLists):
-            highlightBondList = []
-            for bnd in mol.GetBonds():
-                if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
-                    highlightBondList.append(bnd.GetIdx())
-            highlightBondLists.append(highlightBondList)
+        if highlightAtomLists:
+            for mol, highlightAtomList in zip(mols, highlightAtomLists):
+                highlightBondList = []
+                for bnd in mol.GetBonds():
+                    if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
+                        highlightBondList.append(bnd.GetIdx())
+                highlightBondLists.append(highlightBondList)
+        if not highlightBondLists:
+            highlightBondLists = None
 
         panelx = size
         panely = size

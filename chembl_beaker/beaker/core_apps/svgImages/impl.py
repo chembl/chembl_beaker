@@ -17,7 +17,7 @@ except ImportError:
         cairo.HAS_SVG_SURFACE = True
 
 
-
+from itertools import cycle, islice
 from rdkit import Chem
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
@@ -40,26 +40,48 @@ except:
 def _mols2svg(mols, size, legend, kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False,
               computeCoords=False, highlightAtomLists=None):
 
+    if not mols:
+        return ''
     if computeCoords:
         _apply(mols, _computeCoords, True)
-
     if atomMapNumber:
         _apply(mols, _atomMapNumber)
+
+    labels = [x for x in islice(cycle(legend), len(mols))] if isinstance(legend, (list, tuple)) else \
+             [x for x in islice(cycle([legend]), len(mols))]
+    legends = [x.GetProp("_Name") if (x.HasProp("_Name") and x.GetProp("_Name")) else labels[idx]
+               for idx, x in enumerate(mols)]
+
+    molsPerRow = min(len(mols), 4)
+    nRows = len(mols) // molsPerRow
+    if len(mols) % molsPerRow:
+        nRows += 1
 
     if NEW_RENDER_ENGINE:
         if kekulize:
             _apply(mols, _kekulize)
 
-        hl = None
+        highlightBondLists = []
         if highlightAtomLists:
-            hl = highlightAtomLists[0]
+            for mol, highlightAtomList in zip(mols, highlightAtomLists):
+                highlightBondList = []
+                for bnd in mol.GetBonds():
+                    if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
+                        highlightBondList.append(bnd.GetIdx())
+                highlightBondLists.append(highlightBondList)
+        if not highlightBondLists:
+            highlightBondLists = None
 
-        drawer = rdMolDraw2D.MolDraw2DSVG(size, size)
-        drawer.DrawMolecule(mols[0], highlightAtoms=hl, legend=legend)
+        panelx = size
+        panely = size
+        canvasx = panelx * molsPerRow
+        canvasy = panely * nRows
+        drawer = rdMolDraw2D.MolDraw2DSVG(canvasx, canvasy, panelx, panely)
+        drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
         drawer.FinishDrawing()
         return drawer.GetDrawingText()
 
-    molsPerRow = min(len(mols), 4)
+
     totalWidth = molsPerRow * size
     totalHeight = molsPerRow * size
     if cffi and cairocffi.version <= (1, 10, 0):
@@ -76,8 +98,7 @@ def _mols2svg(mols, size, legend, kekulize=True, wedgeBonds=True, fitImage=True,
         ty = size*(i // molsPerRow)
         ctx.translate(tx, ty)
         canv = cairoCanvas.Canvas(ctx=ctx, size=(size, size), imageType='svg')
-        leg = mol.GetProp("_Name") if (mol.HasProp("_Name") and mol.GetProp("_Name")) else legend
-        draw.MolToImage(mol, size=(size, size), legend=leg, canvas=canv, kekulize=kekulize, wedgeBonds=wedgeBonds,
+        draw.MolToImage(mol, size=(size, size), legend=legends[i], canvas=canv, kekulize=kekulize, wedgeBonds=wedgeBonds,
                         fitImage=fitImage, highlightAtoms=highlight)
         canv.flush()
         ctx.translate(-tx, -ty)
@@ -106,7 +127,7 @@ def _smiles2svg(data, size, legend, computeCoords=False, delimiter=' ', smilesCo
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _inchi2svg(inchis,size,legend, kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False,
+def _inchi2svg(inchis, size, legend, kekulize=True, wedgeBonds=True, fitImage=True, atomMapNumber=False,
                computeCoords=False):
     mols = _apply(inchis.split(), Chem.MolFromInchi)
     _apply(mols, _computeCoords)
