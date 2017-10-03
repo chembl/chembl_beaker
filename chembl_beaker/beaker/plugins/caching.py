@@ -31,8 +31,14 @@ class Caching(object):
             else:
                 key = json.dumps(args) + json.dumps(kwargs) + json.dumps([(base64.b64encode(k), base64.b64encode(v))
                                                                           for k, v in request.params.items()]) + \
-                      request.method + request.path + request.body.read()
-                request.body.seek(0)
+                      request.method + request.path
+                if len(request.files):
+                    for file_name, file_content in request.files.items():
+                        key += file_name + file_content.file.read()
+                        file_content.file.seek(0)
+                else:
+                    key += request.body.read()
+                    request.body.seek(0)
                 try:
                     cached_content, content_type = cache.get(key, (None, None))
                 except Exception as e:
