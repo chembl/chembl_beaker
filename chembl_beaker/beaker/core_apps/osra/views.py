@@ -1,22 +1,31 @@
 __author__ = 'mnowotka'
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 from bottle import request
 import base64
 import os
 from chembl_beaker.beaker import app, config
+from chembl_beaker.beaker.utils.io import _parseFlag
 from chembl_beaker.beaker.core_apps.osra.impl import _image2ctab, _image2smiles
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
-def image2ctabView(img):
+
+def image2ctabView(img, params):
+
+    kwargs = dict()
+    kwargs['jaggy'] = _parseFlag(params.get('jaggy', False))
+    kwargs['adaptive'] = _parseFlag(params.get('adaptive', False))
+    kwargs['unpaper'] = int(params.get('unpaper', 0))
+
     known_location = '/usr/local/bin/osra'
     if not os.path.exists(known_location):
         known_location = '/usr/bin/osra'
-    return _image2ctab(img, config.get('osra_binaries_location', known_location))
+    return _image2ctab(img, config.get('osra_binaries_location', known_location), **kwargs)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/image2ctab/<image>', method=['OPTIONS', 'GET'], name="image2ctab")
 def image2ctab(image):
@@ -31,9 +40,10 @@ cURL examples:
         img = base64.urlsafe_b64decode(image[image.find(',')+1:])
     else:
         img = base64.urlsafe_b64decode(image)
-    return image2ctabView(img)
+    return image2ctabView(img, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/image2ctab', method=['OPTIONS', 'POST'], name="image2ctab")
 def image2ctab():
@@ -49,18 +59,25 @@ cURL examples:
     img = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     if img.startswith('data:'):
         img = base64.b64decode(img[img.find(',')+1:])
-    return image2ctabView(img)
+    return image2ctabView(img, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
-def image2smilesView(img):
+
+def image2smilesView(img, params):
+
+    kwargs = dict()
+    kwargs['jaggy'] = _parseFlag(params.get('jaggy', False))
+    kwargs['adaptive'] = _parseFlag(params.get('adaptive', False))
+    kwargs['unpaper'] = int(params.get('unpaper', 0))
+
     known_location = '/usr/local/bin/osra'
     if not os.path.exists(known_location):
         known_location = '/usr/bin/osra'
-    return _image2smiles(img, config.get('osra_binaries_location', known_location))
+    return _image2smiles(img, config.get('osra_binaries_location', known_location), **kwargs)
 
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/image2smiles/<image>', method=['OPTIONS', 'GET'], name="image2smiles")
 def image2smiles(image):
@@ -75,9 +92,10 @@ cURL examples:
         img = base64.urlsafe_b64decode(image[image.find(',')+1:])
     else:
         img = base64.urlsafe_b64decode(image)
-    return image2smilesView(img)
+    return image2smilesView(img, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 @app.route('/image2smiles', method=['OPTIONS', 'POST'], name="image2smiles")
 def image2smiles():
@@ -94,6 +112,6 @@ cURL examples:
     img = request.files.values()[0].file.read() if len(request.files) else request.body.read()
     if img.startswith('data:'):
         img = base64.b64decode(img[img.find(',')+1:])
-    return image2smilesView(img)
+    return image2smilesView(img, request.params)
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------

@@ -113,6 +113,7 @@ cURL examples:
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+
 if hasattr(AllChem, 'MMFFOptimizeMolecule'):
 
     # TODO: this one is redundant (but you have to remember about conditional availability)
