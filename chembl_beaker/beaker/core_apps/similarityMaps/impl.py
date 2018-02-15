@@ -5,7 +5,9 @@ __author__ = 'mnowotka'
 
 import StringIO
 from rdkit.Chem.Draw import SimilarityMaps
+from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.io import _parseSMILESData, _parseMolData
+import chembl_beaker.beaker.utils.chemical_transformation as ct
 
 try:
     import matplotlib
@@ -21,6 +23,9 @@ def _similarityMap(ms, width=500, height=500, radius=2, fingerprint='morgan', fo
     if matplotlib is None:
         raise ValueError('matplotlib not useable')
 
+    _call(ms, 'UpdatePropertyCache', strict=False)
+    _apply(ms, ct._sssr)
+
     fn = None
     if fingerprint == 'morgan':
         fn = lambda x, i: SimilarityMaps.GetMorganFingerprint(x, i, radius=radius)
@@ -29,7 +34,7 @@ def _similarityMap(ms, width=500, height=500, radius=2, fingerprint='morgan', fo
     elif fingerprint == 'ap':
         fn = SimilarityMaps.GetTTFingerprint
 
-    fig, maxv = SimilarityMaps.GetSimilarityMapForFingerprint(ms[0], ms[1], fn, size=(width, height))
+    SimilarityMaps.GetSimilarityMapForFingerprint(ms[0], ms[1], fn, size=(width, height))
     sio = StringIO.StringIO()
     pyplot.savefig(sio, format=format, bbox_inches='tight', dpi=100)
 

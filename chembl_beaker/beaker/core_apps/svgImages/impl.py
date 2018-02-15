@@ -19,7 +19,7 @@ except ImportError:
 
 from itertools import cycle, islice
 from rdkit import Chem
-from chembl_beaker.beaker.utils.functional import _apply
+from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
 from chembl_beaker.beaker.utils.io import _getMatches
@@ -42,6 +42,9 @@ def _mols2svg(mols, size, legend, kekulize=True, wedgeBonds=True, fitImage=True,
 
     if not mols:
         return ''
+
+    _call(mols, 'UpdatePropertyCache', strict=False)
+
     if computeCoords:
         _apply(mols, _computeCoords, True)
     if atomMapNumber:

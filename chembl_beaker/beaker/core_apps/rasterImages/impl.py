@@ -3,7 +3,7 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from itertools import cycle, islice
-from chembl_beaker.beaker.utils.functional import _apply
+from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.io import _getMatches
@@ -31,6 +31,8 @@ def _mols2imageStream(mols, f, format, size, legend, highlightAtomLists=None, ke
     nRows = len(mols) // molsPerRow
     if len(mols) % molsPerRow:
         nRows += 1
+
+    _call(mols, 'UpdatePropertyCache', strict=False)
 
     if NEW_RENDER_ENGINE:
         if kekulize:
