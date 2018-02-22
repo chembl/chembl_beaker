@@ -28,6 +28,7 @@ def blastView(seq, params):
 def blast(sequence):
     """
 Uses BLAST to search in sequences stored in ChEMBL:
+(Please note that this method uses old BLAST API and is intended for the internal use at ChEMBL).
 
     curl -X GET ${BEAKER_ROOT_URL}blast/$(cat seq.fa | base64 -w 0 | tr "+/" "-_")
     """
@@ -41,8 +42,8 @@ Uses BLAST to search in sequences stored in ChEMBL:
 @app.route('/blast', method=['OPTIONS', 'POST'], name="blast")
 def image2ctab():
     """
-Uses OSRA to convert image to CTAB. Image should be 300 DPI png graphic.
-cURL examples:
+Uses BLAST to search in sequences stored in ChEMBL:
+(Please note that this method uses old BLAST API and is intended for the internal use at ChEMBL).
 
     curl -X POST --data-binary @seq.fa ${BEAKER_ROOT_URL}blast
     curl -X POST -F "file=@seq.fa" ${BEAKER_ROOT_URL}blast

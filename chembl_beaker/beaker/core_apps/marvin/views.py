@@ -6,7 +6,8 @@ import json
 from chembl_beaker.beaker import app
 from chembl_beaker.beaker.core_apps.marvin.impl import _clean, _stereoInfo, _molExport, _hydrogenize
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/clean', method=['OPTIONS', 'POST'], name="clean")
 def clean():
@@ -21,7 +22,8 @@ Marvin's *.mrv format. Dim is an optional parameter specifying if 2D or 3D coord
     response.content_type = 'text/plain'
     return _clean(structure, dim)
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/hydrogenize', method=['OPTIONS', 'POST'], name="hydrogenize")
 def hydrogenize():
@@ -41,7 +43,8 @@ Marvin's *.mrv format. Dim is an optional parameter specifying if 2D or 3D coord
     response.content_type = 'text/plain'
     return _hydrogenize(_molExport(structure, input=input_format, output='mol')["structure"], method == 'hydrogenize')
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 @app.route('/cipStereoInfo', method=['OPTIONS', 'POST'], name="cipStereoInfo")
 def stereoInfo():
@@ -55,36 +58,43 @@ bonds.
     response.content_type = 'application/json'
     return json.dumps(_stereoInfo(structure))
 
-#-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/molExport' , method=['OPTIONS', 'POST'], name="molExport")
+# ----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/molExport', method=['OPTIONS', 'POST'], name="molExport")
 def molExport():
     """
 Implements Marvin 4 js MolConvert web service. Converts compound from one format to another, including Marvin's
 *.mrv.
+
+    curl '${BEAKER_ROOT_URL}/molExport' --data '{"structure":"O.CCN1C(=O)c2cccc3c(ccc(C1=O)c23)N4C=C5CN67CCCN8CCN9%10
+    CCCN(CC6)[Cu]789(N%11=NN(C=C%11C%10)c%12ccc%13C(=O)N(CC)C(=O)c%14cccc%12c%13%14)N5=N4.[O-]Cl(=O)(=O)=O.[O-]Cl(=O)
+    (=O)=O", "parameters":"mrv"}'
     """
 
     params = json.loads(request.body.read())
     structure = params['structure']
     input_f = params.get('inputFormat')
-    output_f = params.get('parameters','mrv')
+    output_f = params.get('parameters', 'mrv')
 
     res = _molExport(structure, input=input_f, output=output_f)
     response.content_type = 'application/json'
     return json.dumps(res)
 
-#-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/reactionExport' , method=['OPTIONS', 'POST'], name="reactionExport")
+# ----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/reactionExport', method=['OPTIONS', 'POST'], name="reactionExport")
 def reactionExport():
     """
 Not implemented yet
     """
     response.status = 501
 
-#-----------------------------------------------------------------------------------------------------------------------
 
-@app.route('/reactionConverter' , method=['OPTIONS', 'POST'], name="reactionConverter")
+# ----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/reactionConverter', method=['OPTIONS', 'POST'], name="reactionConverter")
 def reactionConverter():
     """
 Not implemented yet
@@ -92,4 +102,4 @@ Not implemented yet
 
     response.status = 501
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------

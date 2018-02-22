@@ -1,43 +1,54 @@
 __author__ = 'mnowotka'
 
-#-----------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
 from chembl_beaker.beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
 from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
+from chembl_beaker.beaker.utils.functional import _apply, _call
+import chembl_beaker.beaker.utils.chemical_transformation as ct
+
 
 def _hydrogenize(block, hydro):
-    mol = Chem.MolFromMolBlock(block)
-    res = Chem.AddHs(mol, addCoords=True) if hydro else Chem.RemoveHs(mol)
+    mol = Chem.MolFromMolBlock(block, sanitize=False)
+    _call([mol], 'UpdatePropertyCache', strict=False)
+    _apply([mol], ct._sssr)
+    res = Chem.AddHs(mol, addCoords=True) if hydro else Chem.RemoveHs(mol, sanitize=False)
     return MolToMarvin(Chem.MolToMolBlock(res))
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _clean(mrv, dim=2):
     block = MarvinToMol(mrv)
-    mol = Chem.MolFromMolBlock(block)
+    mol = Chem.MolFromMolBlock(block, sanitize=False)
+    _call([mol], 'UpdatePropertyCache', strict=False)
+    _apply([mol], ct._sssr)    
     if not mol:
         print "No mol for block:\n %s" % block
         return mrv
-    AllChem.Compute2DCoords(mol, bondLength = 0.8)
+    AllChem.Compute2DCoords(mol, bondLength=0.8)
     if dim == 3:
         mol = _2D23D(mol, True)
         mol = Chem.RemoveHs(mol)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
+
 
 def _stereoInfo(mrv):
     ret = {"headers":
                {"tetraHedral":
-                    {"name":"tetraHedral","type":"COMPLEX","source":"CALCULATOR"},
+                    {"name": "tetraHedral", "type": "COMPLEX", "source": "CALCULATOR"},
                 "doubleBond":
-                    {"name":"doubleBond","type":"COMPLEX","source":"CALCULATOR"}
-               },
-           "tetraHedral":[],
-           "doubleBond":[]
-    }
+                    {"name": "doubleBond", "type": "COMPLEX", "source": "CALCULATOR"}
+                },
+           "tetraHedral": [],
+           "doubleBond": []
+           }
 
     block = MarvinToMol(mrv)
     mol = Chem.MolFromMolBlock(block)
@@ -48,8 +59,7 @@ def _stereoInfo(mrv):
     for atom in mol.GetAtoms():
         atomIndex = atom.GetIdx()
         if atom.HasProp('_CIPCode'):
-            ret["tetraHedral"].append({"atomIndex":atomIndex, "chirality":atom.GetProp('_CIPCode')})
-
+            ret["tetraHedral"].append({"atomIndex": atomIndex, "chirality": atom.GetProp('_CIPCode')})
 
     for bond in mol.GetBonds():
         stereo = str(bond.GetStereo())
@@ -63,30 +73,33 @@ def _stereoInfo(mrv):
                 cistrans = "Z"
             elif stereo == "STEREOE":
                 cistrans = "E"
-            ret["doubleBond"].append({"atom1Index": atom1Index,"atom2Index":atom2Index,"bondIndex":bondIndex,
-                                                                                                "cistrans":cistrans})
+            ret["doubleBond"].append({"atom1Index": atom1Index, "atom2Index": atom2Index, "bondIndex": bondIndex,
+                                      "cistrans": cistrans})
     return ret
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 def _molExport(structure, **kwargs):
-
     input_f = kwargs.get('input', None)
     output_f = kwargs.get('output', None)
 
     if not input_f:
         mol = _autoDetect(str(structure))
     elif input_f == 'mrv':
-        mol = Chem.MolFromMolBlock(MarvinToMol(structure))
+        mol = Chem.MolFromMolBlock(MarvinToMol(structure), sanitize=False)
     elif input_f == 'smiles':
-        mol = Chem.MolFromSmiles(str(structure))
+        mol = Chem.MolFromSmiles(str(structure), sanitize=False)
     elif input_f == 'inchi':
         mol = Chem.MolFromInchi(str(structure))
     else:
-        mol = Chem.MolFromMolBlock(structure)
+        mol = Chem.MolFromMolBlock(structure, sanitize=False)
+
+    _call([mol], 'UpdatePropertyCache', strict=False)
+    _apply([mol], ct._sssr)
 
     if not mol.GetNumConformers() or mol.GetConformer().Is3D():
-        AllChem.Compute2DCoords(mol, bondLength = 0.8)
+        AllChem.Compute2DCoords(mol, bondLength=0.8)
 
     if output_f == 'smiles':
         out_structure = Chem.MolToSmiles(mol)
@@ -106,38 +119,44 @@ def _molExport(structure, **kwargs):
     elif output_f == 'mrv':
         out_structure = MolToMarvin(Chem.MolToMolBlock(mol))
 
-    return {"structure": out_structure, "format":output_f, "contentUrl":"","contentBaseUrl":""}
+    return {"structure": out_structure, "format": output_f, "contentUrl": "", "contentBaseUrl": ""}
 
-#-----------------------------------------------------------------------------------------------------------------------
+
+# ----------------------------------------------------------------------------------------------------------------------
 
 def _autoDetect(structure):
+    mol = None
 
-    if Chem.MolFromSmiles(structure):
-        return Chem.MolFromSmiles(structure.strip())
+    if Chem.MolFromSmiles(structure.strip(), sanitize=False):
+        mol = Chem.MolFromSmiles(structure.strip(), sanitize=False)
 
-    if Chem.MolFromMolBlock(structure):
-        return Chem.MolFromMolBlock(structure)
+    elif Chem.MolFromMolBlock(structure, sanitize=False):
+        return Chem.MolFromMolBlock(structure, sanitize=False)
 
-    if Chem.INCHI_AVAILABLE and Chem.inchi.MolFromInchi(structure.strip(), True, True):
-        return Chem.inchi.MolFromInchi(structure.strip(), True, True)
+    elif Chem.INCHI_AVAILABLE and Chem.inchi.MolFromInchi(structure.strip(), sanitize=True, removeHs=True):
+        mol = Chem.inchi.MolFromInchi(structure.strip(), sanitize=True, removeHs=True)
 
-    if hasattr(Chem, 'MolFromSmarts') and Chem.MolFromSmarts(structure):
-        return Chem.MolFromSmarts(structure)
+    elif hasattr(Chem, 'MolFromSmarts') and Chem.MolFromSmarts(structure):
+        mol = Chem.MolFromSmarts(structure)
 
-    if hasattr(Chem, 'MolFromMol2Block') and Chem.MolFromMol2Block(structure):
-        return Chem.MolFromMol2Block(structure)
+    elif hasattr(Chem, 'MolFromMol2Block') and Chem.MolFromMol2Block(structure):
+        mol = Chem.MolFromMol2Block(structure)
 
-    if hasattr(Chem, 'MolFromPDBBlock') and Chem.MolFromPDBBlock(structure):
-        return Chem.MolFromPDBBlock(structure)
+    elif hasattr(Chem, 'MolFromPDBBlock') and Chem.MolFromPDBBlock(structure):
+        mol = Chem.MolFromPDBBlock(structure)
 
-    if hasattr(Chem, 'MolFromTPLBlock') and Chem.MolFromTPLBlock(structure):
-        return Chem.MolFromTPLBlock(structure)
+    elif hasattr(Chem, 'MolFromTPLBlock') and Chem.MolFromTPLBlock(structure):
+        mol = Chem.MolFromTPLBlock(structure)
 
-    try:
-        return Chem.MolFromMolBlock(MarvinToMol(structure))
-    except:
-        pass
+    else:
+        try:
+            mol = Chem.MolFromMolBlock(MarvinToMol(structure))
+        except:
+            pass
 
-    return None
+    _call([mol], 'UpdatePropertyCache', strict=False)
+    _apply([mol], ct._sssr)
 
-#-----------------------------------------------------------------------------------------------------------------------
+    return mol
+
+# ----------------------------------------------------------------------------------------------------------------------

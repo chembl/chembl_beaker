@@ -2,7 +2,6 @@ __author__ = 'mnowotka'
 
 import tempfile
 import os.path
-import zipfile
 from subprocess import call
 import requests
 
@@ -21,13 +20,11 @@ def _get_latest_chembl_version():
 
 
 def _parse_results(file_name):
-    print '_parese_results start'
     ret = {}
     if not file_name or not os.path.exists(file_name):
         return ret
     with open(file_name, 'r') as f:
         for line in f.readlines():
-            print line
             data = line.strip().split('\t')
             ids = data[1].split(',')
             seq = data[0]
@@ -42,14 +39,16 @@ def _parse_results(file_name):
     for seq in ret:
         for id in ret[seq]:
             ret[seq][id] = sum(ret[seq][id]) / len(ret[seq][id])
-    print '_parse results returning', ret
+    try:
+        os.remove(file_name)
+    except:
+        pass
     return ret
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
 def _blast(sequence, type, blast_bindir, chembl_db_release=None, seg=False, blast_datadir=None, blast_tmpdir=None):
-    print "_blast start"
     if type not in ('COMPOUNDS', 'TARGETS'):
         return
     if not chembl_db_release:
@@ -59,7 +58,7 @@ def _blast(sequence, type, blast_bindir, chembl_db_release=None, seg=False, blas
     if not blast_tmpdir:
         blast_tmpdir = tempfile.gettempdir()
     fd, fpath = tempfile.mkstemp(prefix='blast_', suffix='.fa', dir=blast_tmpdir)
-    print 'fpath is', fpath
+
     fname = os.path.splitext(os.path.basename(fpath))[0]
     os.write(fd, sequence)
     os.close(fd)
@@ -77,7 +76,6 @@ def _blast(sequence, type, blast_bindir, chembl_db_release=None, seg=False, blas
     db = ['-d', blast_database_path]
     io = ['-i', fpath, '-o', out_file_name_tabbed]
 
-    print 'call arguments are', arguments + flags + additional_flags + db + io
     call(arguments + flags + additional_flags + db + io)
 
     return _parse_results(out_file_name_tabbed)

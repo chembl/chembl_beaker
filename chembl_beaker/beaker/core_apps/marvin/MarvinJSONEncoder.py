@@ -65,6 +65,16 @@ class MarvinJSONEncoder(json.JSONEncoder):
                 return {"atomRefs" : obj.get('atomRefs2').split(),
                         "order": int(obj.get('order')),
                         "stereo": obj.find("bondStereo")}
+            if obj.tag == 'atom':
+                return {"id" : obj.get('id'),
+                            "elementType": obj.get('elementType'),
+                            "x": float(obj.get('x2')),
+                            "y": float(obj.get('y2')),
+                            "z": 0.0,
+                            'dim':2,
+                            'formalCharge': int(obj.get('formalCharge', 0)),
+                            'isotope':int(obj.get('isotope', 0))
+                    }
             if obj.tag == 'bondStereo':
                 pass
         if type(obj) == StringElement:
