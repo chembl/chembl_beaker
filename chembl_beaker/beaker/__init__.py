@@ -32,7 +32,6 @@ DEFAULT_APPS = [
     "chembl_beaker.beaker.core_apps.D3Coords",
     "chembl_beaker.beaker.core_apps.similarityMaps",
     "chembl_beaker.beaker.core_apps.autoDocs",
-    "chembl_beaker.beaker.core_apps.blast",
     ]
 
 DEFAULT_PLUGINS = [

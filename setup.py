@@ -31,7 +31,6 @@ setup(
               'chembl_beaker.beaker.draw',
               'chembl_beaker.beaker.core_apps',
               'chembl_beaker.beaker.core_apps.autoDocs',
-              'chembl_beaker.beaker.core_apps.blast',
               'chembl_beaker.beaker.core_apps.calculations',
               'chembl_beaker.beaker.core_apps.conversions',
               'chembl_beaker.beaker.core_apps.descriptors',
