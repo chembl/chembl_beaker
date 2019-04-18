@@ -9,6 +9,8 @@ from datetime import datetime, date
 import rdkit
 from rdkit import Chem
 from rdkit.Chem.rdchem import GetPeriodicTable
+from rdkit.Chem import rdmolops
+from rdkit.Chem import GetSSSR
 from StringIO import StringIO
 import os
 import getpass
@@ -331,6 +333,9 @@ def MolToMarvin(mol):
         mol = Chem.MolFromMolFile(mol, False, False, False)
     else:
         mol = Chem.MolFromMolBlock(mol, False, False, False)
+    mol.UpdatePropertyCache(strict=False)
+    GetSSSR(mol)
+    rdmolops.SetAromaticity(mol)
     js = _molsToJson([mol], MOL_MARVIN_SCALE)
     return _dataToXml(js)
 
