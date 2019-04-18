@@ -27,7 +27,7 @@ molBondTypes = {
 "SINGLE" : 1,
 "DOUBLE" : 2,
 "TRIPLE" : 3,
-"AROMATIC" : 4,
+"AROMATIC" : 'A',
 "UNSPECIFIED" : 8,
 }
 
