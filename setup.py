@@ -28,7 +28,6 @@ setup(
               'chembl_beaker.beaker',
               'chembl_beaker.beaker.plugins',
               'chembl_beaker.beaker.utils',
-              'chembl_beaker.beaker.draw',
               'chembl_beaker.beaker.core_apps',
               'chembl_beaker.beaker.core_apps.autoDocs',
               'chembl_beaker.beaker.core_apps.calculations',

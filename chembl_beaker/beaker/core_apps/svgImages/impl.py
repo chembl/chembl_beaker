@@ -23,16 +23,7 @@ from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
 from chembl_beaker.beaker.utils.io import _getMatches
-
-NEW_RENDER_ENGINE = False
-
-try:
-    from rdkit.Chem.Draw import rdMolDraw2D
-    NEW_RENDER_ENGINE = True
-except:
-    import StringIO
-    from chembl_beaker.beaker.draw import cairoCanvas
-    from chembl_beaker.beaker import draw
+from rdkit.Chem.Draw import rdMolDraw2D, MolDrawOptions
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -60,53 +51,28 @@ def _mols2svg(mols, size, legend, kekulize=True, wedgeBonds=True, fitImage=True,
     if len(mols) % molsPerRow:
         nRows += 1
 
-    if NEW_RENDER_ENGINE:
-        if kekulize:
-            _apply(mols, _kekulize)
+    if kekulize:
+        _apply(mols, _kekulize)
 
-        highlightBondLists = []
-        if highlightAtomLists:
-            for mol, highlightAtomList in zip(mols, highlightAtomLists):
-                highlightBondList = []
-                for bnd in mol.GetBonds():
-                    if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
-                        highlightBondList.append(bnd.GetIdx())
-                highlightBondLists.append(highlightBondList)
-        if not highlightBondLists:
-            highlightBondLists = None
+    highlightBondLists = []
+    if highlightAtomLists:
+        for mol, highlightAtomList in zip(mols, highlightAtomLists):
+            highlightBondList = []
+            for bnd in mol.GetBonds():
+                if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
+                    highlightBondList.append(bnd.GetIdx())
+            highlightBondLists.append(highlightBondList)
+    if not highlightBondLists:
+        highlightBondLists = None
 
-        panelx = size
-        panely = size
-        canvasx = panelx * molsPerRow
-        canvasy = panely * nRows
-        drawer = rdMolDraw2D.MolDraw2DSVG(canvasx, canvasy, panelx, panely)
-        drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
-        drawer.FinishDrawing()
-        return drawer.GetDrawingText()
-
-
-    totalWidth = molsPerRow * size
-    totalHeight = molsPerRow * size
-    if cffi and cairocffi.version <= (1, 10, 0):
-        imageData = io.BytesIO()
-    else:
-        imageData = StringIO.StringIO()
-    surf = cairo.SVGSurface(imageData, totalWidth, totalHeight)
-    ctx = cairo.Context(surf)
-    for i, mol in enumerate(mols):
-        highlight = []
-        if highlightAtomLists:
-            highlight = highlightAtomLists[i] or []
-        tx = size*(i % molsPerRow)
-        ty = size*(i // molsPerRow)
-        ctx.translate(tx, ty)
-        canv = cairoCanvas.Canvas(ctx=ctx, size=(size, size), imageType='svg')
-        draw.MolToImage(mol, size=(size, size), legend=legends[i], canvas=canv, kekulize=kekulize, wedgeBonds=wedgeBonds,
-                        fitImage=fitImage, highlightAtoms=highlight)
-        canv.flush()
-        ctx.translate(-tx, -ty)
-    surf.finish()
-    return imageData.getvalue()
+    panelx = size
+    panely = size
+    canvasx = panelx * molsPerRow
+    canvasy = panely * nRows
+    drawer = rdMolDraw2D.MolDraw2DSVG(canvasx, canvasy, panelx, panely)
+    drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
+    drawer.FinishDrawing()
+    return drawer.GetDrawingText()
 
 # ----------------------------------------------------------------------------------------------------------------------
 

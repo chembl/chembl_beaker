@@ -7,16 +7,8 @@ from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.io import _getMatches
-
-NEW_RENDER_ENGINE = False
-
-try:
-    from rdkit.Chem.Draw import rdMolDraw2D
-    NEW_RENDER_ENGINE = True
-except:
-    pass
+from rdkit.Chem.Draw import rdMolDraw2D
 import StringIO
-from chembl_beaker.beaker import draw
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -34,34 +26,29 @@ def _mols2imageStream(mols, f, format, size, legend, highlightAtomLists=None, ke
 
     _call(mols, 'UpdatePropertyCache', strict=False)
 
-    if NEW_RENDER_ENGINE:
-        if kekulize:
-            _apply(mols, _kekulize)
+    if kekulize:
+        _apply(mols, _kekulize)
 
-        highlightBondLists = []
-        if highlightAtomLists:
-            for mol, highlightAtomList in zip(mols, highlightAtomLists):
-                highlightBondList = []
-                for bnd in mol.GetBonds():
-                    if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
-                        highlightBondList.append(bnd.GetIdx())
-                highlightBondLists.append(highlightBondList)
-        if not highlightBondLists:
-            highlightBondLists = None
+    highlightBondLists = []
+    if highlightAtomLists:
+        for mol, highlightAtomList in zip(mols, highlightAtomLists):
+            highlightBondList = []
+            for bnd in mol.GetBonds():
+                if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
+                    highlightBondList.append(bnd.GetIdx())
+            highlightBondLists.append(highlightBondList)
+    if not highlightBondLists:
+        highlightBondLists = None
 
-        panelx = size
-        panely = size
-        canvasx = panelx * molsPerRow
-        canvasy = panely * nRows
-        drawer = rdMolDraw2D.MolDraw2DCairo(canvasx, canvasy, panelx, panely)
-        drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
-        drawer.FinishDrawing()
-        f.write(drawer.GetDrawingText())
+    panelx = size
+    panely = size
+    canvasx = panelx * molsPerRow
+    canvasy = panely * nRows
+    drawer = rdMolDraw2D.MolDraw2DCairo(canvasx, canvasy, panelx, panely)
+    drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
+    drawer.FinishDrawing()
+    f.write(drawer.GetDrawingText())
 
-    else:
-        image = draw.MolsToGridImage(mols, molsPerRow=molsPerRow, subImgSize=(size, size), legends=legends,
-                                     highlightAtomLists=highlightAtomLists)
-        image.save(f, format)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

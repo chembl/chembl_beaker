@@ -13,12 +13,7 @@ import re
 import json
 from rdkit import Chem
 from rdkit.Chem.Draw.canvasbase import CanvasBase
-from chembl_beaker.beaker.draw.molDrawing import MolDrawing
-
-try:
-    from chembl_beaker.beaker.draw.molDrawing import DrawingOptions
-except ImportError:
-    DrawingOptions = None
+from rdkit.Chem.Draw import MolDrawing, DrawingOptions
 from rdkit.Chem.AllChem import Compute2DCoords
 
 
