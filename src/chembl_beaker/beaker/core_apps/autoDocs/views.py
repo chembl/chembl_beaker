@@ -32,7 +32,7 @@ def docs():
 @app.route('/spore', methods = ['OPTIONS', 'GET'])
 def spore():
     """Print available functions."""
-
+    print version
     ret = {
         "version": version,
         "expected_status": [200],
