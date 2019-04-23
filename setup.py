@@ -3,7 +3,14 @@
 
 __author__ = 'mnowotka'
 
+import os
 import sys
+SCRIPT_PATH = os.path.realpath(__file__)
+SCRIPT_DIR = os.path.abspath(os.path.join(SCRIPT_PATH, os.pardir))
+BEAKER_PATH = os.path.join(SCRIPT_DIR, 'src')
+sys.path.append(BEAKER_PATH)
+
+import chembl_beaker
 
 try:
     from setuptools import setup
@@ -14,7 +21,7 @@ except ImportError:
 
 setup(
     name='chembl-beaker',
-    version='1.2.22',
+    version=chembl_beaker.__version__,
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
