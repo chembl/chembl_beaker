@@ -3,14 +3,6 @@
 
 __author__ = 'mnowotka'
 
-import os
-import sys
-SCRIPT_PATH = os.path.realpath(__file__)
-SCRIPT_DIR = os.path.abspath(os.path.join(SCRIPT_PATH, os.pardir))
-BEAKER_PATH = os.path.join(SCRIPT_DIR, 'src')
-sys.path.append(BEAKER_PATH)
-
-import chembl_beaker
 
 try:
     from setuptools import setup
@@ -21,7 +13,7 @@ except ImportError:
 
 setup(
     name='chembl-beaker',
-    version=chembl_beaker.__version__,
+    version='1.3.1',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -31,6 +23,7 @@ setup(
     description='RDKit in the Bottle on Tornado',
     url='https://www.ebi.ac.uk/chembl/',
     license='Apache Software License',
+    package_dir={'': './src'},
     packages=['chembl_beaker',
               'chembl_beaker.beaker',
               'chembl_beaker.beaker.plugins',
