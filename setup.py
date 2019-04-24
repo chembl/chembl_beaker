@@ -23,7 +23,7 @@ setup(
     description='RDKit in the Bottle on Tornado',
     url='https://www.ebi.ac.uk/chembl/',
     license='Apache Software License',
-    package_dir={'': './src'},
+    package_dir={'': 'src'},
     packages=['chembl_beaker',
               'chembl_beaker.beaker',
               'chembl_beaker.beaker.plugins',
