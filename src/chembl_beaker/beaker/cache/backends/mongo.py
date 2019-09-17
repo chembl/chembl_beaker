@@ -2,10 +2,7 @@
 # Author Karol Sikora <karol.sikora@laboratorium.ee>, (c) 2012
 # Author Michal Nowotka <mmmnow@gmail.com>, (c) 2013-2014
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 import base64
 import pymongo
 from datetime import datetime, timedelta
@@ -69,7 +66,7 @@ class MongoDBCache(BaseCache):
             coll.insert_one({'_id': key, 'data': encoded})
         else:
             chunks = []
-            for i in xrange(0, document_size, MAX_SIZE):
+            for i in range(0, document_size, MAX_SIZE):
                 chunk = encoded[i:i+MAX_SIZE]
                 aux_key = self.make_key(chunk)
                 coll.insert_one({'_id': aux_key, 'data': chunk})

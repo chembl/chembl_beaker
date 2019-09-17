@@ -64,7 +64,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" -F "size=400" ${BEAKER_ROOT_URL}ctab2json
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2jsonView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -81,7 +81,7 @@ def smiles2jsonView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -134,7 +134,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin_with_header.smi" -F "size=400" ${BEAKER_ROOT_URL}smiles2json
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2jsonView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

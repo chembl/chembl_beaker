@@ -25,7 +25,7 @@ def smiles2SimilarityMapView(data, params):
     kwargs['fingerprint'] = params.get('fingerprint', 'morgan')
     kwargs['format'] = params.get('format', 'png')
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -73,7 +73,7 @@ cURL examples:
     curl -X POST -F "file=@sim.smi" -F "format=svg" ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.svg
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2SimilarityMapView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -133,7 +133,7 @@ cURL examples:
     curl -X POST -F "file=@sim.sdf" -F "width=500" -F "format=svg" ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.svg
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return sdf2SimilarityMapView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

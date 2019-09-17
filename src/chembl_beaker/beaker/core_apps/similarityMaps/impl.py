@@ -3,7 +3,7 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-import StringIO
+import io
 from rdkit.Chem.Draw import SimilarityMaps
 from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.io import _parseSMILESData, _parseMolData
@@ -35,7 +35,7 @@ def _similarityMap(ms, width=500, height=500, radius=2, fingerprint='morgan', fo
         fn = SimilarityMaps.GetTTFingerprint
 
     SimilarityMaps.GetSimilarityMapForFingerprint(ms[0], ms[1], fn, size=(width, height))
-    sio = StringIO.StringIO()
+    sio = io.StringIO()
     pyplot.savefig(sio, format=format, bbox_inches='tight', dpi=100)
 
     return sio.getvalue()

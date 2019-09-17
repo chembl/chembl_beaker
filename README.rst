@@ -66,14 +66,6 @@ To do this you need to configure marvin sketcher instance:
         "stereoinfows" : <url of Beaker cipStereoInfo>
     }));
 
-Beaker and myChEMBL
---------
-Beaker is installed on myChEMBL Virtual Machine (currently version 19) so if you want to see how to deploy it for Apache or use it on your laptop or LAN without having to install RDKit and OSRA you can just grab a copy of myChEMBL.
-The easiest way to do so is to install `vagrant <https://www.vagrantup.com/>`_ and type::
-
-    vagrant init chembl/myChEMBL
-    vagrant up
-
 Software dependencies
 --------
 

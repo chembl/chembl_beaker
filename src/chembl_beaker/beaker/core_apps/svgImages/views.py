@@ -77,7 +77,7 @@ cURL examples:
     curl -X POST -F "file=@mcs.sdf" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}ctab2svg > out.svg    
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2svgView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -99,7 +99,7 @@ def smiles2svgView(data, params):
     kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -159,7 +159,7 @@ cURL examples:
     curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > out.svg    
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2svgView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -183,7 +183,7 @@ def highlightSmilesFragmentSvgView(data, params):
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['force'] = _parseFlag(params.get('force', True))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -255,7 +255,7 @@ cURL examples:
     data = None
     if number_of_files:
         if number_of_files == 1:
-            data = request.files.values()[0].file.read()
+            data = list(request.files.values())[0].file.read()
         elif number_of_files == 2:
             data = request.files['file'].file.read()
             smarts = request.files['smarts'].file.read()
@@ -347,7 +347,7 @@ cURL examples:
     data = None
     if number_of_files:
         if number_of_files == 1:
-            data = request.files.values()[0].file.read()
+            data = list(request.files.values())[0].file.read()
         elif number_of_files == 2:
             data = request.files['file'].file.read()
             smarts = request.files['smarts'].file.read()
@@ -407,7 +407,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.inchi" -F "size=400" ${BEAKER_ROOT_URL}inchi2svg > aspirin.svg
     """
 
-    inchis = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    inchis = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return inchi2svgView(inchis, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

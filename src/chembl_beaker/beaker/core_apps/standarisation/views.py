@@ -49,7 +49,7 @@ cURL examples:
     curl -X POST -F "file=@breakBonds.mol" ${BEAKER_ROOT_URL}breakBonds
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return breakBondsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ cURL examples:
     curl -X POST -F "file=@neutralise.mol" ${BEAKER_ROOT_URL}neutralise
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return neutraliseView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -140,7 +140,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}unsalt
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return unsaltView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ cURL examples:
     curl -X POST -F "file=@rules.mol" ${BEAKER_ROOT_URL}rules
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return rulesView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -230,7 +230,7 @@ cURL examples:
     curl -X POST -F "file=@standardise.mol" ${BEAKER_ROOT_URL}standardise
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return standardiseView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------

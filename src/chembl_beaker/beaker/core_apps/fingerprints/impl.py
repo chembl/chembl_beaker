@@ -2,7 +2,7 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-import StringIO
+import io
 from rdkit import rdBase
 from rdkit import Chem
 from rdkit import DataStructs
@@ -38,7 +38,7 @@ def _getFPSStream(f, mols, type='morgan', radius=2, n_bits=2048):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def _getFPSString(mols, type='morgan', radius=2, n_bits=2048):
-    sio = StringIO.StringIO()
+    sio = io.StringIO()
     _getFPSStream(sio, mols, type, radius, n_bits)
     return sio.getvalue()
 

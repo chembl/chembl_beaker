@@ -38,7 +38,7 @@ def main(conf_path=None):
         try:
             kwargs['workers'] = int(config.get('workers', '4'))
         except Exception as e:
-            print e
+            print(e)
             kwargs['workers'] = 4
 
     if standalone:

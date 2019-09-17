@@ -17,9 +17,9 @@ class TestServer(unittest.TestCase):
     def setUp(self):
         bottle.debug(True)
         self.app = TestApp(beaker)
-        dir = os.path.dirname(chembl_beaker.__file__)
-        f = open(os.path.join(dir, 'samples', 'sample.sdf'))
-        self.sample_mol_data = f.read()
+        dr = os.path.dirname(chembl_beaker.__file__)
+        with open(os.path.join(dr, "samples", "sample.sdf")) as f:
+            self.sample_mol_data = f.read()
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -45,14 +45,14 @@ class TestServer(unittest.TestCase):
         self.assertEqual(r.status_int, 200)
 
         allsmiles = r.body.splitlines()[1:]
-        self.assertRegexpMatches(allsmiles[0], 'C=CC\(NCNNC\(=O\)c1ccncc1\)C\(=O\)c1ccncc1 [0]?')
+        self.assertRegex(allsmiles[0], 'C=CC\(NCNNC\(=O\)c1ccncc1\)C\(=O\)c1ccncc1 [0]?')
 
         # If accepts either [CH2+]C1C2Cc3ccc(O)cc3C1(C)CCN2C or CN1CCC2(C)c3cc(O)ccc3CC1C2[CH4+]
         self.assertTrue(re.search('\[CH2\+\]C1C2Cc3ccc\(O\)cc3C1\(C\)CCN2C [1]?', allsmiles[1]) or
                         re.search('N1CCC2\(C\)c3cc\(O\)ccc3CC1C2\[CH4\+\] [1]?', allsmiles[1]))
 
-        self.assertRegexpMatches(allsmiles[2], 'CC\(CC\(=O\)c1ccc\(-c2ccccc2\)cc1\)C\(=O\)O [2]?')
-        self.assertRegexpMatches(allsmiles[3], 'C\[\*\]CN\(CC\)CC#CC\.Nc1cc\(C2\(C=O\)CCCC2\)ccc1N1CC1 [3]?')
+        self.assertRegex(allsmiles[2], 'CC\(CC\(=O\)c1ccc\(-c2ccccc2\)cc1\)C\(=O\)O [2]?')
+        self.assertRegex(allsmiles[3], 'C\[\*\]CN\(CC\)CC#CC\.Nc1cc\(C2\(C=O\)CCCC2\)ccc1N1CC1 [3]?')
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -95,10 +95,10 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/molWt", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
         weights = [float(w) for w in r.body.strip('[]').split(',')]
-        self.assertAlmostEquals(weights[0], 311, delta=2.5)
-        self.assertAlmostEquals(weights[1], 232, delta=2.5)
-        self.assertAlmostEquals(weights[2], 268, delta=2.5)
-        self.assertAlmostEquals(weights[3], 355, delta=2.5)
+        self.assertAlmostEqual(weights[0], 311, delta=2.5)
+        self.assertAlmostEqual(weights[1], 232, delta=2.5)
+        self.assertAlmostEqual(weights[2], 268, delta=2.5)
+        self.assertAlmostEqual(weights[3], 355, delta=2.5)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -106,20 +106,20 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/logP", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
         logps = [float(w) for w in r.body.strip('[]').split(',')]
-        self.assertAlmostEquals(logps[0], 0.69559, places=4)
-        self.assertAlmostEquals(logps[1], 2.6692, places=0)
-        self.assertAlmostEquals(logps[2], 3.6471, places=4)
-        self.assertAlmostEquals(logps[3], 3.5217, places=4)
+        self.assertAlmostEqual(logps[0], 0.69559, places=4)
+        self.assertAlmostEqual(logps[1], 2.6692, places=0)
+        self.assertAlmostEqual(logps[2], 3.6471, places=4)
+        self.assertAlmostEqual(logps[3], 3.5217, places=4)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
     def test_ctab2image(self):
         from PIL import Image
-        import StringIO
+        import io
         r = self.app.post("/ctab2image", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
         self.assertEqual(r.content_type, 'image/png')
-        buff = StringIO.StringIO(r.body)
+        buff = io.StringIO(r.body)
         im = Image.open(buff)
         self.assertEqual(im.size, (800, 200))
         im.verify()
@@ -142,7 +142,7 @@ class TestServer(unittest.TestCase):
 
     def test_mcs(self):
         from rdkit import Chem
-        from StringIO import StringIO
+        from io import StringIO
         smis = ['c1ccccc1','c1ccccc1C','c1ccccc1O']
         sio = StringIO()
         w = Chem.SDWriter(sio)
@@ -194,7 +194,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         n_smiles = r.body
-        self.assertRegexpMatches(n_smiles, 'SMILES Name \nNCC\(Cc1nn\[nH\]n1\)\(C\[N\+\]\(=O\)\[O\-\]\)C\(=O\)O [0]?\n')
+        self.assertRegex(n_smiles, 'SMILES Name \nNCC\(Cc1nn\[nH\]n1\)\(C\[N\+\]\(=O\)\[O\-\]\)C\(=O\)O [0]?\n')
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -209,7 +209,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         r_smiles = r.body
-        self.assertRegexpMatches(r_smiles, 'SMILES Name \nNc1nccc2cc\[nH\]c\(=O\)c12 [0]?\n')
+        self.assertRegex(r_smiles, 'SMILES Name \nNc1nccc2cc\[nH\]c\(=O\)c12 [0]?\n')
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -224,7 +224,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         s_smiles = r.body
-        self.assertRegexpMatches(s_smiles, 'SMILES Name \nNCc1ccc\(CC\(=O\)O\)cc1 [0]?\n')
+        self.assertRegex(s_smiles, 'SMILES Name \nNCc1ccc\(CC\(=O\)O\)cc1 [0]?\n')
 
 # ----------------------------------------------------------------------------------------------------------------------
 

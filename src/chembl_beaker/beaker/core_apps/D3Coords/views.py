@@ -52,7 +52,7 @@ cURL examples:
     curl -X POST -F "file=@no_coords.mol" ${BEAKER_ROOT_URL}ctab23D
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ def smiles23DView(data, params):
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
     kwargs['mmff'] = _parseFlag(params.get('mmff', False))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -108,7 +108,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles23D
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@ cURL examples:
     curl -X POST -F "file=@no_coords.mol" ${BEAKER_ROOT_URL}MMFFctab23D    
         """
 
-        data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+        data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
         return MMFFctab23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -170,7 +170,7 @@ cURL examples:
         kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
         kwargs['mmff'] = True
 
-        if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+        if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
             kwargs['titleLine'] = False
         else:
             kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -208,7 +208,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}MMFFsmiles23D
         """
 
-        data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+        data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
         return MMFFsmiles23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -228,7 +228,7 @@ if hasattr(AllChem, 'ETKDG'):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-    @app.route('ETKDGctab23D/<ctab>', method=['OPTIONS', 'GET'], name="ETKDGctab23D")
+    @app.route('/ETKDGctab23D/<ctab>', method=['OPTIONS', 'GET'], name="ETKDGctab23D")
     def ETKDGctab23D(ctab):
         """
 Generate 3D coordinates from molfile using Experimental-Torsion "basic Knowledge" Distance Geometry.
@@ -254,7 +254,7 @@ cURL examples:
     curl -X POST -F "file=@no_coords.mol" ${BEAKER_ROOT_URL}ETKDGctab23D    
         """
 
-        data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+        data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
         return ETKDGctab23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -269,7 +269,7 @@ cURL examples:
         kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
         kwargs['mmff'] = True
 
-        if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+        if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
             kwargs['titleLine'] = False
         else:
             kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -307,7 +307,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}ETKDGsmiles23D
         """
 
-        data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+        data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
         return ETKDGsmiles23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -352,7 +352,7 @@ cURL examples:
     curl -X POST -F "file=@no_coords.mol" ${BEAKER_ROOT_URL}KDGctab23D    
         """
 
-        data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+        data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
         return KDGctab23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -367,7 +367,7 @@ cURL examples:
         kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
         kwargs['mmff'] = True
 
-        if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+        if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
             kwargs['titleLine'] = False
         else:
             kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -405,7 +405,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}KDGsmiles23D
         """
 
-        data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+        data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
         return KDGsmiles23DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

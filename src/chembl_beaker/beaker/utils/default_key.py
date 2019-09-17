@@ -11,7 +11,7 @@ DATE_FORMAT = '%y-%m-%d %H%M%S'
 
 AES = None
 try:
-    from Crypto.Cipher import AES
+    from .Crypto.Cipher import AES
     secret_key = config.get('throttling_secret_key')
 except ImportError:
     pass

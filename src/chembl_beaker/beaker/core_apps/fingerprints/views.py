@@ -57,7 +57,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" -F "type=maccs" ${BEAKER_ROOT_URL}sdf2fps
 
     """
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return sdf2fpsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------

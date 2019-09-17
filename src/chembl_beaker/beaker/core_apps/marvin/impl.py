@@ -27,7 +27,7 @@ def _clean(mrv, dim=2):
     _call([mol], 'UpdatePropertyCache', strict=False)
     _apply([mol], ct._sssr)    
     if not mol:
-        print "No mol for block:\n %s" % block
+        print("No mol for block:\n %s" % block)
         return mrv
     AllChem.Compute2DCoords(mol, bondLength=0.8)
     if dim == 3:
@@ -53,7 +53,7 @@ def _stereoInfo(mrv):
     block = MarvinToMol(mrv)
     mol = Chem.MolFromMolBlock(block)
     if not mol:
-        print "No mol for block:\n %s" % block
+        print("No mol for block:\n %s" % block)
         return ret
     Chem.AssignStereochemistry(mol, flagPossibleStereoCenters=True, force=True)
     for atom in mol.GetAtoms():

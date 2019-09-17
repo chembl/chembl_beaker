@@ -48,7 +48,7 @@ cURL examples:
     curl -X POST -F "file=@rings.mol" ${BEAKER_ROOT_URL}atomRings
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return atomRingsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ cURL examples:
     curl -X POST -F "file=@rings.mol" ${BEAKER_ROOT_URL}bondRings
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return bondRingsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -138,7 +138,7 @@ cURL examples:
     curl -X POST -F "file=@addHs.mol" -F "index=1" -F "size=6" ${BEAKER_ROOT_URL}atomIsInRing
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return atomIsInRingView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -186,7 +186,7 @@ cURL examples:
     curl -X POST -F "file=@rings.mol" -F "index=1" -F "size=3" ${BEAKER_ROOT_URL}bondIsInRing
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return bondIsInRingView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -226,7 +226,7 @@ cURL examples:
     curl -X POST -F "file=@rings.mol" ${BEAKER_ROOT_URL}numAtomRings
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return numAtomRingsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -266,7 +266,7 @@ cURL examples:
     curl -X POST -F "file=@rings.mol" ${BEAKER_ROOT_URL}numBondRings
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return numBondRingsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -305,7 +305,7 @@ cURL examples:
     curl -X POST -F "file=@rings.mol" ${BEAKER_ROOT_URL}numRings
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return numRingsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -3,10 +3,7 @@
 #-----------------------------------------------------------------------------------------------------------------------
 
 import json
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 from chembl_beaker.beaker.cache.backends.base import BaseCache
 from chembl_beaker.beaker import config

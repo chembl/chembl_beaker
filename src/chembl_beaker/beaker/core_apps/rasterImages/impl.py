@@ -8,7 +8,7 @@ from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
 from chembl_beaker.beaker.utils.io import _getMatches
 from rdkit.Chem.Draw import rdMolDraw2D
-import StringIO
+import io
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -61,7 +61,7 @@ def _mols2imageString(mols, size, legend, format, atomMapNumber=False, computeCo
         _apply(mols, _computeCoords, True)
     if atomMapNumber:
         _apply(mols, _atomMapNumber)
-    image_data = StringIO.StringIO()
+    image_data = io.BytesIO()
     _mols2imageStream(mols, image_data, format, size, legend, highlightAtomLists, kekulize)
     return image_data.getvalue()
 

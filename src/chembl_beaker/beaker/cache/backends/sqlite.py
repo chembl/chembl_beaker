@@ -2,12 +2,9 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 from threading import Thread
-from Queue import Queue
+from queue import Queue
 import base64
 import sqlite3
 from datetime import datetime
