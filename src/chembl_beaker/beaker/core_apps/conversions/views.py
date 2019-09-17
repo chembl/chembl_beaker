@@ -65,7 +65,7 @@ cURL examples:
     curl -X POST -F "file=@explicitHs.mol" -F "removeHs=0" ${BEAKER_ROOT_URL}ctab2smiles
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2smilesView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ cURL examples:
     curl -X POST -F "file=@explicitHs.mol" -F "removeHs=0" ${BEAKER_ROOT_URL}ctab2smarts
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2smartsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -158,7 +158,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" -F "computeCoords=0"  ${BEAKER_ROOT_URL}ctab2xyz
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2xyzView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ def smiles2ctabView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -215,7 +215,7 @@ cURL examples:
     curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2ctab
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2ctabView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -259,7 +259,7 @@ cURL examples:
     curl -X POST -F "file=@amino.sma" -F "computeCoords=0"  ${BEAKER_ROOT_URL}smarts2ctab
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smarts2ctabView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -273,7 +273,7 @@ def smiles2inchiView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -314,7 +314,7 @@ cURL examples:
     curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchi
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2inchiView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -328,7 +328,7 @@ def smiles2inchiKeyView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -369,7 +369,7 @@ cURL examples:
     curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2inchiKey
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2inchiKeyView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -388,7 +388,7 @@ def canonicalizeSmilesView(data, params):
     kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
     kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -435,7 +435,7 @@ cURL examples:
     curl -X POST -F "file=@isomeric.smi" -F "isomericSmiles=1" ${BEAKER_ROOT_URL}canonicalizeSmiles
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return canonicalizeSmilesView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -466,7 +466,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.inchi" ${BEAKER_ROOT_URL}inchi2ctab
     """
 
-    inchis = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    inchis = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return _inchi2ctab(inchis)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -508,7 +508,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2inchi
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2inchiView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -550,7 +550,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2inchiKey
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2inchiKeyView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -581,7 +581,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.inchi" ${BEAKER_ROOT_URL}inchi2inchiKey
     """
 
-    inchis = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    inchis = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return _inchi2inchiKey(inchis)
 
 # ----------------------------------------------------------------------------------------------------------------------

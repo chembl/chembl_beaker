@@ -13,7 +13,7 @@ class CacheThrottle(BaseThrottle):
         BaseThrottle.__init__(self)
         if not cache:
             err = "CacheThrottle class can't work without cache..."
-            print err
+            print(err)
             raise Exception(err)
 
     def get_remaining_rates(self, identifier, type='IP'):

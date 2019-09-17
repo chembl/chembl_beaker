@@ -118,8 +118,8 @@ class Canvas(CanvasBase):
 # ----------------------------------------------------------------------------------------------------------------------
 
     def addCanvasLine(self, p1, p2, color=(0, 0, 0), color2=None, **kwargs):
-        color = tuple(map(lambda x: x * 255, color))
-        color2 = tuple(map(lambda x: x * 255, color2))
+        color = tuple([x * 255 for x in color])
+        color2 = tuple([x * 255 for x in color2])
         if color2 and color2 != color:
             mp = (p1[0] + p2[0]) / 2., (p1[1] + p2[1]) / 2.
             line1 = self._addCanvasLine(p1, mp, color, **kwargs)
@@ -133,8 +133,8 @@ class Canvas(CanvasBase):
 # ----------------------------------------------------------------------------------------------------------------------
 
     def addCanvasText(self, text, pos, font, color=(0, 0, 0), **kwargs):
-        color = tuple(map(lambda x: x * 255, color))
-        bgColor = tuple(map(lambda x: x * 255, kwargs.get('bgColor', (1, 1, 1))))
+        color = tuple([x * 255 for x in color])
+        bgColor = tuple([x * 255 for x in kwargs.get('bgColor', (1, 1, 1))])
 
         orientation = kwargs.get('orientation', 'E')
         text = re.sub(r'\<.+?\>', '', text)
@@ -174,7 +174,7 @@ class Canvas(CanvasBase):
     def addCanvasPolygon(self, ps, color=(0, 0, 0), fill=True, stroke=False, **kwargs):
         if not fill and not stroke:
             return
-        color = tuple(map(lambda x: x * 255, color))
+        color = tuple([x * 255 for x in color])
         polygon = dict()
         polygon['type'] = 'path'
         path = ''
@@ -193,7 +193,7 @@ class Canvas(CanvasBase):
 # ----------------------------------------------------------------------------------------------------------------------
 
     def addCanvasDashedWedge(self, p1, p2, p3, dash=(2, 2), color=(0, 0, 0), color2=None, **kwargs):
-        color = tuple(map(lambda x: x * 255, color))
+        color = tuple([x * 255 for x in color])
         wedge = dict()
         wedge['stroke-width'] = self.scale * kwargs.get('linewidth', 1)
         wedge['stroke'] = 'rgb' + str(color)
@@ -219,7 +219,7 @@ class Canvas(CanvasBase):
     def addCircle(self, center, radius, color=(0, 0, 0), fill=True, stroke=False, alpha=1.0, **kwargs):
         if not fill and not stroke:
             return
-        color = tuple(map(lambda x: x * 255, color))
+        color = tuple([x * 255 for x in color])
         circle = dict()
         circle['type'] = 'circle'
         circle['cx'] = center[0]
@@ -239,7 +239,7 @@ class Canvas(CanvasBase):
 
 def MolToJSON(mol, size=(300, 300), kekulize=True, wedgeBonds=True, fitImage=False, options=None, **kwargs):
     if not mol:
-        raise ValueError, 'Null molecule provided'
+        raise ValueError('Null molecule provided')
 
     canvas = Canvas(size=size)
 

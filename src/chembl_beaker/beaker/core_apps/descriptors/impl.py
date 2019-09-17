@@ -14,7 +14,7 @@ from chembl_beaker.beaker.utils.io import _parseMolData
 
 
 def _desc(mol, name):
-    if name and isinstance(name, basestring) and hasattr(Descriptors, name):
+    if name and isinstance(name, str) and hasattr(Descriptors, name):
         return getattr(Descriptors, name)(mol)
 
 # ----------------------------------------------------------------------------------------------------------------------

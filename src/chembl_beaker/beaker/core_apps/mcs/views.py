@@ -57,7 +57,7 @@ cURL examples:
     curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}mcs
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return mcsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

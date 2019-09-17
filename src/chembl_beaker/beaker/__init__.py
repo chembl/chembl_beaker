@@ -6,13 +6,12 @@ import chembl_beaker
 from chembl_beaker.beaker.utils import import_class
 import re
 import os
-import sys
 import json
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 HTTP_CODES = bottle.HTTP_CODES.copy()
-HTTP_CODES = dict((y, x) for x, y in HTTP_CODES.iteritems())
+HTTP_CODES = dict((y, x) for x, y in list(HTTP_CODES.items()))
 STATIC_ROOT = os.path.join(os.path.split(chembl_beaker.__file__)[0], 'static')
 PARAM_REGEX = re.compile(r'<[^<>]+>')
 DEFAULT_APPS = [
@@ -52,7 +51,7 @@ def loadPlugins(app, plugins):
             plugin_class = import_class(plugin)
             app.install(plugin_class())
         except Exception as e:
-            print "Failed to load plugin %s because of error %s" % (plugin, e.message)
+            print("Failed to load plugin %s because of error %s" % (plugin, str(e)))
             continue
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +64,7 @@ def loadApps(apps):
         try:
             __import__(module + ".views")
         except Exception as e:
-            print "Loading module %s failed because of error: %s" % (module, e.message)
+            print("Loading module %s failed because of error: %s" % (module, str(e)))
             continue
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -77,14 +76,7 @@ config = app.config
 
 if not getattr(config, 'load_config'):
 
-        py = sys.version_info
-        py3k = py >= (3, 0, 0)
-
-        if py3k:
-            from configparser import ConfigParser
-        else:
-            from ConfigParser import SafeConfigParser as ConfigParser
-
+        from configparser import ConfigParser
         from bottle import ConfigDict
 
         def load_config(self, filename):
@@ -106,5 +98,3 @@ if not getattr(config, 'load_config'):
         ConfigDict.load_config = load_config
 
 # ----------------------------------------------------------------------------------------------------------------------
-
-

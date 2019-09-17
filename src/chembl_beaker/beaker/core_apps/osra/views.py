@@ -56,7 +56,7 @@ cURL examples:
     curl -X POST --data-binary @mol.png ${BEAKER_ROOT_URL}image2ctab
     curl -X POST -F "file=@mol.png" ${BEAKER_ROOT_URL}image2ctab
     """
-    img = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    img = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     if img.startswith('data:'):
         img = base64.b64decode(img[img.find(',')+1:])
     return image2ctabView(img, request.params)
@@ -109,7 +109,7 @@ cURL examples:
     curl -X POST -F "file=@mol.png" ${BEAKER_ROOT_URL}image2smiles
     """
 
-    img = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    img = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     if img.startswith('data:'):
         img = base64.b64decode(img[img.find(',')+1:])
     return image2smilesView(img, request.params)

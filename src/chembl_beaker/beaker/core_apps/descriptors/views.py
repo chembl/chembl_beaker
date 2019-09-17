@@ -45,7 +45,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}getNumAtoms
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return getNumAtomsView(data, request.params)
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -86,7 +86,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}getNumBonds
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return getNumBondsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -127,7 +127,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}logP
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return logPView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -167,7 +167,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}tpsa
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return tpsaView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -207,7 +207,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}molWt
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return molWtView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}descriptors
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return descriptorsView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------

@@ -67,7 +67,7 @@ cURL examples:
 
     response.status = 400
     response.body = 'This method expects one ot two ctabs.'
-    print 'this should be error 400'
+    print('this should be error 400')
     return response
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -111,7 +111,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}kekulize
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return kekulizeView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -153,7 +153,7 @@ cURL examples:
     curl -X POST -F "file=@aromatic.mol" ${BEAKER_ROOT_URL}sanitize
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return sanitizeView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}symmSSSR
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return symmSSSRView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -241,7 +241,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}sssr
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return sssrView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -285,7 +285,7 @@ cURL examples:
     curl -X POST -F "file=@addHs.mol" -F "addCoords=1" ${BEAKER_ROOT_URL}addHs
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return addHsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -327,7 +327,7 @@ cURL examples:
     curl -X POST -F "file=@removeHs.mol" -F "implicitOnly=1" ${BEAKER_ROOT_URL}removeHs
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return removeHsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -10,10 +10,10 @@ if throttle_class:
     try:
         throttle = import_class(throttle_class)()
         if not isinstance(throttle, BaseThrottle):
-            print "Configured throttle class (%s) is not a BaseThrottle instance, skipping throttling." % throttle_class
+            print("Configured throttle class (%s) is not a BaseThrottle instance, skipping throttling." % throttle_class)
             throttle = None
     except ImportError:
-        print 'Error importing %s' % throttle_class
+        print('Error importing %s' % throttle_class)
 
 
 

@@ -3,17 +3,11 @@
 
 __author__ = 'mnowotka'
 
-
-try:
-    from setuptools import setup
-except ImportError:
-    from ez_setup import use_setuptools
-    use_setuptools()
-    from setuptools import setup
+from setuptools import setup
 
 setup(
     name='chembl-beaker',
-    version='1.3.2',
+    version='1.5.0',
     entry_points={
         'console_scripts': [
             'run_beaker=chembl_beaker.run_beaker:main']
@@ -65,7 +59,8 @@ setup(
                  'Intended Audience :: Developers',
                  'License :: OSI Approved :: Apache Software License',
                  'Operating System :: POSIX :: Linux',
-                 'Programming Language :: Python :: 2.7',
+                 'Programming Language :: Python :: 3.6',
+                 'Programming Language :: Python :: 3.7',
                  'Topic :: Scientific/Engineering :: Chemistry'],
     zip_safe=False,
 )

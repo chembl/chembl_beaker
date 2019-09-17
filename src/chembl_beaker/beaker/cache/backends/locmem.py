@@ -1,9 +1,6 @@
 __author__ = 'mnowotka'
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 import time
 from chembl_beaker.beaker.cache.backends.base import BaseCache
 from chembl_beaker.beaker.utils.synch import RWLock
