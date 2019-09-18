@@ -26,6 +26,7 @@ setup(
               'chembl_beaker.beaker.core_apps.descriptors',
               'chembl_beaker.beaker.core_apps.standarisation',
               'chembl_beaker.beaker.core_apps.D3Coords',
+              'chembl_beaker.beaker.core_apps.D2Coords',
               'chembl_beaker.beaker.core_apps.fingerprints',
               'chembl_beaker.beaker.core_apps.jsonImages',
               'chembl_beaker.beaker.core_apps.ringInfo',
