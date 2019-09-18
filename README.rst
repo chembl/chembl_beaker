@@ -52,9 +52,7 @@ As a portable, lightweight, `CORS <https://en.wikipedia.org/wiki/Cross-origin_re
 Where is it used?
 --------
 
-Beaker is used in `Clippy <https://github.com/madgpap/chembl_clippy>`_ project but can be used as a standalone web server as well.
-
-It can also be used as web service backend for `Marvin For Java Script <http://www.chemaxon.com/products/marvin/marvin-for-javascript/>`_ as it exposes methods compatible with it's webservice `specification <https://marvinjs-demo.chemaxon.com/latest/docs/dev/webservices.html>`_.
+It can be used as web service backend for `Marvin For Java Script <http://www.chemaxon.com/products/marvin/marvin-for-javascript/>`_ as it exposes methods compatible with it's webservice `specification <https://marvinjs-demo.chemaxon.com/latest/docs/dev/webservices.html>`_.
 To do this you need to configure marvin sketcher instance:
 
 ::
@@ -91,32 +89,6 @@ The best way to install beaker is to use `PIP`:
     
 This command will install latest stable version with Bottle and Tornado. RDKit and OSRA must be installed separately.
 You can of course clone development version from github but it's not guaranteed to be working.
-If you want to install github version using `PIP`, invoke this command:
-
-    ``sudo pip install git+https://github.com/mnowotka/chembl_beaker.git``
-
-Full recipe for Mac users
---------
-
-So I want to test it, I have a Mac and I don't know what rdkit, tornado and bottle is - how do I start?
-
-First, install XQuartz from https://xquartz.macosforge.org/landing/, then::
-
-      ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-      brew tap edc/homebrew-rdkit
-      brew install rdkit
-      export RDBASE=/usr/local/share/RDKit
-      export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/site-packages
-      export CFLAGS=-Qunused-arguments
-      export CPPFLAGS=-Qunused-arguments
-      sudo -E pip install cairocffi
-      sudo -E pip install Pillow
-      sudo -E pip install lxml
-      sudo pip install standardiser
-      sudo pip install chembl_beaker
-      run_berker.py
-
-Alternatively, you can use `this article <http://macinchem.org/reviews/cheminfo/cheminfoMac.php>`_ as an instllation guide.
 
 Configuration
 --------
@@ -181,9 +153,6 @@ Everything that can be deployed on Apache with mod_wsgi, can be deployed on Ngin
 Documentation
 --------
 Like every good software written in Python, beaker is self-documented. When you run beaker, open your browser and go to URL: ``BEAKER_ROOT/docs``. You will see live documentation genrated on the fly from all available webservices, exposed by beaker. You can immediately try them and see results return by the server. Every webservice should be documented - documentation is generated automatically as well, from docstring of every exposed webservice, interpreted as markdown.
-
-.. image:: https://dl.dropboxusercontent.com/u/10967207/static/docs.png
-    :alt: docs screenshot
 
 Development - writing your own extentions
 --------
