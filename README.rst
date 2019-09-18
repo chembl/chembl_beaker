@@ -20,10 +20,6 @@ chembl_beaker
 .. image:: https://img.shields.io/pypi/l/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: License
-
-.. image:: https://badge.waffle.io/chembl/chembl_beaker.png?label=ready&title=Ready 
- :target: https://waffle.io/chembl/chembl_beaker
- :alt: 'Stories in Ready'
     
 What is Beaker?
 --------
