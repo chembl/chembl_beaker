@@ -51,6 +51,7 @@ def _smiles2ctab(data, computeCoords=True, delimiter=' ', smilesColumn=0, nameCo
 
 def _smarts2ctab(data, computeCoords=True, delimiter=' ', sanitize=True):
     mols = []
+    data = data.decode()
     for line in data.splitlines():
         if not line:
             continue
