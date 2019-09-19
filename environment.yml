@@ -2,9 +2,11 @@ name: chembl-beaker
 channels:
 - rdkit
 - defaults
+- bioconda
 dependencies:
 - pillow==6.1.0
 - rdkit==2019.03.4.0
 - lxml==4.4.1
 - matplotlib
 - pycairo==1.18.1
+- osra

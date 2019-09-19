@@ -39,6 +39,6 @@ def _image2ctab(img, osra, **kwargs):
 
 
 def _image2smiles(img, osra, **kwargs):
-    return 'SMILES Name \n' + '\n'.join(filter(bool, _recogniseImage(img, osra, **kwargs).split('\n')))
+    return b'SMILES Name \n' + b'\n'.join(filter(bool, _recogniseImage(img, osra, **kwargs).split(b'\n')))
 
 # ----------------------------------------------------------------------------------------------------------------------
