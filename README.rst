@@ -1,18 +1,6 @@
 chembl_beaker
 ======
 
-.. image:: https://img.shields.io/pypi/v/chembl_beaker.svg
-    :target: https://pypi.python.org/pypi/chembl_beaker/
-    :alt: Latest Version
-
-.. image:: https://img.shields.io/pypi/dm/chembl_beaker.svg
-    :target: https://pypi.python.org/pypi/chembl_beaker/
-    :alt: Downloads
-
-.. image:: https://img.shields.io/pypi/pyversions/chembl_beaker.svg
-    :target: https://pypi.python.org/pypi/chembl_beaker/
-    :alt: Supported Python versions
-
 .. image:: https://img.shields.io/pypi/status/chembl_beaker.svg
     :target: https://pypi.python.org/pypi/chembl_beaker/
     :alt: Development Status
@@ -79,12 +67,12 @@ Additional dependencies
 Installation
 --------
 
-The best way to install beaker is to use `PIP`:
+The best way to install beaker is to use Docker::
 
-    ``pip install chembl_beaker``
-    
-This command will install latest stable version with Bottle and Tornado. RDKit and OSRA must be installed separately.
-You can of course clone development version from github but it's not guaranteed to be working.
+    docker pull chembl/beaker
+    docker run -p 8080:8080 chembl/beaker
+
+open http://127.0.0.1:8080/docs
 
 Configuration
 --------
