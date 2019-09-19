@@ -9,7 +9,7 @@ from chembl_beaker.beaker.utils.io import _parseMolData
 
 MAX_PASSES = 10
 
-RDK_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 'NumRotatableBonds', 'MolLogP']
+RDK_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 'NumRotatableBonds', 'MolLogP', 'NumAromaticRings']
 
 # ----------------------------------------------------------------------------------------------------------------------
 
