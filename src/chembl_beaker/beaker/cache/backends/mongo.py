@@ -29,6 +29,7 @@ class MongoDBCache(BaseCache):
         self._host = config.get('mongo_host', 'localhost')
         self._port = int(config.get('mongo_port', 27017))
         self._database = config.get('mongo_db', 'beaker_cache')
+        self._auth_database = config.get('mongo_auth_db', self._database)
         self._rshosts = config.get('mongo_rshosts')
         self._rsname = config.get('mongo_rsname')
         self._user = config.get('mongo_user', None)
@@ -160,7 +161,7 @@ class MongoDBCache(BaseCache):
 
         self._db = self.connection[self._database]
         if self._user and self._password:
-            self._db.authenticate(self._user, self._password)
+            self._db.authenticate(self._user, self._password, source=self._auth_database)
         if pymongo.version_tuple[0] < 3:
             self._coll = self._db[self._collection]
         else:
