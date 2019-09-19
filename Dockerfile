@@ -26,7 +26,7 @@ RUN conda env create -n chembl-beaker -f /tmp/environment.yml
 ENV PATH /opt/conda/envs/chembl-beaker/bin:$PATH
 
 # install beaker from branch
-RUN pip install https://github.com/chembl/chembl_beaker/archive/py3.zip
+RUN pip install https://github.com/chembl/chembl_beaker/archive/descriptors.zip
 
 # osra needs both files in the same bin dir
 RUN cp /opt/conda/pkgs/osra-2.0.1-0/share/spelling.txt /opt/conda/envs/chembl-beaker/bin/spelling.txt && \
