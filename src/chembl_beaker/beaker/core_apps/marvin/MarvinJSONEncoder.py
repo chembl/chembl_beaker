@@ -10,7 +10,8 @@ import rdkit
 from rdkit import Chem
 from rdkit.Chem.rdchem import GetPeriodicTable
 from rdkit.Chem import rdmolops
-from rdkit.Chem import GetSSSR
+import chembl_beaker.beaker.utils.chemical_transformation as ct
+from chembl_beaker.beaker.utils.functional import _apply, _call
 from io import StringIO
 import os
 import getpass
@@ -333,8 +334,9 @@ def MolToMarvin(mol):
         mol = Chem.MolFromMolFile(mol, False, False, False)
     else:
         mol = Chem.MolFromMolBlock(mol, False, False, False)
-    mol.UpdatePropertyCache(strict=False)
-    GetSSSR(mol)
+    _call([mol], 'UpdatePropertyCache', strict=False)
+    _apply([mol], ct._sssr)
+
     rdmolops.SetAromaticity(mol)
     js = _molsToJson([mol], MOL_MARVIN_SCALE)
     return _dataToXml(js)

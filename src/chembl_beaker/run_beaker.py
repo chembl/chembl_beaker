@@ -51,6 +51,8 @@ if __name__ == "__main__":
     main()
 
 else:
+    apps = json.loads(config.get('installed_apps', '[]'))
+    loadApps(apps)
     application = app
 
 # ----------------------------------------------------------------------------------------------------------------------
