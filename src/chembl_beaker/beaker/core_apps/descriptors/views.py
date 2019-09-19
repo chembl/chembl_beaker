@@ -218,7 +218,6 @@ def descriptorsView(data, params):
     kwargs['sanitize'] = bool(params.get('sanitize', True))
     kwargs['removeHs'] = bool(params.get('removeHs', True))
     kwargs['strictParsing'] = bool(params.get('strictParsing', True))
-    kwargs['ds'] = params.get('descrs')
     return json.dumps(_getDescriptors(data, **kwargs))
 
 #-----------------------------------------------------------------------------------------------------------------------
