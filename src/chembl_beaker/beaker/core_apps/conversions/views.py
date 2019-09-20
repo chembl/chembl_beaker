@@ -5,7 +5,7 @@ __author__ = 'mnowotka'
 from chembl_beaker.beaker import app
 from bottle import request
 from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2smarts
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey, _ctab2xyz
+from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
 from chembl_beaker.beaker.core_apps.conversions.impl import _smarts2ctab
@@ -474,10 +474,11 @@ cURL examples:
 
 def ctab2inchiView(data, params):
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
-    return _ctab2inchi(data, **kwargs)
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', False))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', False))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', False))
+    kwargs['rdkload'] = _parseFlag(params.get('rdkload', False))
+    return _ctab2inchi(data, **kwargs) 
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -516,9 +517,10 @@ cURL examples:
 
 def ctab2inchiKeyView(data, params):
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['sanitize'] = _parseFlag(params.get('sanitize', False))
+    kwargs['removeHs'] = _parseFlag(params.get('removeHs', False))
+    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', False))
+    kwargs['rdkload'] = _parseFlag(params.get('rdkload', False))
     return _ctab2inchiKey(data, **kwargs)
 
 # ----------------------------------------------------------------------------------------------------------------------

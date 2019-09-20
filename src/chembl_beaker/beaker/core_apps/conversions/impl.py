@@ -5,7 +5,7 @@ __author__ = 'mnowotka'
 from rdkit import Chem
 from chembl_beaker.beaker.utils.functional import _apply
 from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData, _getSMILESString, _getSDFString
-from chembl_beaker.beaker.utils.io import _getSMARTSString, _getXYZ
+from chembl_beaker.beaker.utils.io import _getSMARTSString
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 from chembl_beaker.beaker.utils.chemical_transformation import _sanitize
 from chembl_beaker.beaker.utils.io import _molFromSmarts
@@ -51,7 +51,7 @@ def _smiles2ctab(data, computeCoords=True, delimiter=' ', smilesColumn=0, nameCo
 
 def _smarts2ctab(data, computeCoords=True, delimiter=' ', sanitize=True):
     mols = []
-    data = data.decode()
+    data = data.decode("utf-8")
     for line in data.splitlines():
         if not line:
             continue
@@ -68,12 +68,6 @@ def _smarts2ctab(data, computeCoords=True, delimiter=' ', sanitize=True):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2xyz(data, computeCoords=True):
-    return _getXYZ(_parseMolData(data), computeCoords)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 def _inchi2ctab(inchis):
     mols = _apply(inchis.split(),Chem.MolFromInchi)
     _apply(mols, _computeCoords)
@@ -82,15 +76,15 @@ def _inchi2ctab(inchis):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2inchi(data, sanitize=True, removeHs=True, strictParsing=True):
-    return '\n'.join(_apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
-                            Chem.MolToInchi))
+def _ctab2inchi(data, sanitize=False, removeHs=False, strictParsing=False, rdkload=False):
+    return '\n'.join(_apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing, rdkload=False),
+                            Chem.MolBlockToInchi))
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2inchiKey(data, sanitize=True, removeHs=True, strictParsing=True):
-    inchis = _ctab2inchi(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
+def _ctab2inchiKey(data, sanitize=False, removeHs=False, strictParsing=False, rdkload=False):
+    inchis = _ctab2inchi(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing, rdkload=False)
     return _inchi2inchiKey(inchis)
 
 # ----------------------------------------------------------------------------------------------------------------------

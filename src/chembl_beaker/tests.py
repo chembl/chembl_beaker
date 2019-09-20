@@ -32,7 +32,7 @@ class TestServer(unittest.TestCase):
     def test_ctab2inchi(self):
         r = self.app.post("/ctab2inchi", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
-        self.assertEqual(r.body.decode(), 'InChI=1S/C16H17N5O2/c1-2-14(15(22)12-3-7-17-8-4-12)19-11-20-21-16(23)13-5-9-18-10-'
+        self.assertEqual(r.body.decode("utf-8"), 'InChI=1S/C16H17N5O2/c1-2-14(15(22)12-3-7-17-8-4-12)19-11-20-21-16(23)13-5-9-18-10-'
                                  '6-13/h2-10,14,19-20H,1,11H2,(H,21,23)\nInChI=1S/C15H19NO/c1-10-14-8-11-4-5-12(17)9'
                                  '-13(11)15(10,2)6-7-16(14)3/h4-5,9-10,14H,1,6-8H2,2-3H3/p+1\nInChI=1S/C17H16O3/c1-1'
                                  '2(17(19)20)11-16(18)15-9-7-14(8-10-15)13-5-3-2-4-6-13/h2-10,12H,11H2,1H3,(H,19,20)'
@@ -64,52 +64,11 @@ class TestServer(unittest.TestCase):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-    def test_ctab2xyz(self):
-        r = self.app.post("/ctab2xyz", self.sample_mol_data)
-        self.assertEqual(r.status_int, 200)
-        # it must contain the number of atoms of each of the molecules in the mol data
-        # followed by an empty line
-        r.mustcontain("40\n\n")
-        r.mustcontain("37\n\n")
-        r.mustcontain("36\n\n")
-        r.mustcontain("60\n\n")
-
-# ----------------------------------------------------------------------------------------------------------------------
-
     def test_ctab2svg(self):
         r = self.app.post("/ctab2svg", self.sample_mol_data)
         self.assertEqual(r.status_int, 200)
         self.assertEqual(r.content_type, 'image/svg+xml')
         r.mustcontain('svg')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_TPSA(self):
-        r = self.app.post("/tpsa", self.sample_mol_data)
-        self.assertEqual(r.status_int, 200)
-        self.assertEqual(r.body.decode(), '[96.01, 23.47, 54.37, 49.339999999999996]')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_MolWt(self):
-        r = self.app.post("/molWt", self.sample_mol_data)
-        self.assertEqual(r.status_int, 200)
-        weights = [float(w) for w in r.body.decode().strip('[]').split(',')]
-        self.assertAlmostEqual(weights[0], 311, delta=2.5)
-        self.assertAlmostEqual(weights[1], 232, delta=2.5)
-        self.assertAlmostEqual(weights[2], 268, delta=2.5)
-        self.assertAlmostEqual(weights[3], 355, delta=2.5)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_logP(self):
-        r = self.app.post("/logP", self.sample_mol_data)
-        self.assertEqual(r.status_int, 200)
-        logps = [float(w) for w in r.body.decode().strip('[]').split(',')]
-        self.assertAlmostEqual(logps[0], 0.69559, places=4)
-        self.assertAlmostEqual(logps[1], 2.6692, places=0)
-        self.assertAlmostEqual(logps[2], 3.6471, places=4)
-        self.assertAlmostEqual(logps[3], 3.5217, places=4)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -155,7 +114,7 @@ class TestServer(unittest.TestCase):
         txt=sio.getvalue()
         ctab_post = self.app.post("/mcs", txt)
         self.assertEqual(ctab_post.status_int, 200)
-        self.assertTrue(ctab_post.body.decode() in ('[#6]:1:[#6]:[#6]:[#6]:[#6]:[#6]:1', '[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1'))
+        self.assertTrue(ctab_post.body.decode("utf-8") in ('[#6]:1:[#6]:[#6]:[#6]:[#6]:[#6]:1', '[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1'))
 
         ebtxt = base64.urlsafe_b64encode(txt.encode("utf-8"))
         estxt = str(ebtxt, "utf-8")
