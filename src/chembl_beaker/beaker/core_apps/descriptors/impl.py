@@ -8,13 +8,13 @@ from chembl_beaker.beaker.utils.functional import _call, _apply
 from chembl_beaker.beaker.utils.io import _parseMolData
 
 MAX_PASSES = 10
-
-RDK_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 'NumRotatableBonds', 'MolLogP', 'NumAromaticRings']
+RDK_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 
+                 'NumRotatableBonds', 'MolLogP', 'NumAromaticRings']
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def apply_rxn(mol, rxn):
+def _apply_rxn(mol, rxn):
     mols = [mol]
     changed = False
     for n_pass in range(MAX_PASSES):
@@ -41,7 +41,8 @@ def apply_rxn(mol, rxn):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def neutralise_sulphoxide(mol):
+
+def _neutralise_sulphoxide(mol):
     smirks = '[S+1:1][O-1:2]>>[S+0:1]=[O-0:2]'
     rxn = rdChemReactions.ReactionFromSmarts(smirks)
     frags = rdmolops.GetMolFrags(mol, asMols=True)
@@ -61,11 +62,11 @@ def neutralise_sulphoxide(mol):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def remove_isotope_info(mol):
+
+def _remove_isotope_info(mol):
     """
-    Removing isotpe information RDKit MolWt will calc the average weight and ExactMolWt the monoisotopic weight.
-    MolWt takes average weight of each atom only if no isotope information is given.
-    ExactMolWt takes most abundant isotope weight for each atom only if no isotope information is given.
+    Remove isotpe information so ExactMolWt will use the most abundant isotope weight for each atom and hence calculate 
+    the monoisotopic mass.
     """
     for atom in mol.GetAtoms():
         atom.SetIsotope(0)
@@ -73,7 +74,8 @@ def remove_isotope_info(mol):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def ro3_pass(mw_freebase, hba, hbd, alogp, rtb, psa):
+
+def _ro3_pass(mw_freebase, hba, hbd, alogp, rtb, psa):
     """
     It is suggested that compounds that pass all these criteria are more likely to be hits in fragment screening.
     molecular weight <=300,
@@ -96,7 +98,7 @@ def ro3_pass(mw_freebase, hba, hbd, alogp, rtb, psa):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def num_ro5_violations(alogp, mw_freebase, hba, hbd):
+def _num_ro5_violations(alogp, mw_freebase, hba, hbd):
     """
     Number of properties defined in Lipinski’s Rule of 5 (RO5) that the compound fails.
     Conditions which violate the RO5 are:
@@ -130,64 +132,28 @@ def _desc(mol, name):
 # ----------------------------------------------------------------------------------------------------------------------
 
 def _desc_list(mol):
-    mol = remove_isotope_info(mol)
-    mol = neutralise_sulphoxide(mol)
+    mol = _remove_isotope_info(mol)
+    mol = _neutralise_sulphoxide(mol)
     descriptors = dict()
     for name, fn in Descriptors.descList:
         if name in RDK_DESC_LIST:
             descriptors[name] = fn(mol)
     if 'MolecularFormula' not in descriptors:
         descriptors['MolecularFormula'] = CalcMolFormula(mol)
-    descriptors['Ro3Pass'] = ro3_pass(descriptors['MolWt'],
-                                      descriptors['NumHAcceptors'],
-                                      descriptors['NumHDonors'],
-                                      descriptors['MolLogP'],
-                                      descriptors['NumRotatableBonds'],
-                                      descriptors['TPSA'])
-    descriptors['NumRo5'] = num_ro5_violations(descriptors['MolLogP'],
-                                               descriptors['MolWt'],
-                                               descriptors['NumHAcceptors'],
-                                               descriptors['NumHDonors'])
+    descriptors['Ro3Pass'] = _ro3_pass(descriptors['MolWt'],
+                                       descriptors['NumHAcceptors'],
+                                       descriptors['NumHDonors'],
+                                       descriptors['MolLogP'],
+                                       descriptors['NumRotatableBonds'],
+                                       descriptors['TPSA'])
+    descriptors['NumRo5'] = _num_ro5_violations(descriptors['MolLogP'],
+                                                descriptors['MolWt'],
+                                                descriptors['NumHAcceptors'],
+                                                descriptors['NumHDonors'])
     descriptors['MonoisotopicMolWt'] = descriptors.pop('ExactMolWt')
     return descriptors
 
 # ----------------------------------------------------------------------------------------------------------------------
-
-
-def _getNumAtoms(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _call(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                               strictParsing=strictParsing), "GetNumAtoms")
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-def _getNumBonds(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _call(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                               strictParsing=strictParsing), "GetNumBonds")
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-def _getLogP(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                                strictParsing=strictParsing), _desc, 'MolLogP')
-
-# -----------------------------------------------------------------------------------------------------------------------
-
-
-def _getTPSA(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                                strictParsing=strictParsing), _desc, 'TPSA')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-def _getMolWt(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                                strictParsing=strictParsing), _desc, 'MolWt')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
 
 def _getDescriptors(data, sanitize=True, removeHs=True, strictParsing=True):
     return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,

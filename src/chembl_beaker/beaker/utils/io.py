@@ -5,12 +5,10 @@ __author__ = 'mnowotka'
 import os
 import tempfile
 import io
-from rdkit.Chem import SDMolSupplier
-from rdkit.Chem import SmilesMolSupplier
-from rdkit.Chem import MolToSmarts
-from rdkit.Chem import MolFromSmarts
-from rdkit.Chem import SDWriter
-from rdkit.Chem import SmilesWriter
+from rdkit.Chem import BondDir
+from rdkit.Chem import SDMolSupplier, SDWriter
+from rdkit.Chem import MolToSmarts, MolFromSmarts, MolFromMolBlock
+from rdkit.Chem import SmilesMolSupplier, SmilesWriter
 from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 from chembl_beaker.beaker.utils.chemical_transformation import _getSubstructMatch
@@ -35,12 +33,55 @@ def _parseFlag(data):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True):
+def _parse_sdf(filename):
+    """
+    Yields molblocks from a sdf file.
+    
+    :param filename: 
+    :return: 
+    """
+    with open(filename, "r") as sdf_file:
+        molblock = []
+        for line in sdf_file:
+            line = line.rstrip("\r\n")
+            if not line == "$$$$":
+                molblock.append(line)
+            else:
+                if molblock:
+                    yield "\n".join(molblock)
+                    molblock = []
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _reapply_molblock_wedging(m):
+    for b in m.GetBonds():
+        # only do the wedgeing if the bond doesn't already have something there:
+        if b.GetBondDir() == BondDir.NONE and b.HasProp(
+                "_MolFileBondStereo"):
+            val = b.GetProp("_MolFileBondStereo")
+            if val == '1':
+                b.SetBondDir(BondDir.BEGINWEDGE)
+            elif val == '6':
+                b.SetBondDir(BondDir.BEGINDASH)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True, rdkload=True):
     fd, fpath = tempfile.mkstemp(text=True)
     os.write(fd, data)
     os.close(fd)
-    suppl = SDMolSupplier(fpath, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
-    res = [x for x in suppl if x]
+    suppl = _parse_sdf(fpath)
+    res = []
+    for moblock in suppl:
+        if rdkload:
+            mol = MolFromMolBlock(moblock, sanitize=sanitize, removeHs=sanitize, strictParsing=sanitize)
+            if mol:
+                _reapply_molblock_wedging(mol)
+                res.append(mol)
+        else:
+            res.append(moblock)
     os.remove(fpath)
     return res
 
@@ -115,38 +156,6 @@ def _getSMARTSString(mols, isomericSmiles=False):
 
 def _molFromSmarts(smarts):
     return MolFromSmarts(smarts)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-def _getXYZ(mols, computeCoords=True):
-
-    sio = io.StringIO()
-
-    for i, mol in enumerate(mols):
-
-        molH = mol
-        if computeCoords:
-            from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
-            molH = _2D23D(mol, None)
-
-        atoms = molH.GetAtoms()
-        sio.write(str(len(atoms)) + '\n')
-        sio.write('\n')
-
-        i = 0
-        for conf in molH.GetConformers():
-
-            for j in range(0, conf.GetNumAtoms()):
-
-                sio.write(atoms[i].GetSymbol() +
-                          '\t' + str(conf.GetAtomPosition(j).x) +
-                          '\t' + str(conf.GetAtomPosition(j).y) +
-                          '\t' + str(conf.GetAtomPosition(j).z)
-                          + '\n')
-                i += 1
-
-    return sio.getvalue()
 
 # ----------------------------------------------------------------------------------------------------------------------
 
