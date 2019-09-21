@@ -5,10 +5,7 @@ __author__ = 'mnowotka'
 import os
 import tempfile
 import io
-from rdkit.Chem import BondDir
-from rdkit.Chem import SDMolSupplier, SDWriter
-from rdkit.Chem import MolToSmarts, MolFromSmarts, MolFromMolBlock
-from rdkit.Chem import SmilesMolSupplier, SmilesWriter
+from rdkit import Chem
 from chembl_beaker.beaker.utils.functional import _apply, _call
 from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
 from chembl_beaker.beaker.utils.chemical_transformation import _getSubstructMatch
@@ -57,13 +54,13 @@ def _parse_sdf(filename):
 def _reapply_molblock_wedging(m):
     for b in m.GetBonds():
         # only do the wedgeing if the bond doesn't already have something there:
-        if b.GetBondDir() == BondDir.NONE and b.HasProp(
+        if b.GetBondDir() == Chem.BondDir.NONE and b.HasProp(
                 "_MolFileBondStereo"):
             val = b.GetProp("_MolFileBondStereo")
             if val == '1':
-                b.SetBondDir(BondDir.BEGINWEDGE)
+                b.SetBondDir(Chem.BondDir.BEGINWEDGE)
             elif val == '6':
-                b.SetBondDir(BondDir.BEGINDASH)
+                b.SetBondDir(Chem.BondDir.BEGINDASH)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -76,7 +73,7 @@ def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True, rdkloa
     res = []
     for moblock in suppl:
         if rdkload:
-            mol = MolFromMolBlock(moblock, sanitize=sanitize, removeHs=sanitize, strictParsing=sanitize)
+            mol = Chem.MolFromMolBlock(moblock, sanitize=sanitize, removeHs=sanitize, strictParsing=sanitize)
             if mol:
                 _reapply_molblock_wedging(mol)
                 res.append(mol)
@@ -93,8 +90,8 @@ def _parseSMILESData(data, computeCoords=False, delimiter=' ', smilesColumn=0, n
     fd, fpath = tempfile.mkstemp(text=True)
     os.write(fd, data)
     os.close(fd)
-    suppl = SmilesMolSupplier(fpath, delimiter=delimiter, smilesColumn=smilesColumn, nameColumn=nameColumn,
-                              titleLine=titleLine, sanitize=sanitize)
+    suppl = Chem.SmilesMolSupplier(fpath, delimiter=delimiter, smilesColumn=smilesColumn, nameColumn=nameColumn,
+                                   titleLine=titleLine, sanitize=sanitize)
     mols = [x for x in suppl if x]
 #    if not mols:
 #        mols = [MolFromSmiles(data, sanitize=sanitize)]
@@ -108,7 +105,7 @@ def _parseSMILESData(data, computeCoords=False, delimiter=' ', smilesColumn=0, n
 
 
 def _getSDFStream(f, mols):
-    w = SDWriter(f)
+    w = Chem.SDWriter(f)
     for m in mols:
         w.write(m)
     w.flush()
@@ -126,8 +123,8 @@ def _getSDFString(mols):
 
 def _getSMILESStream(f, mols, delimiter=' ', nameHeader='Name', includeHeader=True, isomericSmiles=False,
                      kekuleSmiles=False):
-    w = SmilesWriter(f, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
-                     isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
+    w = Chem.SmilesWriter(f, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
+                          isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
     for mol in mols:
         w.write(mol)
     w.flush()
@@ -148,14 +145,14 @@ def _getSMILESString(mols, delimiter=' ', nameHeader='Name', includeHeader=True,
 def _getSMARTSString(mols, isomericSmiles=False):
     sio = io.StringIO()
     for mol in mols:
-        sio.write(MolToSmarts(mol, isomericSmiles) + '\n')
+        sio.write(Chem.MolToSmarts(mol, isomericSmiles) + '\n')
     return sio.getvalue()
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
 def _molFromSmarts(smarts):
-    return MolFromSmarts(smarts)
+    return Chem.MolFromSmarts(smarts)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
