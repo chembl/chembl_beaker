@@ -8,7 +8,7 @@ from chembl_beaker.beaker.utils.functional import _call, _apply
 from chembl_beaker.beaker.utils.io import _parseMolData
 
 MAX_PASSES = 10
-RDK_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 
+CBL_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 
                  'NumRotatableBonds', 'MolLogP', 'NumAromaticRings']
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ def _neutralise_sulphoxide(mol):
     rxn = rdChemReactions.ReactionFromSmarts(smirks)
     frags = rdmolops.GetMolFrags(mol, asMols=True)
     n_frags = list(filter(lambda x: x is not None,
-                          [apply_rxn(frag, rxn) for frag in frags]))
+                          [_apply_rxn(frag, rxn) for frag in frags]))
     if len(n_frags) == 1:
         n_mol = n_frags[0]
     elif len(n_frags) == 2:
@@ -131,12 +131,12 @@ def _desc(mol, name):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _desc_list(mol):
+def _chembl_desc_list(mol):
     mol = _remove_isotope_info(mol)
     mol = _neutralise_sulphoxide(mol)
     descriptors = dict()
     for name, fn in Descriptors.descList:
-        if name in RDK_DESC_LIST:
+        if name in CBL_DESC_LIST:
             descriptors[name] = fn(mol)
     if 'MolecularFormula' not in descriptors:
         descriptors['MolecularFormula'] = CalcMolFormula(mol)
@@ -155,8 +155,24 @@ def _desc_list(mol):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _getDescriptors(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                                strictParsing=strictParsing), _desc_list)
+def _desc_list(mol, names):
+    descriptors = dict()
+    for name, fn in Descriptors.descList:
+        if not names or name in names:
+            descriptors[name] = fn(mol)
+    if 'MolecularFormula' not in descriptors:
+        descriptors['MolecularFormula'] = CalcMolFormula(mol)
+    return descriptors
 
 # ----------------------------------------------------------------------------------------------------------------------
+
+def _getDescriptors(data, ds, sanitize=True, removeHs=True, strictParsing=True):
+    if ds:
+        ds = ds.split(',')
+    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
+                                strictParsing=strictParsing), _desc_list, ds)
+# ----------------------------------------------------------------------------------------------------------------------
+
+def _getChemblDescriptors(data, sanitize=True, removeHs=True, strictParsing=True):
+    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
+                                strictParsing=strictParsing), _chembl_desc_list)
