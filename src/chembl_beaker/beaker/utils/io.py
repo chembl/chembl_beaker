@@ -47,6 +47,9 @@ def _parse_sdf(filename):
                 if molblock:
                     yield "\n".join(molblock)
                     molblock = []
+        # last molecule without "$$$$" line
+        if molblock:
+            yield "\n".join(molblock)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -71,14 +74,14 @@ def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True, rdkloa
     os.close(fd)
     suppl = _parse_sdf(fpath)
     res = []
-    for moblock in suppl:
+    for molblock in suppl:
         if rdkload:
-            mol = Chem.MolFromMolBlock(moblock, sanitize=sanitize, removeHs=sanitize, strictParsing=sanitize)
+            mol = Chem.MolFromMolBlock(molblock, sanitize=sanitize, removeHs=sanitize, strictParsing=sanitize)
             if mol:
                 _reapply_molblock_wedging(mol)
                 res.append(mol)
         else:
-            res.append(moblock)
+            res.append(molblock)
     os.remove(fpath)
     return res
 
