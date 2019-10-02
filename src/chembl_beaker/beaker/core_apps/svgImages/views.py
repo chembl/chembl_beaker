@@ -432,7 +432,7 @@ def smiles2SimilarityMapSvgView(data, params):
     kwargs['fingerprint'] = params.get('fingerprint', 'morgan')
     kwargs['format'] = 'svg'
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
