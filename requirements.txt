@@ -13,7 +13,7 @@ numpy==1.11.3
 olefile==0.44
 pandas==0.20.1
 PasteDeploy==1.5.2
-Pillow==4.2.1
+Pillow==6.2.0
 pycrypto==2.6.1
 pymongo==3.3.0
 pyparsing==2.2.0
