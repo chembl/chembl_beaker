@@ -2,6 +2,7 @@ __author__ = 'mnowotka'
 
 from chembl_beaker.beaker import app
 from chembl_beaker.beaker.core_apps.descriptors.impl import _getDescriptors, _getChemblDescriptors
+from chembl_beaker.beaker.utils.io import _parseFlag
 from bottle import request
 import base64
 import json
@@ -11,9 +12,8 @@ import json
 def chemblDescriptorsView(data, params):
 
     kwargs = dict()
-    kwargs['sanitize'] = bool(params.get('sanitize', True))
-    kwargs['removeHs'] = bool(params.get('removeHs', True))
-    kwargs['strictParsing'] = bool(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     return json.dumps(_getChemblDescriptors(data, **kwargs))
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -51,9 +51,8 @@ cURL examples:
 def descriptorsView(data, params):
 
     kwargs = dict()
-    kwargs['sanitize'] = bool(params.get('sanitize', True))
-    kwargs['removeHs'] = bool(params.get('removeHs', True))
-    kwargs['strictParsing'] = bool(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     kwargs['ds'] = params.get('descrs')
     return json.dumps(_getDescriptors(data, **kwargs))
 

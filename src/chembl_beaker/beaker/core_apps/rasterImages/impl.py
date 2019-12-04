@@ -68,9 +68,9 @@ def _mols2imageString(mols, size, legend, format, atomMapNumber=False, computeCo
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2image(data, size, legend, sanitize=True, removeHs=True, strictParsing=True, atomMapNumber=False,
-                computeCoords=False, kekulize=True):
-    return _mols2imageString(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+def _ctab2image(data, size, legend, loadMol=True, useRDKitChemistry=False, atomMapNumber=False,
+                computeCoords=False, kekulize=False):
+    return _mols2imageString(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry),
                              size, legend, 'PNG', atomMapNumber, computeCoords, kekulize=kekulize)
 
 # ----------------------------------------------------------------------------------------------------------------------

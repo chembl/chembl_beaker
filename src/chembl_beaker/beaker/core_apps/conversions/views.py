@@ -14,17 +14,13 @@ import base64
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-
 def ctab2smilesView(data, params):
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     kwargs['delimiter'] = params.get('delimiter', ' ')
     kwargs['nameHeader'] = params.get('nameHeader', 'Name')
     kwargs['includeHeader'] = _parseFlag(params.get('includeHeader', True))
-    kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
-    kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))
     return _ctab2smiles(data, **kwargs)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -73,10 +69,8 @@ cURL examples:
 
 def ctab2smartsView(data, params):
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
-    kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     return _ctab2smarts(data, **kwargs)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -119,47 +113,6 @@ cURL examples:
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2smartsView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-def ctab2xyzView(data, params):
-    computeCoords = _parseFlag(params.get('computeCoords', True))
-    return _ctab2xyz(data, computeCoords)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/ctab2xyz/<ctab>', method=['OPTIONS', 'GET'], name="ctab2xyz")
-def ctab2xyz(ctab):
-    """
-Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}ctab2xyz/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
-    curl -X GET "${BEAKER_ROOT_URL}ctab2xyz/"$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}ctab2xyz/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
-    """
-    data = base64.urlsafe_b64decode(ctab)
-    return ctab2xyzView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/ctab2xyz', method=['OPTIONS', 'POST'], name="ctab2xyz")
-def ctab2xyz():
-    """
-Converts the molecules in the CTAB to xyz format. CTAB is a single molfile
-cURL examples:
-
-    curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2xyz
-    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2xyz
-    curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}ctab2xyz
-    curl -X POST -F "file=@aspirin.mol" -F "computeCoords=0"  ${BEAKER_ROOT_URL}ctab2xyz
-    """
-
-    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
-    return ctab2xyzView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -385,8 +338,6 @@ def canonicalizeSmilesView(data, params):
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
     kwargs['nameHeader'] = params.get('nameHeader', 'Name')
     kwargs['includeHeader'] = _parseFlag(params.get('includeHeader', True))
-    kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
-    kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))
 
     if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
@@ -474,10 +425,8 @@ cURL examples:
 
 def ctab2inchiView(data, params):
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', False))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', False))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', False))
-    kwargs['rdkload'] = _parseFlag(params.get('rdkload', False))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', False))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     return _ctab2inchi(data, **kwargs) 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -517,10 +466,8 @@ cURL examples:
 
 def ctab2inchiKeyView(data, params):
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', False))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', False))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', False))
-    kwargs['rdkload'] = _parseFlag(params.get('rdkload', False))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', False))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     return _ctab2inchiKey(data, **kwargs)
 
 # ----------------------------------------------------------------------------------------------------------------------

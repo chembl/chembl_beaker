@@ -28,7 +28,10 @@ def _clean(mrv, dim=2):
     if not mol:
         print("No mol for block:\n %s" % block)
         return mrv
-    AllChem.Compute2DCoords(mol, bondLength=0.8)
+    
+    Chem.rdDepictor.SetPreferCoordGen(True)
+    Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
+    # AllChem.Compute2DCoords(mol, bondLength=0.8)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
 
@@ -95,7 +98,8 @@ def _molExport(structure, **kwargs):
     _apply([mol], ct._sssr)
 
     if not mol.GetNumConformers() or mol.GetConformer().Is3D():
-        AllChem.Compute2DCoords(mol, bondLength=0.8)
+        Chem.rdDepictor.SetPreferCoordGen(True)
+        Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
 
     if output_f == 'smiles':
         out_structure = Chem.MolToSmiles(mol)

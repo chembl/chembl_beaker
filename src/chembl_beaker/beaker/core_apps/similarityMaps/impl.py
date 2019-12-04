@@ -52,9 +52,8 @@ def _smiles2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='mo
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _sdf2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='morgan', sanitize=True, removeHs=True,
-                       strictParsing=True, format='png'):
-    return _similarityMap(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+def _sdf2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='morgan', loadMol=True, useRDKitChemistry=True, format='png'):
+    return _similarityMap(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry),
         width=width, height=height, radius=radius, fingerprint=fingerprint, format=format)
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -14,10 +14,8 @@ import base64
 
 def ctab22DView(data, params):
     kwargs = dict()
-    kwargs['multi'] = int(params.get('multi', False))
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
 
     return _ctab22D(data, **kwargs)
 
@@ -59,7 +57,6 @@ cURL examples:
 
 def smiles22DView(data, params):
     kwargs = dict()
-    kwargs['multi'] = int(params.get('multi', False))
     kwargs['computeCoords'] = False
     kwargs['delimiter'] = params.get('delimiter', ' ')
     kwargs['smilesColumn'] = int(params.get('smilesColumn', 0))
@@ -105,6 +102,25 @@ cURL examples:
     curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles22D
     curl -X POST --data-binary @aspirin_no_header.smi ${BEAKER_ROOT_URL}smiles22D
     curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles22D
+    """
+
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
+    return smiles22DView(data, request.params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+@app.route('/is3D', method=['OPTIONS', 'POST'], name="is3D")
+def is3D():
+    """
+Check if molecule is 3D.
+CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @aspirin_with_header.smi ${BEAKER_ROOT_URL}is3D
+    curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}is3D
+    curl -X POST --data-binary @aspirin_no_header.smi ${BEAKER_ROOT_URL}is3D
+    curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}is3D
     """
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()

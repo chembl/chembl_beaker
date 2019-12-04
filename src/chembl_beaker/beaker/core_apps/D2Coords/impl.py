@@ -17,19 +17,40 @@ def _2D22D(mol):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab22D(data, multi, sanitize=False, removeHs=False, strictParsing=True):
-    mols = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
+def _check3Dcoords(mol):
+    conf = mol.GetConformer()
+    if conf.Is3D():
+        return True
+
+    for i in range(mol.GetNumAtoms()):
+        if abs(conf.GetAtomPosition(i).z) >= 0.0001:
+            return True
+    return False
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _ctab22D(data, loadMol=True, useRDKitChemistry=False):
+    mols = _parseMolData(data, loadMol=True, useRDKitChemistry=False)
     optimisedMols = _apply(mols, _2D22D)
     return _getSDFString(optimisedMols)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _smiles22D(data, multi, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
+def _smiles22D(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
                titleLine=True, sanitize=False):
     mols = _parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter, smilesColumn=smilesColumn,
         nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize)
     optimisedMols = _apply(mols, _2D22D)
     return _getSDFString(optimisedMols)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _is3D(data, loadMol=True, useRDKitChemistry=False):
+    mols = _parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry)
+    flags = _apply(mols, _check3Dcoords)
+    return flags
 
 # ----------------------------------------------------------------------------------------------------------------------

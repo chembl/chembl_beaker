@@ -16,17 +16,13 @@ STATIC_ROOT = os.path.join(os.path.split(chembl_beaker.__file__)[0], 'static')
 PARAM_REGEX = re.compile(r'<[^<>]+>')
 DEFAULT_APPS = [
     "chembl_beaker.beaker",
-    "chembl_beaker.beaker.core_apps.calculations",
     "chembl_beaker.beaker.core_apps.conversions",
     "chembl_beaker.beaker.core_apps.descriptors",
-    "chembl_beaker.beaker.core_apps.fingerprints",
     "chembl_beaker.beaker.core_apps.marvin",
     "chembl_beaker.beaker.core_apps.mcs",
     "chembl_beaker.beaker.core_apps.osra",
     "chembl_beaker.beaker.core_apps.rasterImages",
     "chembl_beaker.beaker.core_apps.svgImages",
-    "chembl_beaker.beaker.core_apps.jsonImages",
-    "chembl_beaker.beaker.core_apps.ringInfo",
     "chembl_beaker.beaker.core_apps.standarisation",
     "chembl_beaker.beaker.core_apps.D2Coords",
     "chembl_beaker.beaker.core_apps.similarityMaps",

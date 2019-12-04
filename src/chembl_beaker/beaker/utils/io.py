@@ -68,18 +68,37 @@ def _reapply_molblock_wedging(m):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _parseMolData(data, sanitize=True, removeHs=True, strictParsing=True, rdkload=True):
+def _parse_molblock(molblock, useRDKitChemistry=False):
+    m = Chem.MolFromMolBlock(molblock, sanitize=useRDKitChemistry, 
+                             removeHs=useRDKitChemistry)
+    if not useRDKitChemistry:
+        # the RDKit has, by default, removed bond wedging information from the molecule
+        # put that back in:
+        _reapply_molblock_wedging(m)
+        # Set the stereochemistry of double bonds
+        # This block can be removed if github #X ends up being accepted and fixed
+        anybonds = []
+        for bond in m.GetBonds():
+            if bond.GetStereo() == Chem.BondStereo.STEREOANY:
+                anybonds.append(bond.GetIdx())
+        Chem.SetBondStereoFromDirections(m)
+        for bidx in anybonds:
+            m.GetBondWithIdx(bidx).SetStereo(Chem.BondStereo.STEREOANY)    
+    return m
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _parseMolData(data, loadMol=False, useRDKitChemistry=False):
     fd, fpath = tempfile.mkstemp(text=True)
     os.write(fd, data)
     os.close(fd)
     suppl = _parse_sdf(fpath)
     res = []
     for molblock in suppl:
-        if rdkload:
-            mol = Chem.MolFromMolBlock(molblock, sanitize=sanitize, removeHs=sanitize, strictParsing=sanitize)
-            if mol:
-                _reapply_molblock_wedging(mol)
-                res.append(mol)
+        if loadMol:
+            mol = _parse_molblock(molblock, useRDKitChemistry=useRDKitChemistry)
+            res.append(mol)
         else:
             res.append(molblock)
     os.remove(fpath)
@@ -124,10 +143,8 @@ def _getSDFString(mols):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _getSMILESStream(f, mols, delimiter=' ', nameHeader='Name', includeHeader=True, isomericSmiles=False,
-                     kekuleSmiles=False):
-    w = Chem.SmilesWriter(f, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
-                          isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
+def _getSMILESStream(f, mols, delimiter=' ', nameHeader='Name', includeHeader=True):
+    w = Chem.SmilesWriter(f, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader)
     for mol in mols:
         w.write(mol)
     w.flush()
@@ -135,11 +152,9 @@ def _getSMILESStream(f, mols, delimiter=' ', nameHeader='Name', includeHeader=Tr
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _getSMILESString(mols, delimiter=' ', nameHeader='Name', includeHeader=True, isomericSmiles=False,
-                     kekuleSmiles=False):
+def _getSMILESString(mols, delimiter=' ', nameHeader='Name', includeHeader=True):
     sio = io.StringIO()
-    _getSMILESStream(sio, mols, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader,
-                     isomericSmiles=isomericSmiles, kekuleSmiles=kekuleSmiles)
+    _getSMILESStream(sio, mols, delimiter=delimiter, nameHeader=nameHeader, includeHeader=includeHeader)
     return sio.getvalue()
 
 # ----------------------------------------------------------------------------------------------------------------------

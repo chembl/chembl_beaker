@@ -11,7 +11,6 @@ from chembl_beaker.beaker import app, config, loadPlugins, loadApps
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-
 def main(conf_path=None):
 
     standalone = False

@@ -1,4 +1,4 @@
-__author__ = 'mnowotka'
+__author__ = 'efelix'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -166,13 +166,11 @@ def _desc_list(mol, names):
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _getDescriptors(data, ds, sanitize=True, removeHs=True, strictParsing=True):
+def _getDescriptors(data, ds, loadMol=True, useRDKitChemistry=True):
     if ds:
         ds = ds.split(',')
-    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                                strictParsing=strictParsing), _desc_list, ds)
+    return _apply(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry), _desc_list, ds)
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _getChemblDescriptors(data, sanitize=True, removeHs=True, strictParsing=True):
-    return _apply(_parseMolData(data, sanitize=sanitize, removeHs=removeHs,
-                                strictParsing=strictParsing), _chembl_desc_list)
+def _getChemblDescriptors(data, loadMol=True, useRDKitChemistry=True):
+    return _apply(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry), _chembl_desc_list)

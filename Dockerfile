@@ -1,5 +1,7 @@
 FROM debian:jessie-slim
 
+ENV PYTHONUNBUFFERED 1
+
 # install required ubuntu packages
 RUN apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends ca-certificates libxrender1 libxext6 wget bzip2 libgraphicsmagick++3 libopenbabel4 libpotrace0 && \
@@ -24,6 +26,9 @@ RUN conda env create -n chembl-beaker -f /tmp/environment.yml
 
 # activate env (add conda env bin to path)
 ENV PATH /opt/conda/envs/chembl-beaker/bin:$PATH
+
+# install new standardiser
+RUN pip install https://github.com/chembl/ChEMBL_Structure_Pipeline/archive/master.zip
 
 # install beaker from branch
 RUN pip install https://github.com/chembl/chembl_beaker/archive/py3.zip

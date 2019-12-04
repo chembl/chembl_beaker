@@ -82,9 +82,8 @@ cURL examples:
 def sdf2SimilarityMapView(data, params):
 
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     kwargs['width'] = int(params.get('width', 500))
     kwargs['height'] = int(params.get('height', 500))
     kwargs['radius'] = int(params.get('radius', 2))
