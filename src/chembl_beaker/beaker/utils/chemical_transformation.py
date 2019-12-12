@@ -2,7 +2,7 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker.utils.functional import _apply, _call
+from beaker.utils.functional import _apply, _call
 from rdkit.Chem.AllChem import GenerateDepictionMatching2DStructure
 from rdkit.Chem import Kekulize
 from rdkit.Chem import AddHs

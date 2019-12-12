@@ -3,10 +3,10 @@ __author__ = 'efelix'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from rdkit.Chem import AllChem
-from chembl_beaker.beaker import app
+from beaker import app
 from bottle import request
-from chembl_beaker.beaker.core_apps.D2Coords.impl import _ctab22D, _smiles22D
-from chembl_beaker.beaker.utils.io import _parseFlag
+from beaker.core_apps.D2Coords.impl import _ctab22D, _smiles22D
+from beaker.utils.io import _parseFlag
 import base64
 
 # ----------------------------------------------------------------------------------------------------------------------

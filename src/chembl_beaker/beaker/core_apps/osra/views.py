@@ -5,9 +5,9 @@ __author__ = 'mnowotka'
 from bottle import request
 import base64
 import os
-from chembl_beaker.beaker import app, config
-from chembl_beaker.beaker.utils.io import _parseFlag
-from chembl_beaker.beaker.core_apps.osra.impl import _image2ctab, _image2smiles
+from beaker import app, config
+from beaker.utils.io import _parseFlag
+from beaker.core_apps.osra.impl import _image2ctab, _image2smiles
 
 # ----------------------------------------------------------------------------------------------------------------------
 

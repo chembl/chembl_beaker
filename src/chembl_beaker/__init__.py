@@ -3,7 +3,7 @@ __author__ = 'mnowotka'
 import rdkit
 
 try:
-    __version__ = __import__('pkg_resources').get_distribution('chembl_beaker').version
+    __version__ = '1.5.0'
 except Exception as e:
     __version__ = 'development'
 

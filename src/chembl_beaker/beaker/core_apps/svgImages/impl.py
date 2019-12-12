@@ -19,12 +19,12 @@ except ImportError:
 
 from itertools import cycle, islice
 from rdkit import Chem
-from chembl_beaker.beaker.utils.functional import _apply, _call
-from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
-from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
-from chembl_beaker.beaker.utils.io import _getMatches
+from beaker.utils.functional import _apply, _call
+from beaker.utils.io import _parseMolData, _parseSMILESData
+from beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
+from beaker.utils.io import _getMatches
 from rdkit.Chem.Draw import rdMolDraw2D, MolDrawOptions
-import chembl_beaker.beaker.utils.chemical_transformation as ct
+import beaker.utils.chemical_transformation as ct
 
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -2,9 +2,9 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker import app
-from chembl_beaker.beaker.core_apps.mcs.impl import _mcs
-from chembl_beaker.beaker.utils.io import _parseFlag
+from beaker import app
+from beaker.core_apps.mcs.impl import _mcs
+from beaker.utils.io import _parseFlag
 from bottle import request
 import base64
 

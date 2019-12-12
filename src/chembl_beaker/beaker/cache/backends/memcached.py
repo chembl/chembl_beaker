@@ -5,9 +5,9 @@
 import json
 import pickle
 
-from chembl_beaker.beaker.cache.backends.base import BaseCache
-from chembl_beaker.beaker import config
-from chembl_beaker.beaker.utils.functional import cached_property
+from beaker.cache.backends.base import BaseCache
+from beaker import config
+from beaker.utils.functional import cached_property
 
 #-----------------------------------------------------------------------------------------------------------------------
 

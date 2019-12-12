@@ -6,9 +6,9 @@ import os
 import tempfile
 import io
 from rdkit import Chem
-from chembl_beaker.beaker.utils.functional import _apply, _call
-from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
-from chembl_beaker.beaker.utils.chemical_transformation import _getSubstructMatch
+from beaker.utils.functional import _apply, _call
+from beaker.utils.chemical_transformation import _computeCoords
+from beaker.utils.chemical_transformation import _getSubstructMatch
 
 # ----------------------------------------------------------------------------------------------------------------------
 

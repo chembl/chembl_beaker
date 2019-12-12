@@ -7,7 +7,7 @@ __author__ = 'mnowotka'
 import json
 from bottle import run
 from optparse import OptionParser
-from chembl_beaker.beaker import app, config, loadPlugins, loadApps
+from beaker import app, config, loadPlugins, loadApps
 
 # ----------------------------------------------------------------------------------------------------------------------
 

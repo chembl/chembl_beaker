@@ -3,12 +3,12 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from rdkit import Chem
-from chembl_beaker.beaker.utils.functional import _apply
-from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData, _getSMILESString, _getSDFString
-from chembl_beaker.beaker.utils.io import _getSMARTSString
-from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords
-from chembl_beaker.beaker.utils.chemical_transformation import _sanitize
-from chembl_beaker.beaker.utils.io import _molFromSmarts
+from beaker.utils.functional import _apply
+from beaker.utils.io import _parseMolData, _parseSMILESData, _getSMILESString, _getSDFString
+from beaker.utils.io import _getSMARTSString
+from beaker.utils.chemical_transformation import _computeCoords
+from beaker.utils.chemical_transformation import _sanitize
+from beaker.utils.io import _molFromSmarts
 
 # ----------------------------------------------------------------------------------------------------------------------
 

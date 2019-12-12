@@ -2,8 +2,8 @@ __author__ = 'mnowotka'
 
 import os
 import unittest
-import chembl_beaker
-from chembl_beaker.run_beaker import app as beaker
+import beaker
+from beaker.run_beaker import app as beaker
 import base64
 from webtest import TestApp
 import bottle
@@ -17,7 +17,7 @@ class TestServer(unittest.TestCase):
     def setUp(self):
         bottle.debug(True)
         self.app = TestApp(beaker)
-        dr = os.path.dirname(chembl_beaker.__file__)
+        dr = os.path.dirname(beaker.__file__)
         with open(os.path.join(dr, "samples", "sample.sdf")) as f:
             self.sample_mol_data = f.read()
 

@@ -4,14 +4,13 @@ from lxml.etree import _ElementTree, Element, tostring
 from lxml import objectify
 from lxml.objectify import ObjectifiedElement, StringElement
 import json
-from chembl_beaker import __version__ as version
 from datetime import datetime, date
 import rdkit
 from rdkit import Chem
 from rdkit.Chem.rdchem import GetPeriodicTable
 from rdkit.Chem import rdmolops
-import chembl_beaker.beaker.utils.chemical_transformation as ct
-from chembl_beaker.beaker.utils.functional import _apply, _call
+import beaker.utils.chemical_transformation as ct
+from beaker.utils.functional import _apply, _call
 from io import StringIO
 import os
 import getpass

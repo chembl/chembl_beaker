@@ -2,38 +2,53 @@ __author__ = 'mnowotka'
 
 import bottle
 from bottle import Bottle
-import chembl_beaker
-from chembl_beaker.beaker.utils import import_class
+import beaker
+from beaker.utils import import_class
 import re
 import os
 import json
+import rdkit
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+try:
+    __version__ = '1.5.0'
+except Exception as e:
+    __version__ = 'development'
+
+
+rdkversion = rdkit.__version__.split(".")
+if rdkversion < ["2019", "09", "2"]:
+    raise ValueError("need an RDKit version >= 2019.09.2")
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 HTTP_CODES = bottle.HTTP_CODES.copy()
 HTTP_CODES = dict((y, x) for x, y in list(HTTP_CODES.items()))
-STATIC_ROOT = os.path.join(os.path.split(chembl_beaker.__file__)[0], 'static')
+STATIC_ROOT = "chembl_beaker/static"
+
 PARAM_REGEX = re.compile(r'<[^<>]+>')
 DEFAULT_APPS = [
-    "chembl_beaker.beaker",
-    "chembl_beaker.beaker.core_apps.conversions",
-    "chembl_beaker.beaker.core_apps.descriptors",
-    "chembl_beaker.beaker.core_apps.marvin",
-    "chembl_beaker.beaker.core_apps.mcs",
-    "chembl_beaker.beaker.core_apps.osra",
-    "chembl_beaker.beaker.core_apps.rasterImages",
-    "chembl_beaker.beaker.core_apps.svgImages",
-    "chembl_beaker.beaker.core_apps.standarisation",
-    "chembl_beaker.beaker.core_apps.D2Coords",
-    "chembl_beaker.beaker.core_apps.similarityMaps",
-    "chembl_beaker.beaker.core_apps.autoDocs",
+    "beaker",
+    "beaker.core_apps.conversions",
+    "beaker.core_apps.descriptors",
+    "beaker.core_apps.marvin",
+    "beaker.core_apps.mcs",
+    "beaker.core_apps.osra",
+    "beaker.core_apps.rasterImages",
+    "beaker.core_apps.svgImages",
+    "beaker.core_apps.standarisation",
+    "beaker.core_apps.D2Coords",
+    "beaker.core_apps.similarityMaps",
+    "beaker.core_apps.autoDocs",
     ]
 
 DEFAULT_PLUGINS = [
-    'chembl_beaker.beaker.plugins.enableCors.EnableCors',
-    'chembl_beaker.beaker.plugins.restrictions.Restrictions',
-    'chembl_beaker.beaker.plugins.throttling.Throttling',
-    'chembl_beaker.beaker.plugins.caching.Caching',
+    'beaker.plugins.enableCors.EnableCors',
+    'beaker.plugins.restrictions.Restrictions',
+    'beaker.plugins.throttling.Throttling',
+    'beaker.plugins.caching.Caching',
 ]
 
 # ----------------------------------------------------------------------------------------------------------------------

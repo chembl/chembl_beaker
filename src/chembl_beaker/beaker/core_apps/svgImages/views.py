@@ -2,12 +2,12 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker import app
+from beaker import app
 from bottle import request, response
-from chembl_beaker.beaker.utils.io import _parseFlag
-from chembl_beaker.beaker.core_apps.svgImages.impl import _ctab2svg, _smiles2svg, _inchi2svg
-from chembl_beaker.beaker.core_apps.svgImages.impl import _highlightCtabFragmentSVG, _highlightSmilesFragmentSVG
-from chembl_beaker.beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
+from beaker.utils.io import _parseFlag
+from beaker.core_apps.svgImages.impl import _ctab2svg, _smiles2svg, _inchi2svg
+from beaker.core_apps.svgImages.impl import _highlightCtabFragmentSVG, _highlightSmilesFragmentSVG
+from beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
 from bottle import request, response
 import base64
 

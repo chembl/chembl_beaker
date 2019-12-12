@@ -2,10 +2,10 @@ __author__ = 'efelix'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker import app
+from beaker import app
 from bottle import request, response
-from chembl_beaker.beaker.utils.io import _parseFlag
-from chembl_beaker.beaker.core_apps.standarisation.impl import _check, _standardise, _get_parent
+from beaker.utils.io import _parseFlag
+from beaker.core_apps.standarisation.impl import _check, _standardise, _get_parent
 import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -24,13 +24,13 @@ def getParentView(data, params):
 @app.route('/getParent', method=['OPTIONS', 'POST'], name='getParent')
 def get_parent():
     """
-    Remove salt/solvates.
-    Examples and documentation: []()
-    CTAB is either single molfile or SDF file.
-    cURL examples:
+Remove salt/solvates.
+Examples and documentation: []()
+CTAB is either single molfile or SDF file.
+cURL examples:
 
-    curl -X POST --data-binary @unsalt.mol ${BEAKER_ROOT_URL}unsalt
-    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}unsalt
+    curl -X POST --data-binary @unsalt.mol ${BEAKER_ROOT_URL}getParent
+    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}getParent
     """
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
@@ -52,10 +52,10 @@ def standardiseView(data, params):
 @app.route('/standardise', method=['OPTIONS', 'POST'], name='standardise')
 def standardise():
     """
-    Get standardised molecule.
-    Examples and documentation: []()
-    CTAB is either single molfile or SDF file.
-    cURL examples:
+Get standardised molecule.
+Examples and documentation: []()
+CTAB is either single molfile or SDF file.
+cURL examples:
 
     curl -X POST --data-binary @standardise.mol ${BEAKER_ROOT_URL}standardise
     curl -X POST -F "file=@standardise.mol" ${BEAKER_ROOT_URL}standardise
@@ -80,6 +80,14 @@ def checkView(data, params):
 @app.route('/check', method=['OPTIONS', 'POST'], name='check')
 def check():
     """
+Check molecule for issues.
+Examples and documentation: []()
+CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @standardise.mol ${BEAKER_ROOT_URL}check
+    curl -X POST -F "file=@standardise.mol" ${BEAKER_ROOT_URL}check
+
     """
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return checkView(data, request.params)

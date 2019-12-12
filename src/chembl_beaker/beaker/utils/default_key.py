@@ -5,7 +5,7 @@ __author__ = 'mnowotka'
 from datetime import datetime
 import pytz
 import base64
-from chembl_beaker.beaker import config
+from beaker import config
 
 DATE_FORMAT = '%y-%m-%d %H%M%S'
 

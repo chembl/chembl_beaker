@@ -1,10 +1,10 @@
-from chembl_beaker.beaker import config
-from chembl_beaker.beaker.utils import import_class
-from chembl_beaker.beaker.throttle.backends.base import BaseThrottle
+from beaker import config
+from beaker.utils import import_class
+from beaker.throttle.backends.base import BaseThrottle
 
 throttle = None
 
-throttle_class = config.get('throttle_backend', 'chembl_beaker.beaker.throttle.backends.cacheThrottle.CacheThrottle')
+throttle_class = config.get('throttle_backend', 'beaker.throttle.backends.cacheThrottle.CacheThrottle')
 
 if throttle_class:
     try:

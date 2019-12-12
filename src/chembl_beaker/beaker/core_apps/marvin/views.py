@@ -3,8 +3,8 @@ __author__ = 'mnowotka'
 from bottle import request, response
 import json
 
-from chembl_beaker.beaker import app
-from chembl_beaker.beaker.core_apps.marvin.impl import _clean, _stereoInfo, _molExport, _hydrogenize
+from beaker import app
+from beaker.core_apps.marvin.impl import _clean, _stereoInfo, _molExport, _hydrogenize
 
 
 # ----------------------------------------------------------------------------------------------------------------------

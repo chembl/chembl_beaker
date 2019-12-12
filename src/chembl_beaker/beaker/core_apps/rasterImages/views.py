@@ -2,11 +2,11 @@ __author__ = 'mnowotka'
 
 from bottle import request, response
 import base64
-from chembl_beaker.beaker.utils.io import _parseFlag
-from chembl_beaker.beaker import app
-from chembl_beaker.beaker.core_apps.rasterImages.impl import _ctab2image, _smiles2image
-from chembl_beaker.beaker.core_apps.rasterImages.impl import _highlightCtabFragment, _highlightSmilesFragment
-from chembl_beaker.beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
+from beaker.utils.io import _parseFlag
+from beaker import app
+from beaker.core_apps.rasterImages.impl import _ctab2image, _smiles2image
+from beaker.core_apps.rasterImages.impl import _highlightCtabFragment, _highlightSmilesFragment
+from beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
 from bottle import request, response
 import base64
 

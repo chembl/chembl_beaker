@@ -6,9 +6,9 @@ from datetime import datetime
 import pytz
 import base64
 from bottle import request, response
-from chembl_beaker.beaker.throttle import throttle
-from chembl_beaker.beaker import config
-from chembl_beaker.beaker.utils import import_class
+from beaker.throttle import throttle
+from beaker import config
+from beaker.utils import import_class
 
 DATE_FORMAT = '%y-%m-%d %H%M%S'
 

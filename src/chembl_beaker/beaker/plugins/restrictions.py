@@ -5,7 +5,7 @@ __author__ = 'mnowotka'
 import json
 from bottle import BaseRequest, request, response
 from netaddr import IPNetwork, IPAddress
-from chembl_beaker.beaker import config
+from beaker import config
 
 #-----------------------------------------------------------------------------------------------------------------------
 

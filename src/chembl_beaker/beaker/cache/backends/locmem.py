@@ -2,9 +2,9 @@ __author__ = 'mnowotka'
 
 import pickle
 import time
-from chembl_beaker.beaker.cache.backends.base import BaseCache
-from chembl_beaker.beaker.utils.synch import RWLock
-from chembl_beaker.beaker import config
+from beaker.cache.backends.base import BaseCache
+from beaker.utils.synch import RWLock
+from beaker import config
 
 #-----------------------------------------------------------------------------------------------------------------------
 

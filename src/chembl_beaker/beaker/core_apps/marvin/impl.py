@@ -4,9 +4,9 @@ __author__ = 'mnowotka'
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from chembl_beaker.beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
-from chembl_beaker.beaker.utils.functional import _apply, _call
-import chembl_beaker.beaker.utils.chemical_transformation as ct
+from beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
+from beaker.utils.functional import _apply, _call
+import beaker.utils.chemical_transformation as ct
 
 
 def _hydrogenize(block, hydro):

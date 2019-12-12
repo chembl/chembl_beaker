@@ -6,8 +6,8 @@ import base64
 import time
 import json
 from bottle import request, response
-from chembl_beaker.beaker import config
-from chembl_beaker.beaker.cache import cache
+from beaker import config
+from beaker.cache import cache
 
 if not cache:
     print("Caching plugin enabled but no cache backend configured, cashing will be skipped...")

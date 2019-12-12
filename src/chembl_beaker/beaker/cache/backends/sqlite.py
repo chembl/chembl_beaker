@@ -8,8 +8,8 @@ from queue import Queue
 import base64
 import sqlite3
 from datetime import datetime
-from chembl_beaker.beaker.cache.backends.base import BaseCache
-from chembl_beaker.beaker import config
+from beaker.cache.backends.base import BaseCache
+from beaker import config
 import pytz
 
 #-----------------------------------------------------------------------------------------------------------------------

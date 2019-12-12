@@ -4,7 +4,7 @@ __author__ = 'mnowotka'
 
 from rdkit import Chem
 from rdkit.Chem import rdFMCS as MCS
-from chembl_beaker.beaker.utils.io import _parseMolData
+from beaker.utils.io import _parseMolData
 
 
 # ----------------------------------------------------------------------------------------------------------------------

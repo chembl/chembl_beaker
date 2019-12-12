@@ -5,9 +5,9 @@ __author__ = 'mnowotka'
 
 import io
 from rdkit.Chem.Draw import SimilarityMaps
-from chembl_beaker.beaker.utils.functional import _apply, _call
-from chembl_beaker.beaker.utils.io import _parseSMILESData, _parseMolData
-import chembl_beaker.beaker.utils.chemical_transformation as ct
+from beaker.utils.functional import _apply, _call
+from beaker.utils.io import _parseSMILESData, _parseMolData
+import beaker.utils.chemical_transformation as ct
 
 try:
     import matplotlib

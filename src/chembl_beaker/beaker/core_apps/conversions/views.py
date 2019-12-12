@@ -2,14 +2,14 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker import app
+from beaker import app
 from bottle import request
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2smarts
-from chembl_beaker.beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey
-from chembl_beaker.beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
-from chembl_beaker.beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
-from chembl_beaker.beaker.core_apps.conversions.impl import _smarts2ctab
-from chembl_beaker.beaker.utils.io import _parseFlag
+from beaker.core_apps.conversions.impl import _ctab2smiles, _smiles2ctab, _inchi2ctab, _ctab2smarts
+from beaker.core_apps.conversions.impl import _ctab2inchi, _inchi2inchiKey
+from beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiKey
+from beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
+from beaker.core_apps.conversions.impl import _smarts2ctab
+from beaker.utils.io import _parseFlag
 import base64
 
 # ----------------------------------------------------------------------------------------------------------------------

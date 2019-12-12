@@ -2,8 +2,8 @@ __author__ = 'efelix'
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from chembl_beaker.beaker.utils.functional import _apply
-from chembl_beaker.beaker.utils.io import _parseMolData, _getSDFString, _parseSMILESData
+from beaker.utils.functional import _apply
+from beaker.utils.io import _parseMolData, _getSDFString, _parseSMILESData
 
 
 # ----------------------------------------------------------------------------------------------------------------------

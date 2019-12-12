@@ -4,8 +4,8 @@ __author__ = 'efelix'
 
 from rdkit.Chem import Descriptors, rdChemReactions, rdmolops, CombineMols, SanitizeMol, MolToSmiles
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
-from chembl_beaker.beaker.utils.functional import _call, _apply
-from chembl_beaker.beaker.utils.io import _parseMolData
+from beaker.utils.functional import _call, _apply
+from beaker.utils.io import _parseMolData
 
 MAX_PASSES = 10
 CBL_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 

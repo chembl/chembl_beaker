@@ -2,12 +2,12 @@ __author__ = 'mnowotka'
 
 from collections import OrderedDict
 from bottle import response, static_file
-from chembl_beaker import __version__ as version
+from beaker import __version__ as version
 import json
 
-from chembl_beaker.beaker import app, config
-from chembl_beaker.beaker import STATIC_ROOT
-from chembl_beaker.beaker import PARAM_REGEX
+from beaker import app, config
+from beaker import STATIC_ROOT
+from beaker import PARAM_REGEX
 
 EXCLUDED_METHODS = config.get('excluded_methods')
 
