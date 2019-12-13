@@ -16,3 +16,4 @@ dependencies:
     - bottle==0.12.18
     - netaddr==0.7.19
     - pymongo==3.10
+    - WebTest==2.0

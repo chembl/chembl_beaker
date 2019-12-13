@@ -3,7 +3,7 @@ __author__ = 'mnowotka'
 import os
 import unittest
 import beaker
-from beaker.run_beaker import app as beaker
+from run_beaker import app as beaker
 import base64
 from webtest import TestApp
 import bottle
@@ -17,7 +17,7 @@ class TestServer(unittest.TestCase):
     def setUp(self):
         bottle.debug(True)
         self.app = TestApp(beaker)
-        dr = os.path.dirname(beaker.__file__)
+        dr = os.path.dirname("src/chembl_beaker/samples")
         with open(os.path.join(dr, "samples", "sample.sdf")) as f:
             self.sample_mol_data = f.read()
 
@@ -53,14 +53,6 @@ class TestServer(unittest.TestCase):
 
         self.assertRegex(allsmiles[2], b'CC\(CC\(=O\)c1ccc\(-c2ccccc2\)cc1\)C\(=O\)O [2]?')
         self.assertEqual(allsmiles[3], b'C*CN(CC)CC#CC.Nc1cc(C2(C=O)CCCC2)ccc1N1CC1 3')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_ctab2json(self):
-        r = self.app.post("/ctab2json", self.sample_mol_data)
-        self.assertEqual(r.status_int, 200)
-        self.assertEqual(r.content_type, 'application/json')
-        self.assertTrue('path' in r, r)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -114,7 +106,7 @@ class TestServer(unittest.TestCase):
         txt=sio.getvalue()
         ctab_post = self.app.post("/mcs", txt)
         self.assertEqual(ctab_post.status_int, 200)
-        self.assertTrue(ctab_post.body.decode("utf-8") in ('[#6]:1:[#6]:[#6]:[#6]:[#6]:[#6]:1', '[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1'))
+        self.assertEqual(ctab_post.body.decode("utf-8"), '[#6]1=[#6]-[#6]=[#6]-[#6]=[#6]-1')
 
         ebtxt = base64.urlsafe_b64encode(txt.encode("utf-8"))
         estxt = str(ebtxt, "utf-8")
@@ -125,56 +117,7 @@ class TestServer(unittest.TestCase):
 
         ctab_post = self.app.post("/mcs?asSmiles=1", txt)
         self.assertEqual(ctab_post.status_int, 200)
-        self.assertEqual(ctab_post.body, b'c1ccccc1')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_break_bonds(self):
-        input_smiles = "[Na]OC(=O)c1ccccc1"
-        r = self.app.post("/smiles2ctab", input_smiles)
-        self.assertEqual(r.status_int, 200)
-        mol = r.body
-        r = self.app.post("/breakBonds", mol)
-        self.assertEqual(r.status_int, 200)
-        mol = r.body
-        r = self.app.post("/ctab2smiles", mol)
-        self.assertEqual(r.status_int, 200)
-        bb_smiles = r.body
-
-        # accepts either [Na+].O=C([O-])c1ccccc1 or 'O=C([O-])c1ccccc1.[Na+]'
-        self.assertTrue(re.match(b'SMILES Name \n\[Na\+\]\.O=C\(\[O\-\]\)c1ccccc1 [0]?\n', bb_smiles) or
-                        re.match(b'SMILES Name \nO=C\(\[O\-\]\)c1ccccc1\.\[Na\+\] [0]?\n', bb_smiles),
-                        msg="Response body doesn't match any of the valid regular expressions")
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_neutralise(self):
-        input_smiles = "C(C(=O)[O-])(Cc1n[n-]nn1)(C[NH3+])(C[N+](=O)[O-])"
-        r = self.app.post("/smiles2ctab", input_smiles)
-        self.assertEqual(r.status_int, 200)
-        mol = r.body
-        r = self.app.post("/neutralise", mol)
-        self.assertEqual(r.status_int, 200)
-        mol = r.body
-        r = self.app.post("/ctab2smiles", mol)
-        self.assertEqual(r.status_int, 200)
-        n_smiles = r.body
-        self.assertRegex(n_smiles, b'SMILES Name \nNCC\(Cc1nn\[nH\]n1\)\(C\[N\+\]\(=O\)\[O\-\]\)C\(=O\)O [0]?\n')
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-    def test_rules(self):
-        input_smiles = "Oc1nccc2cc[nH]c(=N)c12"
-        r = self.app.post("/smiles2ctab", input_smiles)
-        self.assertEqual(r.status_int, 200)
-        mol = r.body
-        r = self.app.post("/rules", mol)
-        self.assertEqual(r.status_int, 200)
-        mol = r.body
-        r = self.app.post("/ctab2smiles", mol)
-        self.assertEqual(r.status_int, 200)
-        r_smiles = r.body
-        self.assertRegex(r_smiles, b'SMILES Name \nNc1nccc2cc\[nH\]c\(=O\)c12 [0]?\n')
+        self.assertEqual(ctab_post.body, b'C1=CC=CC=C1')
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -189,7 +132,7 @@ class TestServer(unittest.TestCase):
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         s_smiles = r.body
-        self.assertRegex(s_smiles, b'SMILES Name \nNCc1ccc\(CC\(=O\)O\)cc1 [0]?\n')
+        self.assertEqual(s_smiles, b'SMILES Name \nNCc1ccc(CC(=O)[O-])cc1.O.[Na+].c1nnn[nH]1 0\n')
 
 # ----------------------------------------------------------------------------------------------------------------------
 
