@@ -2,8 +2,8 @@ __author__ = 'mnowotka'
 
 import pytz
 from datetime import datetime, timedelta
-from chembl_beaker.beaker.throttle.backends.base import BaseThrottle
-from chembl_beaker.beaker.cache import cache
+from beaker.throttle.backends.base import BaseThrottle
+from beaker.cache import cache
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -13,7 +13,7 @@ class CacheThrottle(BaseThrottle):
         BaseThrottle.__init__(self)
         if not cache:
             err = "CacheThrottle class can't work without cache..."
-            print err
+            print(err)
             raise Exception(err)
 
     def get_remaining_rates(self, identifier, type='IP'):

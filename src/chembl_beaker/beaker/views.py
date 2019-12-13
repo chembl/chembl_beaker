@@ -2,10 +2,10 @@ __author__ = 'mnowotka'
 
 #-----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker import app
-from chembl_beaker import __version__ as version
+from beaker import app
+from beaker import __version__ as version
 from bottle import static_file
-from chembl_beaker.beaker import STATIC_ROOT
+from beaker import STATIC_ROOT
 
 #-----------------------------------------------------------------------------------------------------------------------
 

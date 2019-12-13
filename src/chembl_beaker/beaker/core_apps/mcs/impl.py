@@ -3,19 +3,17 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from rdkit import Chem
-try:
-    from rdkit.Chem import rdFMCS as MCS
-except:
-    from rdkit.Chem import MCS
-from chembl_beaker.beaker.utils.io import _parseMolData
+from rdkit.Chem import rdFMCS as MCS
+from beaker.utils.io import _parseMolData
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _mcs(data, asSmiles, atomCompare, bondCompare, threshold, ringMatchesRingOnly, completeRingsOnly, sanitize=True,
-         removeHs=True, strictParsing=True, isomericSmiles=False, canonical=True, kekuleSmiles=False):
-    ms = _parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing)
+def _mcs(data, asSmiles, atomCompare, bondCompare, threshold, ringMatchesRingOnly, completeRingsOnly, loadMol=False, useRDKitChemistry=False,
+         isomericSmiles=False, canonical=True, kekuleSmiles=False):
+    ms = _parseMolData(data, loadMol=loadMol,
+                       useRDKitChemistry=useRDKitChemistry)
     if not ms:
         return
     if len(ms) == 1:
@@ -65,4 +63,3 @@ def _mcs(data, asSmiles, atomCompare, bondCompare, threshold, ringMatchesRingOnl
     return res
 
 # ----------------------------------------------------------------------------------------------------------------------
-

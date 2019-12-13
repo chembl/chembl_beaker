@@ -2,11 +2,11 @@ __author__ = 'mnowotka'
 
 from bottle import request, response
 import base64
-from chembl_beaker.beaker.utils.io import _parseFlag
-from chembl_beaker.beaker import app
-from chembl_beaker.beaker.core_apps.rasterImages.impl import _ctab2image, _smiles2image
-from chembl_beaker.beaker.core_apps.rasterImages.impl import _highlightCtabFragment, _highlightSmilesFragment
-from chembl_beaker.beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
+from beaker.utils.io import _parseFlag
+from beaker import app
+from beaker.core_apps.rasterImages.impl import _ctab2image, _smiles2image
+from beaker.core_apps.rasterImages.impl import _highlightCtabFragment, _highlightSmilesFragment
+from beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
 from bottle import request, response
 import base64
 
@@ -19,11 +19,10 @@ def ctab2imageView(data, params):
     kwargs['size'] = int(params.get('size', 200))
     separator = params.get('separator', '|')
     kwargs['legend'] = params.get('legend', '').split(separator)
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
-    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
 
     response.content_type = 'image/png'
     ret = _ctab2image(data, **kwargs)
@@ -78,7 +77,7 @@ cURL examples:
     curl -X POST -F "file=@aspirin.mol" -F "size=400" ${BEAKER_ROOT_URL}ctab2image > aspirin.png
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2imageView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -98,7 +97,7 @@ def smiles2imageView(data, params):
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -162,7 +161,7 @@ cURL examples:
     curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}smiles2image > out.png
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2imageView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -184,7 +183,7 @@ def highlightSmilesFragmentView(data, params):
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['force'] = _parseFlag(params.get('force', True))
 
-    if params.get('titleLine') is None and not data.startswith('SMILES Name'):
+    if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
         kwargs['titleLine'] = False
     else:
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
@@ -259,7 +258,7 @@ cURL examples:
     data = None
     if number_of_files:
         if number_of_files == 1:
-            data = request.files.values()[0].file.read()
+            data = list(request.files.values())[0].file.read()
         elif number_of_files == 2:
             data = request.files['file'].file.read()
             smarts = request.files['smarts'].file.read()
@@ -279,9 +278,8 @@ def highlightCtabFragmentView(data, params):
     smarts = params.get('smarts', '')
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
     kwargs['legend'] = params.get('legend', '').split(separator)
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['force'] = _parseFlag(params.get('force', True))
@@ -350,7 +348,7 @@ cURL examples:
     data = None
     if number_of_files:
         if number_of_files == 1:
-            data = request.files.values()[0].file.read()
+            data = list(request.files.values())[0].file.read()
         elif number_of_files == 2:
             data = request.files['file'].file.read()
             smarts = request.files['smarts'].file.read()
@@ -423,7 +421,7 @@ cURL examples:
     curl -X POST -F "file=@sim.smi" -F "width=500" -F "height=500" -F "fingerprint=ap" ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.png
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2SimilarityMapView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -432,9 +430,8 @@ cURL examples:
 def sdf2SimilarityMapView(data, params):
 
     kwargs = dict()
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     kwargs['width'] = int(params.get('width', 500))
     kwargs['height'] = int(params.get('height', 500))
     kwargs['radius'] = int(params.get('radius', 2))
@@ -481,7 +478,7 @@ cURL examples:
     curl -X POST -F "file=@sim.sdf" -F "width=500" -F "height=500" -F "fingerprint=ap" ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.png
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return sdf2SimilarityMapView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

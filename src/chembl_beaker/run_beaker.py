@@ -7,10 +7,9 @@ __author__ = 'mnowotka'
 import json
 from bottle import run
 from optparse import OptionParser
-from chembl_beaker.beaker import app, config, loadPlugins, loadApps
+from beaker import app, config, loadPlugins, loadApps
 
 # ----------------------------------------------------------------------------------------------------------------------
-
 
 def main(conf_path=None):
 
@@ -21,7 +20,7 @@ def main(conf_path=None):
     else:
         standalone = True
         parser = OptionParser()
-        parser.add_option("-c", "--config", dest="config_path", help="path to config file", default="beaker.conf")
+        parser.add_option("-p", "--config_path", dest="config_path", help="path to config file", default="beaker.conf")
         (options, args) = parser.parse_args()
         conf_path = options.config_path
         config.load_config(conf_path)
@@ -34,11 +33,11 @@ def main(conf_path=None):
 
     server = config.get('server_middleware', 'tornado')
     kwargs = {}
-    if server is 'gunicorn':
+    if server == 'gunicorn':
         try:
             kwargs['workers'] = int(config.get('workers', '4'))
         except Exception as e:
-            print e
+            print(e)
             kwargs['workers'] = 4
 
     if standalone:
@@ -51,6 +50,8 @@ if __name__ == "__main__":
     main()
 
 else:
+    apps = json.loads(config.get('installed_apps', '[]'))
+    loadApps(apps)
     application = app
 
 # ----------------------------------------------------------------------------------------------------------------------

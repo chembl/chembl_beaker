@@ -3,12 +3,12 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from itertools import cycle, islice
-from chembl_beaker.beaker.utils.functional import _apply, _call
-from chembl_beaker.beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
-from chembl_beaker.beaker.utils.io import _parseMolData, _parseSMILESData
-from chembl_beaker.beaker.utils.io import _getMatches
+from beaker.utils.functional import _apply, _call
+from beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
+from beaker.utils.io import _parseMolData, _parseSMILESData
+from beaker.utils.io import _getMatches
 from rdkit.Chem.Draw import rdMolDraw2D
-import StringIO
+import io
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -61,16 +61,16 @@ def _mols2imageString(mols, size, legend, format, atomMapNumber=False, computeCo
         _apply(mols, _computeCoords, True)
     if atomMapNumber:
         _apply(mols, _atomMapNumber)
-    image_data = StringIO.StringIO()
+    image_data = io.BytesIO()
     _mols2imageStream(mols, image_data, format, size, legend, highlightAtomLists, kekulize)
     return image_data.getvalue()
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2image(data, size, legend, sanitize=True, removeHs=True, strictParsing=True, atomMapNumber=False,
-                computeCoords=False, kekulize=True):
-    return _mols2imageString(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+def _ctab2image(data, size, legend, loadMol=True, useRDKitChemistry=False, atomMapNumber=False,
+                computeCoords=False, kekulize=False):
+    return _mols2imageString(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry),
                              size, legend, 'PNG', atomMapNumber, computeCoords, kekulize=kekulize)
 
 # ----------------------------------------------------------------------------------------------------------------------

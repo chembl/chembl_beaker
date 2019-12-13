@@ -3,11 +3,11 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-import StringIO
+import io
 from rdkit.Chem.Draw import SimilarityMaps
-from chembl_beaker.beaker.utils.functional import _apply, _call
-from chembl_beaker.beaker.utils.io import _parseSMILESData, _parseMolData
-import chembl_beaker.beaker.utils.chemical_transformation as ct
+from beaker.utils.functional import _apply, _call
+from beaker.utils.io import _parseSMILESData, _parseMolData
+import beaker.utils.chemical_transformation as ct
 
 try:
     import matplotlib
@@ -35,7 +35,7 @@ def _similarityMap(ms, width=500, height=500, radius=2, fingerprint='morgan', fo
         fn = SimilarityMaps.GetTTFingerprint
 
     SimilarityMaps.GetSimilarityMapForFingerprint(ms[0], ms[1], fn, size=(width, height))
-    sio = StringIO.StringIO()
+    sio = io.StringIO()
     pyplot.savefig(sio, format=format, bbox_inches='tight', dpi=100)
 
     return sio.getvalue()
@@ -52,9 +52,8 @@ def _smiles2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='mo
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def _sdf2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='morgan', sanitize=True, removeHs=True,
-                       strictParsing=True, format='png'):
-    return _similarityMap(_parseMolData(data, sanitize=sanitize, removeHs=removeHs, strictParsing=strictParsing),
+def _sdf2SimilarityMap(data, width=500, height=500, radius=2, fingerprint='morgan', loadMol=True, useRDKitChemistry=True, format='png'):
+    return _similarityMap(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry),
         width=width, height=height, radius=radius, fingerprint=fingerprint, format=format)
 
 # ----------------------------------------------------------------------------------------------------------------------

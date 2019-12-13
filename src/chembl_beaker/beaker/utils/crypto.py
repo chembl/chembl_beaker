@@ -1,7 +1,7 @@
 """
 Standard crypto functions and utilities.
 """
-from __future__ import unicode_literals
+
 
 import hmac
 import struct
@@ -179,7 +179,7 @@ else:
         def F(i):
             u = salt + struct.pack(b'>I', i)
             result = 0
-            for j in xrange(int(iterations)):
+            for j in range(int(iterations)):
                 dig1, dig2 = inner.copy(), outer.copy()
                 dig1.update(u)
                 dig2.update(dig1.digest())

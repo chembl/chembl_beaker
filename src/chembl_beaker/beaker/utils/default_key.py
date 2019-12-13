@@ -5,13 +5,13 @@ __author__ = 'mnowotka'
 from datetime import datetime
 import pytz
 import base64
-from chembl_beaker.beaker import config
+from beaker import config
 
 DATE_FORMAT = '%y-%m-%d %H%M%S'
 
 AES = None
 try:
-    from Crypto.Cipher import AES
+    from .Crypto.Cipher import AES
     secret_key = config.get('throttling_secret_key')
 except ImportError:
     pass

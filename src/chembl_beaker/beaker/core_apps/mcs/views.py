@@ -2,9 +2,9 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker import app
-from chembl_beaker.beaker.core_apps.mcs.impl import _mcs
-from chembl_beaker.beaker.utils.io import _parseFlag
+from beaker import app
+from beaker.core_apps.mcs.impl import _mcs
+from beaker.utils.io import _parseFlag
 from bottle import request
 import base64
 
@@ -20,9 +20,8 @@ def mcsView(data, params):
     kwargs['ringMatchesRingOnly'] = _parseFlag(params.get('ringMatchesRingOnly', False))
     kwargs['completeRingsOnly'] = _parseFlag(params.get('completeRingsOnly', False))
     kwargs['threshold'] = params.get('threshold', None)
-    kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
-    kwargs['removeHs'] = _parseFlag(params.get('removeHs', True))
-    kwargs['strictParsing'] = _parseFlag(params.get('strictParsing', True))
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
     kwargs['canonical'] = _parseFlag(params.get('canonical', True))
     kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))
@@ -57,7 +56,7 @@ cURL examples:
     curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}mcs
     """
 
-    data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return mcsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
