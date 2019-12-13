@@ -5,7 +5,7 @@ __author__ = 'efelix'
 from rdkit.Chem import AllChem
 from beaker import app
 from bottle import request
-from beaker.core_apps.D2Coords.impl import _ctab22D, _smiles22D
+from beaker.core_apps.D2Coords.impl import _ctab22D, _smiles22D, _is3D
 from beaker.utils.io import _parseFlag
 import base64
 
@@ -18,6 +18,16 @@ def ctab22DView(data, params):
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
 
     return _ctab22D(data, **kwargs)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def is3DView(data, params):
+    kwargs = dict()
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
+
+    return _is3D(data, **kwargs)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -124,6 +134,6 @@ cURL examples:
     """
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
-    return smiles22DView(data, request.params)
+    return is3DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------

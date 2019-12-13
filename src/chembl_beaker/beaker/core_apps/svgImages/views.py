@@ -25,7 +25,7 @@ def ctab2svgView(data, params):
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', False))
     kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
-    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
 
     response.content_type = 'image/svg+xml'
     return _ctab2svg(data, **kwargs)

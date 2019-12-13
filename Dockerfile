@@ -27,12 +27,12 @@ RUN conda env create -n chembl-beaker -f /tmp/environment.yml
 # activate env (add conda env bin to path)
 ENV PATH /opt/conda/envs/chembl-beaker/bin:$PATH
 
-# copy beaker and config file
-COPY src/chembl_beaker chembl_beaker
-COPY beaker.conf beaker.conf
-
 # osra needs both files in the same bin dir
 RUN cp /opt/conda/pkgs/osra-2.0.1-0/share/spelling.txt /opt/conda/envs/chembl-beaker/bin/spelling.txt && \
     cp /opt/conda/pkgs/osra-2.0.1-0/share/superatom.txt /opt/conda/envs/chembl-beaker/bin/superatom.txt
+
+# copy beaker and config file
+COPY src/chembl_beaker chembl_beaker
+COPY beaker.conf beaker.conf
 
 ENTRYPOINT [ "python", "chembl_beaker/run_beaker.py", "-c", "beaker.conf" ]
