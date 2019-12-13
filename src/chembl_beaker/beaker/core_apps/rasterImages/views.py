@@ -22,7 +22,7 @@ def ctab2imageView(data, params):
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
-    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
 
     response.content_type = 'image/png'
     ret = _ctab2image(data, **kwargs)
