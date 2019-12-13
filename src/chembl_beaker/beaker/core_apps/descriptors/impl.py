@@ -6,6 +6,7 @@ from rdkit.Chem import Descriptors, rdChemReactions, rdmolops, CombineMols, Sani
 from rdkit.Chem.rdMolDescriptors import CalcMolFormula
 from beaker.utils.functional import _call, _apply
 from beaker.utils.io import _parseMolData
+from copy import deepcopy
 
 MAX_PASSES = 10
 CBL_DESC_LIST = ['qed', 'MolWt', 'ExactMolWt', 'TPSA', 'HeavyAtomCount', 'NumHAcceptors', 'NumHDonors', 
@@ -132,11 +133,12 @@ def _desc(mol, name):
 # ----------------------------------------------------------------------------------------------------------------------
 
 def _chembl_desc_list(mol):
-    mol = _remove_isotope_info(mol)
     mol = _neutralise_sulphoxide(mol)
     descriptors = dict()
     for name, fn in Descriptors.descList:
         if name in CBL_DESC_LIST:
+            if name == 'ExactMolWt':
+                mol = _remove_isotope_info(deepcopy(mol))
             descriptors[name] = fn(mol)
     if 'MolecularFormula' not in descriptors:
         descriptors['MolecularFormula'] = CalcMolFormula(mol)
