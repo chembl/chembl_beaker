@@ -2,12 +2,12 @@ __author__ = 'mnowotka'
 
 from collections import OrderedDict
 from bottle import response, static_file
-from chembl_beaker import __version__ as version
+from beaker import __version__ as version
 import json
 
-from chembl_beaker.beaker import app, config
-from chembl_beaker.beaker import STATIC_ROOT
-from chembl_beaker.beaker import PARAM_REGEX
+from beaker import app, config
+from beaker import STATIC_ROOT
+from beaker import PARAM_REGEX
 
 EXCLUDED_METHODS = config.get('excluded_methods')
 
@@ -32,7 +32,7 @@ def docs():
 @app.route('/spore', methods = ['OPTIONS', 'GET'])
 def spore():
     """Print available functions."""
-    print version
+    print(version)
     ret = {
         "version": version,
         "expected_status": [200],
@@ -54,7 +54,7 @@ def spore():
         method_info["method"] = method
         method_info["formats"] = ['text']
         method_info["path"] = PARAM_REGEX.sub(lambda x: ':' + x.group(0)[1:-1].upper(), route.rule)
-        method_info["required_params"] = map(lambda x: x[1:-1].upper(), PARAM_REGEX.findall(route.rule))
+        method_info["required_params"] = [x[1:-1].upper() for x in PARAM_REGEX.findall(route.rule)]
         if method.upper() == 'POST':
             post_methods[uname] = method_info
         else:

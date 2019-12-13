@@ -2,8 +2,7 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from chembl_beaker.beaker.utils.functional import _apply, _call
-from rdkit.Chem.AllChem import Compute2DCoords
+from beaker.utils.functional import _apply, _call
 from rdkit.Chem.AllChem import GenerateDepictionMatching2DStructure
 from rdkit.Chem import Kekulize
 from rdkit.Chem import AddHs
@@ -14,6 +13,7 @@ from rdkit.Chem import SanitizeMol
 from rdkit.Chem import AdjustQueryProperties
 from rdkit.Chem import AdjustQueryParameters
 from rdkit.Chem.rdmolops import SanitizeFlags as sf
+from rdkit import Chem
 from itertools import compress
 SANITIZE_ALL = sf.SANITIZE_ALL
 
@@ -22,7 +22,8 @@ SANITIZE_ALL = sf.SANITIZE_ALL
 
 def _computeCoords(mol, force=False):
     if force or (not mol.GetNumConformers() or mol.GetConformer().Is3D()):
-        Compute2DCoords(mol)
+        Chem.rdDepictor.SetPreferCoordGen(True)
+        Chem.rdDepictor.Compute2DCoords(mol)
     return mol
 
 # ----------------------------------------------------------------------------------------------------------------------

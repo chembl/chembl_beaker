@@ -6,11 +6,11 @@ import base64
 import time
 import json
 from bottle import request, response
-from chembl_beaker.beaker import config
-from chembl_beaker.beaker.cache import cache
+from beaker import config
+from beaker.cache import cache
 
 if not cache:
-    print "Caching plugin enabled but no cache backend configured, cashing will be skipped..."
+    print("Caching plugin enabled but no cache backend configured, cashing will be skipped...")
 
 if cache and config.get('clear_cache_on_start', False):
     cache.clear()
@@ -30,10 +30,10 @@ class Caching(object):
                 res = fn(*args, **kwargs)
             else:
                 key = json.dumps(args) + json.dumps(kwargs) + json.dumps([(base64.b64encode(k), base64.b64encode(v))
-                                                                          for k, v in request.params.items()]) + \
+                                                                          for k, v in list(request.params.items())]) + \
                       request.method + request.path
                 if len(request.files):
-                    for file_name, file_content in request.files.items():
+                    for file_name, file_content in list(request.files.items()):
                         key += file_name + file_content.file.read()
                         file_content.file.seek(0)
                 else:
@@ -42,7 +42,7 @@ class Caching(object):
                 try:
                     cached_content, content_type = cache.get(key, (None, None))
                 except Exception as e:
-                    print e
+                    print(e)
                     cached_content, content_type = (None, None)
                 if cached_content:
                     if content_type:
@@ -57,7 +57,7 @@ class Caching(object):
                         try:
                             cache.set(key, (res, content_type))
                         except Exception as e:
-                            print e
+                            print(e)
             if config.get('debug', True):
                 end = time.time()
                 response.headers['X-ChEMBL-in-cache'] = from_cache

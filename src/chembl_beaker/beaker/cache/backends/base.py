@@ -4,8 +4,8 @@ __author__ = 'mnowotka'
 
 import time
 import hashlib
-from chembl_beaker.beaker.utils import import_class
-from chembl_beaker.beaker import config
+from beaker.utils import import_class
+from beaker import config
 
 #-----------------------------------------------------------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
 __author__ = 'mnowotka'
 
-from chembl_beaker.beaker import config
+from beaker import config
 
 #-----------------------------------------------------------------------------------------------------------------------
 

@@ -4,14 +4,14 @@ from lxml.etree import _ElementTree, Element, tostring
 from lxml import objectify
 from lxml.objectify import ObjectifiedElement, StringElement
 import json
-from chembl_beaker import __version__ as version
 from datetime import datetime, date
 import rdkit
 from rdkit import Chem
 from rdkit.Chem.rdchem import GetPeriodicTable
 from rdkit.Chem import rdmolops
-from rdkit.Chem import GetSSSR
-from StringIO import StringIO
+import beaker.utils.chemical_transformation as ct
+from beaker.utils.functional import _apply, _call
+from io import StringIO
 import os
 import getpass
 
@@ -178,7 +178,7 @@ def _dict2Mol(obj, scale = 1.0):
                           atom,
                           0 if not atoms.get('isotope') else atoms.get('isotope')[i] -
                                                              int(PERIODIC_TABLE.GetAtomicWeight(str(atom))),
-                          charges.keys()[charges.values().index(atoms.get('formalCharge', zeros)[i])],
+                          list(charges.keys())[list(charges.values()).index(atoms.get('formalCharge', zeros)[i])],
                                                                                                 0,0,0,0,0,0,0,0,0,0))
     else:
         for i, atom in enumerate(atoms):
@@ -190,7 +190,7 @@ def _dict2Mol(obj, scale = 1.0):
                           elementType,
                           0 if not atom.get('isotope') else atom.get('isotope') -
                                                             int(PERIODIC_TABLE.GetAtomicWeight(str(elementType))),
-                          charges.keys()[charges.values().index(atom.get('formalCharge', 0))],
+                          list(charges.keys())[list(charges.values()).index(atom.get('formalCharge', 0))],
                                                                                                 0,0,0,0,0,0,0,0,0,0 ))
 
     for bond in obj['bonds']:
@@ -222,7 +222,7 @@ def _dict2Mol(obj, scale = 1.0):
 #-----------------------------------------------------------------------------------------------------------------------
 
 def _jsonToMol(obj, scale = 1.0):
-    return '$$$$\n'.join([_dict2Mol(x.values()[0], scale) for x in obj])
+    return '$$$$\n'.join([_dict2Mol(list(x.values())[0], scale) for x in obj])
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -284,8 +284,8 @@ def _dictToEtree(data, name=None, depth=0):
         for mol in data:
             element.append(_dictToEtree(mol, name, depth + 1))
     elif depth == 3:
-        molID = data.keys()[0]
-        val = data.values()[0]
+        molID = list(data.keys())[0]
+        val = list(data.values())[0]
         element = Element('molecule', molID=molID)
         element.append(_dictToEtree(val['atoms'], 'atoms', depth + 1))
         element.append(_dictToEtree(val['bonds'], 'bonds', depth + 1))
@@ -333,8 +333,9 @@ def MolToMarvin(mol):
         mol = Chem.MolFromMolFile(mol, False, False, False)
     else:
         mol = Chem.MolFromMolBlock(mol, False, False, False)
-    mol.UpdatePropertyCache(strict=False)
-    GetSSSR(mol)
+    _call([mol], 'UpdatePropertyCache', strict=False)
+    _apply([mol], ct._sssr)
+
     rdmolops.SetAromaticity(mol)
     js = _molsToJson([mol], MOL_MARVIN_SCALE)
     return _dataToXml(js)

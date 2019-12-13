@@ -1,6 +1,0 @@
-[bottle]
-DEBUG = True
-BOTTLE_PORT = 8080
-BOTTLE_HOST = localhost
-SERVER_MIDDLEWARE = tornado
-OSRA_BINARIES_LOCATION = /usr/bin/osra

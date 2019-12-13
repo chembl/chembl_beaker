@@ -6,9 +6,9 @@ from datetime import datetime
 import pytz
 import base64
 from bottle import request, response
-from chembl_beaker.beaker.throttle import throttle
-from chembl_beaker.beaker import config
-from chembl_beaker.beaker.utils import import_class
+from beaker.throttle import throttle
+from beaker import config
+from beaker.utils import import_class
 
 DATE_FORMAT = '%y-%m-%d %H%M%S'
 
@@ -32,7 +32,7 @@ def verify_key(key):
         now = datetime.utcnow().replace(tzinfo=pytz.utc)
         decoded_key = base64.standard_b64decode(key)
         decrypted_key = aes.decrypt(decoded_key)
-        decrypted = filter(bool, decrypted_key.split('\t'))
+        decrypted = list(filter(bool, decrypted_key.split('\t')))
         dates = [pytz.utc.localize(datetime.strptime(date, DATE_FORMAT)) for date in decrypted]
         if dates[0] < now < dates[1]:
             return True
@@ -49,14 +49,14 @@ if key_verification_function:
         verified_key = import_class(key_verification_function)
     except ImportError:
         err = 'Error importing function %s' % key_verification_function
-        print err
+        print(err)
         raise Exception(err)
 
 else:
     if not AES:
-        print "API Key verification will be switched off - can't find pycrypto library"
+        print("API Key verification will be switched off - can't find pycrypto library")
     if not secret_key:
-        print "API Key verification will be switched off - no AES key defined"
+        print("API Key verification will be switched off - no AES key defined")
     verified_key = verify_key
 
 #-----------------------------------------------------------------------------------------------------------------------

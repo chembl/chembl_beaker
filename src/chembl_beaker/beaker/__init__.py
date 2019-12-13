@@ -2,43 +2,52 @@ __author__ = 'mnowotka'
 
 import bottle
 from bottle import Bottle
-import chembl_beaker
-from chembl_beaker.beaker.utils import import_class
+import beaker
+from beaker.utils import import_class
 import re
 import os
-import sys
 import json
+import rdkit
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+try:
+    __version__ = '1.5.0'
+except Exception as e:
+    __version__ = 'development'
+
+
+rdkversion = rdkit.__version__.split(".")
+if rdkversion < ["2019", "09", "2"]:
+    raise ValueError("need an RDKit version >= 2019.09.2")
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 HTTP_CODES = bottle.HTTP_CODES.copy()
-HTTP_CODES = dict((y, x) for x, y in HTTP_CODES.iteritems())
-STATIC_ROOT = os.path.join(os.path.split(chembl_beaker.__file__)[0], 'static')
+HTTP_CODES = dict((y, x) for x, y in list(HTTP_CODES.items()))
+STATIC_ROOT = "chembl_beaker/static"
+
 PARAM_REGEX = re.compile(r'<[^<>]+>')
 DEFAULT_APPS = [
-    "chembl_beaker.beaker",
-    "chembl_beaker.beaker.core_apps.calculations",
-    "chembl_beaker.beaker.core_apps.conversions",
-    "chembl_beaker.beaker.core_apps.descriptors",
-    "chembl_beaker.beaker.core_apps.fingerprints",
-    "chembl_beaker.beaker.core_apps.marvin",
-    "chembl_beaker.beaker.core_apps.mcs",
-    "chembl_beaker.beaker.core_apps.osra",
-    "chembl_beaker.beaker.core_apps.rasterImages",
-    "chembl_beaker.beaker.core_apps.svgImages",
-    "chembl_beaker.beaker.core_apps.jsonImages",
-    "chembl_beaker.beaker.core_apps.ringInfo",
-    "chembl_beaker.beaker.core_apps.standarisation",
-    "chembl_beaker.beaker.core_apps.D3Coords",
-    "chembl_beaker.beaker.core_apps.similarityMaps",
-    "chembl_beaker.beaker.core_apps.autoDocs",
+    "beaker",
+    "beaker.core_apps.conversions",
+    "beaker.core_apps.descriptors",
+    "beaker.core_apps.marvin",
+    "beaker.core_apps.mcs",
+    "beaker.core_apps.osra",
+    "beaker.core_apps.svgImages",
+    "beaker.core_apps.standarisation",
+    "beaker.core_apps.D2Coords",
+    "beaker.core_apps.autoDocs",
+    "beaker.core_apps.structuralAlerts"
     ]
 
 DEFAULT_PLUGINS = [
-    'chembl_beaker.beaker.plugins.enableCors.EnableCors',
-    'chembl_beaker.beaker.plugins.restrictions.Restrictions',
-    'chembl_beaker.beaker.plugins.throttling.Throttling',
-    'chembl_beaker.beaker.plugins.caching.Caching',
+    'beaker.plugins.enableCors.EnableCors',
+    'beaker.plugins.restrictions.Restrictions',
+    'beaker.plugins.throttling.Throttling',
+    'beaker.plugins.caching.Caching',
 ]
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -52,7 +61,7 @@ def loadPlugins(app, plugins):
             plugin_class = import_class(plugin)
             app.install(plugin_class())
         except Exception as e:
-            print "Failed to load plugin %s because of error %s" % (plugin, e.message)
+            print("Failed to load plugin %s because of error %s" % (plugin, str(e)))
             continue
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -65,7 +74,7 @@ def loadApps(apps):
         try:
             __import__(module + ".views")
         except Exception as e:
-            print "Loading module %s failed because of error: %s" % (module, e.message)
+            print("Loading module %s failed because of error: %s" % (module, str(e)))
             continue
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -77,14 +86,7 @@ config = app.config
 
 if not getattr(config, 'load_config'):
 
-        py = sys.version_info
-        py3k = py >= (3, 0, 0)
-
-        if py3k:
-            from configparser import ConfigParser
-        else:
-            from ConfigParser import SafeConfigParser as ConfigParser
-
+        from configparser import ConfigParser
         from bottle import ConfigDict
 
         def load_config(self, filename):
@@ -106,5 +108,3 @@ if not getattr(config, 'load_config'):
         ConfigDict.load_config = load_config
 
 # ----------------------------------------------------------------------------------------------------------------------
-
-

@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chembl-beaker
+  labels:
+    app: chembl-beaker
+spec:
+  selector:
+    matchLabels:
+      app: chembl-beaker
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: chembl-beaker
+        tier: backend
+    spec:
+      containers:
+      - name: chembl-beaker
+        image: <DOCKER_IMAGE>:<VERSION>
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+      imagePullSecrets:
+      - name: chembl-dev-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chembl-beaker
+spec:
+  selector:
+    app: chembl-beaker
+  ports:
+  - protocol: TCP
+    port: 5000
+    targetPort: 5000
+  type: NodePort

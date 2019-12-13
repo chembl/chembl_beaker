@@ -1,0 +1,138 @@
+variables:
+    DOCKER_TLS_CERTDIR: ""
+    GIT_STRATEGY: clone
+    REGISTRY_USER: chembl/chembl
+    APPLICATION: chembl_beaker
+    RELEASE_IMAGE: $CI_REGISTRY/$REGISTRY_USER/$APPLICATION:$CI_BUILD_REF_NAME
+    DOCKER_IMAGE: $CI_REGISTRY/$REGISTRY_USER/$APPLICATION
+    DOCKER_DRIVER: overlay
+
+image: docker:latest
+
+services:
+    - docker:dind
+
+stages:
+    - build
+    - test
+    - deploy
+
+# --------------------------- DEV --------------------------------------------
+
+build-dev:
+  stage: build
+  only:
+    - dev
+  script:
+    - docker version # verify docker cli is there. Also prints server info
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo Building $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
+    - docker build -t $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA} .
+    - echo Deploying $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
+    - docker push ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA}
+
+test-dev:
+  stage: test
+  only:
+      - dev 
+  dependencies:
+      - build-dev
+  script:
+      - docker run --entrypoint python ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA} chembl_beaker/test_beaker.py
+      - echo "done"
+
+deploy-dev:
+  image:
+      name: lachlanevenson/k8s-kubectl:latest
+      entrypoint: ["/bin/sh", "-c"]
+  stage: deploy
+  dependencies:
+      - build-dev
+  script:
+      - echo $KUBE_URL_HX
+      - echo "$KUBE_CA_PEM_HX" > "$(pwd)/kube.ca.pem"
+      - kubectl config set-cluster ${KUBE_CLUS_NAME_HX} --server="${KUBE_URL_HX}" --certificate-authority="$(pwd)/kube.ca.pem"
+      - kubectl config set-credentials ${KUBE_USER_HX} --token="${KUBE_TOKEN_HX}"
+      - kubectl config set-context ${CHEMBL_NS_DEV} --cluster=${KUBE_CLUS_NAME_HX} --user=${KUBE_USER_HX}
+      - kubectl config use-context ${CHEMBL_NS_DEV}
+      - echo ${CHEMBL_NS_DEV} ${KUBE_URL_HX} ${KUBE_CLUS_NAME_HX} ${KUBE_USER_HX}
+      - kubectl get pods -n ${CHEMBL_NS_DEV}
+      - sed -i "s~<VERSION>~${CI_COMMIT_SHORT_SHA}~" k8s-deployment.yml
+      - sed -i "s~<DOCKER_IMAGE>~${DOCKER_IMAGE}~" k8s-deployment.yml
+      - kubectl apply -n ${CHEMBL_NS_DEV} -f k8s-deployment.yml
+  only:
+      - dev
+
+# --------------------------- PROD -------------------------------------------
+
+
+build-prod:
+    stage: build
+    only:
+       - master
+    variables:
+        DOCKER_HOST: tcp://docker:2375
+    script:
+        - docker version # verify docker cli is there. Also prints server info
+        - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+        - echo Building $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
+        - docker build -t $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA} .
+        - echo Deploying $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
+        - docker push ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA}
+
+test-prod:
+    only:
+        - master 
+    dependencies:
+        - build-prod
+    script:
+        - docker run --entrypoint python ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA} chembl_beaker/test_beaker.py
+        - echo "done"
+
+deploy-prod-hx:
+    image:
+        name: lachlanevenson/k8s-kubectl:latest
+        entrypoint: ["/bin/sh", "-c"]
+    stage: deploy
+    dependencies:
+        - build-prod
+    script:
+        - echo $KUBE_URL_HX
+        - echo "$KUBE_CA_PEM_HX" > "$(pwd)/kube.ca.pem"
+        - kubectl config set-cluster ${KUBE_CLUS_NAME_HX} --server="${KUBE_URL_HX}" --certificate-authority="$(pwd)/kube.ca.pem"
+        - kubectl config set-credentials ${KUBE_USER_HX} --token="${KUBE_TOKEN_HX}"
+        - kubectl config set-context ${CHEMBL_NS_PROD} --cluster=${KUBE_CLUS_NAME_HX} --user=${KUBE_USER_HX}
+        - kubectl config use-context ${CHEMBL_NS_PROD}
+        - echo ${CHEMBL_NS_PROD} ${KUBE_URL_HX} ${KUBE_CLUS_NAME_HX} ${KUBE_USER_HX}
+        - kubectl get pods -n ${CHEMBL_NS_PROD}
+        - sed -i "s~<VERSION>~${CI_COMMIT_SHORT_SHA}~" k8s-deployment.yml
+        - sed -i "s~<DOCKER_IMAGE>~${DOCKER_IMAGE}~" k8s-deployment.yml
+        - kubectl apply -n ${CHEMBL_NS_PROD} -f k8s-deployment.yml
+    when: manual
+    only:
+        - master
+
+deploy-prod-hh:
+  image:
+      name: lachlanevenson/k8s-kubectl:latest
+      entrypoint: ["/bin/sh", "-c"]
+  stage: deploy
+  script:
+      - echo $KUBE_URL_HH
+      - echo "$KUBE_CA_PEM_HH" > "$(pwd)/kube.ca.pem"
+      - kubectl config set-cluster ${KUBE_CLUS_NAME_HH} --server="${KUBE_URL_HH}" --certificate-authority="$(pwd)/kube.ca.pem"
+      - kubectl config set-credentials ${KUBE_USER_HH} --token="${KUBE_TOKEN_HH}"
+      - kubectl config set-context ${CHEMBL_NS_PROD} --cluster=${KUBE_CLUS_NAME_HH} --user=${KUBE_USER_HH}
+      - kubectl config use-context ${CHEMBL_NS_PROD}
+      - echo ${CHEMBL_NS_PROD} ${KUBE_URL_HH} ${KUBE_CLUS_NAME_HH} ${KUBE_USER_HH}
+      - kubectl get pods -n ${CHEMBL_NS_PROD}
+      - sed -i "s~<VERSION>~${CI_COMMIT_SHORT_SHA}~" k8s-deployment.yml
+      - sed -i "s~<DOCKER_IMAGE>~${DOCKER_IMAGE}~" k8s-deployment.yml
+      - kubectl apply -n ${CHEMBL_NS_PROD} -f k8s-deployment.yml
+  when: manual
+  only:
+      - master
+
+
+after_script:
+    - echo "End of script"

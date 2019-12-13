@@ -4,10 +4,9 @@ __author__ = 'mnowotka'
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from chembl_beaker.beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
-from chembl_beaker.beaker.core_apps.D3Coords.impl import _2D23D
-from chembl_beaker.beaker.utils.functional import _apply, _call
-import chembl_beaker.beaker.utils.chemical_transformation as ct
+from beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
+from beaker.utils.functional import _apply, _call
+import beaker.utils.chemical_transformation as ct
 
 
 def _hydrogenize(block, hydro):
@@ -27,12 +26,12 @@ def _clean(mrv, dim=2):
     _call([mol], 'UpdatePropertyCache', strict=False)
     _apply([mol], ct._sssr)    
     if not mol:
-        print "No mol for block:\n %s" % block
+        print("No mol for block:\n %s" % block)
         return mrv
-    AllChem.Compute2DCoords(mol, bondLength=0.8)
-    if dim == 3:
-        mol = _2D23D(mol, True)
-        mol = Chem.RemoveHs(mol)
+    
+    Chem.rdDepictor.SetPreferCoordGen(True)
+    Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
+    # AllChem.Compute2DCoords(mol, bondLength=0.8)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
 
@@ -53,7 +52,7 @@ def _stereoInfo(mrv):
     block = MarvinToMol(mrv)
     mol = Chem.MolFromMolBlock(block)
     if not mol:
-        print "No mol for block:\n %s" % block
+        print("No mol for block:\n %s" % block)
         return ret
     Chem.AssignStereochemistry(mol, flagPossibleStereoCenters=True, force=True)
     for atom in mol.GetAtoms():
@@ -99,7 +98,8 @@ def _molExport(structure, **kwargs):
     _apply([mol], ct._sssr)
 
     if not mol.GetNumConformers() or mol.GetConformer().Is3D():
-        AllChem.Compute2DCoords(mol, bondLength=0.8)
+        Chem.rdDepictor.SetPreferCoordGen(True)
+        Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
 
     if output_f == 'smiles':
         out_structure = Chem.MolToSmiles(mol)
@@ -119,7 +119,7 @@ def _molExport(structure, **kwargs):
     elif output_f == 'mrv':
         out_structure = MolToMarvin(Chem.MolToMolBlock(mol))
 
-    return {"structure": out_structure, "format": output_f, "contentUrl": "", "contentBaseUrl": ""}
+    return {"structure": out_structure.decode("utf-8"), "format": output_f, "contentUrl": "", "contentBaseUrl": ""}
 
 
 # ----------------------------------------------------------------------------------------------------------------------
