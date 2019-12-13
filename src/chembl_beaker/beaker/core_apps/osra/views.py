@@ -24,23 +24,6 @@ def image2ctabView(img, params):
         known_location = '/usr/bin/osra'
     return _image2ctab(img, config.get('osra_binaries_location', known_location), **kwargs)
 
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/image2ctab/<image>', method=['OPTIONS', 'GET'], name="image2ctab")
-def image2ctab(image):
-    """
-Uses OSRA to convert image to CTAB. Image should be urlsafe_base64 encoded data of 300 DPI png graphic.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}image2ctab/$(cat mol.jpg | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}image2ctab/$(cat mol.png | base64 -w 0 | tr "+/" "-_")
-    """
-    if image.startswith('data:'):
-        img = base64.urlsafe_b64decode(image[image.find(',')+1:])
-    else:
-        img = base64.urlsafe_b64decode(image)
-    return image2ctabView(img, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
