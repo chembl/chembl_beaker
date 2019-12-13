@@ -2,9 +2,9 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-from beaker.utils.io import _parseFlag
-from beaker import app
-from beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
+from chembl_beaker.beaker.utils.io import _parseFlag
+from chembl_beaker.beaker import app
+from chembl_beaker.beaker.core_apps.similarityMaps.impl import _smiles2SimilarityMap, _sdf2SimilarityMap
 from bottle import request, response
 import base64
 

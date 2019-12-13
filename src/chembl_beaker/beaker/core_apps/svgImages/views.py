@@ -315,7 +315,7 @@ cURL examples:
     curl -X POST -F "file=@sim.smi" -F "width=500" -F "height=500" -F "fingerprint=ap" ${BEAKER_ROOT_URL}smiles2SimilarityMap > sim.svg
     """
 
-    data = list(request.files.values()[0].file.read()) if len(request.files) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return smiles2SimilarityMapSvgView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -351,7 +351,7 @@ cURL examples:
     curl -X POST -F "file=@sim.sdf" -F "width=500" -F "height=500" -F "fingerprint=ap" ${BEAKER_ROOT_URL}sdf2SimilarityMap > sim.svg
     """
 
-    data = list(request.files.values()[0].file.read() if len(request.files)) else request.body.read()
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return sdf2SimilarityMapSvgView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
