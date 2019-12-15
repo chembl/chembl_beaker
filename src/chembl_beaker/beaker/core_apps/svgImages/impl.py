@@ -2,21 +2,7 @@ __author__ = 'mnowotka'
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-try:
-    import cairo
-    cffi = False
-except ImportError:
-    import cairocffi
-    cairocffi.install_as_pycairo()
-    cffi = True
-    import io
-    import cairo
-    if not hasattr(cairo, 'HAS_PDF_SURFACE'):
-        cairo.HAS_PDF_SURFACE = False
-    if not hasattr(cairo, 'HAS_SVG_SURFACE'):
-        cairo.HAS_SVG_SURFACE = True
-
-
+import cairo
 from itertools import cycle, islice
 from rdkit import Chem
 from beaker.utils.functional import _apply, _call
