@@ -19,11 +19,9 @@ def ctab2svgView(data, params):
     kwargs = dict()
     kwargs['size'] = int(params.get('size', 200))
     separator = params.get('separator', '|')
-    kwargs['legend'] = params.get('legend', '').split(separator)
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', False))
-    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
 
@@ -37,19 +35,19 @@ def ctab2svgView(data, params):
 def ctab2svg():
     """
 Converts CTAB to SVG vector graphic. CTAB is either single molfile or SDF file. Size is the optional size of
-image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+image in pixels (default value is 200 px). 
 cURL examples:
 
     curl -X POST --data-binary @aspirin.mol ${BEAKER_ROOT_URL}ctab2svg > aspirin.svg
     curl -X POST -F "file=@aspirin.mol" -F "computeCoords=0" ${BEAKER_ROOT_URL}ctab2svg > aspirin.svg
     curl -X POST -F "file=@aspirin.mol" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}ctab2svg > aspirin.svg
-    curl -X POST -F "file=@aspirin.mol" -F "legend=aspirin" ${BEAKER_ROOT_URL}ctab2svg > aspirin.svg
+    curl -X POST -F "file=@aspirin.mol" ${BEAKER_ROOT_URL}ctab2svg > aspirin.svg
     curl -X POST -F "file=@aspirin.mol" -F "size=400" ${BEAKER_ROOT_URL}ctab2svg > aspirin.svg
-    curl -X POST -F "file=@mcs.sdf" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}ctab2svg > out.svg
-    curl -X POST -F "file=@mcs.sdf" -F "legend=foo|bar|bla" -F "computeCoords=0" ${BEAKER_ROOT_URL}ctab2svg > out.svg
-    curl -X POST -F "file=@mcs_no_coords.sdf" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}ctab2svg > out.svg
-    curl -X POST -F "file=@mcs.sdf" -F "legend=foo" ${BEAKER_ROOT_URL}ctab2svg > out.svg
-    curl -X POST -F "file=@mcs.sdf" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}ctab2svg > out.svg    
+    curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}ctab2svg > out.svg
+    curl -X POST -F "file=@mcs.sdf" -F "computeCoords=0" ${BEAKER_ROOT_URL}ctab2svg > out.svg
+    curl -X POST -F "file=@mcs_no_coords.sdf" ${BEAKER_ROOT_URL}ctab2svg > out.svg
+    curl -X POST -F "file=@mcs.sdf" ${BEAKER_ROOT_URL}ctab2svg > out.svg
+    curl -X POST -F "file=@mcs.sdf" -F "size=400" ${BEAKER_ROOT_URL}ctab2svg > out.svg    
     """
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
@@ -62,7 +60,6 @@ def smiles2svgView(data, params):
 
     kwargs = dict()
     separator = params.get('separator', '|')
-    kwargs['legend'] = params.get('legend', '').split(separator)
     kwargs['size'] = int(params.get('size', 200))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['delimiter'] = params.get('delimiter', ' ')
@@ -70,7 +67,6 @@ def smiles2svgView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
-    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
 
     if params.get('titleLine') is None and not data.startswith(b'SMILES Name'):
@@ -88,22 +84,22 @@ def smiles2svgView(data, params):
 def smiles2svg():
     """
 Converts SMILES to SVG vector graphic. This method accepts single or multiple SMILES or *.smi file. Size is the
-optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+optional size of image in pixels (default value is 200 px). 
 cURL examples:
 
     curl -X POST --data-binary @aspirin_no_header.smi ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
     curl -X POST -F "file=@aspirin_no_header.smi" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
-    curl -X POST -F "file=@aspirin_no_header.smi" -F "legend=aspirin" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
+    curl -X POST -F "file=@aspirin_no_header.smi" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
     curl -X POST -F "file=@aspirin_no_header.smi" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
     curl -X POST --data-binary @aspirin_with_header.smi ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
-    curl -X POST -F "file=@aspirin_with_header.smi" -F "legend=aspirin" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
+    curl -X POST -F "file=@aspirin_with_header.smi" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
     curl -X POST -F "file=@aspirin_with_header.smi" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > aspirin.svg
-    curl -X POST -F "file=@mcs.smi" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}smiles2svg > out.svg
-    curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}smiles2svg > out.svg
-    curl -X POST -F "file=@mcs.smi" -F "legend=foo" ${BEAKER_ROOT_URL}smiles2svg > out.svg
-    curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo" ${BEAKER_ROOT_URL}smiles2svg > out.svg
-    curl -X POST -F "file=@mcs.smi" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > out.svg
-    curl -X POST -F "file=@mcs_no_header.smi" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > out.svg    
+    curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2svg > out.svg
+    curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2svg > out.svg
+    curl -X POST -F "file=@mcs.smi" ${BEAKER_ROOT_URL}smiles2svg > out.svg
+    curl -X POST -F "file=@mcs_no_header.smi" ${BEAKER_ROOT_URL}smiles2svg > out.svg
+    curl -X POST -F "file=@mcs.smi" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > out.svg
+    curl -X POST -F "file=@mcs_no_header.smi" -F "size=400" ${BEAKER_ROOT_URL}smiles2svg > out.svg    
     """
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
@@ -117,7 +113,6 @@ def highlightSmilesFragmentSvgView(data, params):
     kwargs = dict()
     smarts = params.get('smarts', '')
     separator = params.get('separator', '|')
-    kwargs['legend'] = params.get('legend', '').split(separator)
     kwargs['size'] = int(params.get('size', 200))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['delimiter'] = params.get('delimiter', ' ')
@@ -125,7 +120,6 @@ def highlightSmilesFragmentSvgView(data, params):
     kwargs['nameColumn'] = int(params.get('nameColumn', 1))
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
-    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['force'] = _parseFlag(params.get('force', True))
 
@@ -145,23 +139,23 @@ def highlightSmilesFragmentSvg():
     """
 Converts SMILES to SVG vector graphic with a highlighted fragment described as SMARTS. 
 This method accepts SMARTS and single or multiple SMILES or *.smi file. Size is the
-optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+optional size of image in pixels (default value is 200 px). 
 cURL examples:
 
     curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
-    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin_no_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
-    curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin_with_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@CHEMBL1999443.smi" -F "smarts=[#6]1:[#6]:[#6]:[#6]:[#6](:[#6]:1-[#6](-[#8])=[#8])-[#8]-[#6](-[#6])=[#8]" -F "force=true" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted_forced.svg
     curl -X POST -F "file=@CHEMBL1999443.smi" -F "smarts=@aspirin.sma" -F "force=true" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" -F "legend=foo" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" -F "legend=foo" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg    
+    curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs_no_header.smi" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightSmilesFragmentSvg > out_highlighted.svg    
     """
 
     number_of_files = len(request.files)
@@ -186,11 +180,9 @@ def highlightCtabFragmentSvgView(data, params):
     smarts = params.get('smarts', '')
     kwargs['size'] = int(params.get('size', 200))
     separator = params.get('separator', '|')
-    kwargs['legend'] = params.get('legend', '').split(separator)
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', False))
-    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['force'] = _parseFlag(params.get('force', True))
@@ -207,21 +199,21 @@ def highlightCtabFragmentSvg():
 Converts SMILES to SVG vector graphic with a highlighted fragment described as SMARTS.
 SMARTS describes the fragment to be highlighted. 
 CTAB is either single molfile or SDF file. Size is the optional size of
-image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+image in pixels (default value is 200 px). 
 cURL examples:
 
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "computeCoords=0" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "atomMapNumber=1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
-    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "legend=aspirin" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
+    curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@aspirin.mol" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > aspirin_highlighted.svg
     curl -X POST -F "file=@CHEMBL1999443.mol" -F "smarts=[#6]1:[#6]:[#6]:[#6]:[#6](:[#6]:1-[#6](-[#8])=[#8])-[#8]-[#6](-[#6])=[#8]" -F "force=true" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted_forced.svg
     curl -X POST -F "file=@CHEMBL1999443.mol" -F "smarts=@aspirin.sma" -F "force=true" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted_forced.svg
-    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "computeCoords=0" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs_no_coords.sdf" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "legend=foo" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
-    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "legend=foo|bar|bla" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "computeCoords=0" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs_no_coords.sdf" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
+    curl -X POST -F "file=@mcs.sdf" -F "smarts=c1ccccc1" -F "size=400" ${BEAKER_ROOT_URL}highlightCtabFragmentSvg > out_highlighted.svg
     """
 
     number_of_files = len(request.files)
@@ -244,9 +236,7 @@ def inchi2svgView(data, params):
     kwargs = dict()
     kwargs['size'] = int(params.get('size', 200))
     separator = params.get('separator', '|')
-    kwargs['legend'] = params.get('legend', '').split(separator)
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
-    kwargs['fitImage'] = _parseFlag(params.get('fitImage', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
 
@@ -260,11 +250,11 @@ def inchi2svgView(data, params):
 def inchi2svg():
     """
 Converts InChI to SVG vector graphic. This method accepts single or multiple InChIs. Size is the
-optional size of image in pixels (default value is 200 px). Legend is optional label in the bottom of image.
+optional size of image in pixels (default value is 200 px). 
 cURL examples:
 
     curl -X POST --data-binary @aspirin.inchi ${BEAKER_ROOT_URL}inchi2svg > aspirin.svg
-    curl -X POST -F "file=@aspirin.inchi" -F "legend=aspirin" ${BEAKER_ROOT_URL}inchi2svg > aspirin.svg
+    curl -X POST -F "file=@aspirin.inchi" ${BEAKER_ROOT_URL}inchi2svg > aspirin.svg
     curl -X POST -F "file=@aspirin.inchi" -F "size=400" ${BEAKER_ROOT_URL}inchi2svg > aspirin.svg
     """
 

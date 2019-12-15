@@ -23,18 +23,20 @@ from beaker.utils.functional import _apply, _call
 from beaker.utils.io import _parseMolData, _parseSMILESData
 from beaker.utils.chemical_transformation import _computeCoords, _atomMapNumber, _kekulize
 from beaker.utils.io import _getMatches
-from rdkit.Chem.Draw import rdMolDraw2D, MolDrawOptions
+from rdkit.Chem.Draw import rdMolDraw2D
 import beaker.utils.chemical_transformation as ct
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _mols2svg(mols, size, legend, kekulize=False, fitImage=True, atomMapNumber=False,
-              computeCoords=False, highlightAtomLists=None):
+def _mols2svg(mols, size, kekulize=False, atomMapNumber=False, computeCoords=False, highlightAtomLists=None):
 
     if not mols:
         return ''
+    else:
+        # process only one molecule
+        mols = mols[0:1]
 
     _call(mols, 'UpdatePropertyCache', strict=False)
     _apply(mols, ct._sssr)
@@ -44,89 +46,67 @@ def _mols2svg(mols, size, legend, kekulize=False, fitImage=True, atomMapNumber=F
     if atomMapNumber:
         _apply(mols, _atomMapNumber)
 
-    labels = [x for x in islice(cycle(legend), len(mols))] if isinstance(legend, (list, tuple)) else \
-             [x for x in islice(cycle([legend]), len(mols))]
-    legends = [x.GetProp("_Name") if (x.HasProp("_Name") and x.GetProp("_Name")) else labels[idx]
-               for idx, x in enumerate(mols)]
-
-    molsPerRow = min(len(mols), 4)
-    nRows = len(mols) // molsPerRow
-    if len(mols) % molsPerRow:
-        nRows += 1
-
     if kekulize:
         _apply(mols, _kekulize)
 
-    highlightBondLists = []
     if highlightAtomLists:
-        for mol, highlightAtomList in zip(mols, highlightAtomLists):
-            highlightBondList = []
-            for bnd in mol.GetBonds():
-                if bnd.GetBeginAtomIdx() in highlightAtomList and bnd.GetEndAtomIdx() in highlightAtomList:
-                    highlightBondList.append(bnd.GetIdx())
-            highlightBondLists.append(highlightBondList)
-    if not highlightBondLists:
-        highlightBondLists = None
+        highlightAtomLists = highlightAtomLists[0]
 
-    panelx = size
-    panely = size
-    canvasx = panelx * molsPerRow
-    canvasy = panely * nRows
-    drawer = rdMolDraw2D.MolDraw2DSVG(canvasx, canvasy, panelx, panely)
-    drawer.DrawMolecules(mols, highlightAtoms=highlightAtomLists, highlightBonds=highlightBondLists, legends=legends)
+    drawer = rdMolDraw2D.MolDraw2DSVG(size, size)
+    drawer.DrawMolecule(mols[0], highlightAtoms=highlightAtomLists)
     drawer.FinishDrawing()
     return drawer.GetDrawingText()
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _ctab2svg(data, size, legend, loadMol=True, useRDKitChemistry=False, kekulize=False,
-              fitImage=True, atomMapNumber=False, computeCoords=False):
+def _ctab2svg(data, size, loadMol=True, useRDKitChemistry=False, kekulize=False,
+              atomMapNumber=False, computeCoords=False):
     return _mols2svg(_parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry),
-        size, legend, kekulize=kekulize, fitImage=fitImage, atomMapNumber=atomMapNumber,
+        size, kekulize=kekulize, atomMapNumber=atomMapNumber,
         computeCoords=computeCoords)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _smiles2svg(data, size, legend, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
-                titleLine=True, sanitize=True, kekulize=True, fitImage=True, atomMapNumber=False):
+def _smiles2svg(data, size, computeCoords=False, delimiter=' ', smilesColumn=0, nameColumn=1,
+                titleLine=True, sanitize=True, kekulize=True, atomMapNumber=False):
     return _mols2svg(_parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
-        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize), size, legend,
-        kekulize=kekulize, fitImage=fitImage, atomMapNumber=atomMapNumber,
+        smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize), size,
+        kekulize=kekulize, atomMapNumber=atomMapNumber,
         computeCoords=computeCoords)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _inchi2svg(inchis, size, legend, kekulize=True, fitImage=True, atomMapNumber=False,
+def _inchi2svg(inchis, size, kekulize=True, atomMapNumber=False,
                computeCoords=False):
     mols = _apply(inchis.split(), Chem.MolFromInchi)
     _apply(mols, _computeCoords)
-    return _mols2svg(mols, size, legend, kekulize=kekulize, fitImage=fitImage,
+    return _mols2svg(mols, size, kekulize=kekulize,
                         atomMapNumber=atomMapNumber, computeCoords=computeCoords)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _highlightSmilesFragmentSVG(data, smarts, size, legend, computeCoords=False, delimiter=' ', smilesColumn=0,
+def _highlightSmilesFragmentSVG(data, smarts, size, computeCoords=False, delimiter=' ', smilesColumn=0,
                                 nameColumn=1, titleLine=True, sanitize=True, kekulize=True,
-                                fitImage=True, atomMapNumber=False, force=False):
+                                atomMapNumber=False, force=False):
     mols = _parseSMILESData(data, computeCoords=computeCoords, delimiter=delimiter,
                             smilesColumn=smilesColumn, nameColumn=nameColumn, titleLine=titleLine, sanitize=sanitize)
     matches = _getMatches(mols, smarts, force)
-    return _mols2svg(mols, size, legend, kekulize=kekulize, fitImage=fitImage,
+    return _mols2svg(mols, size, kekulize=kekulize,
                      atomMapNumber=atomMapNumber, computeCoords=computeCoords, highlightAtomLists=matches)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _highlightCtabFragmentSVG(data, smarts, size, legend, loadMol=True, useRDKitChemistry=False,
-                              kekulize=False, fitImage=True, atomMapNumber=False, computeCoords=False,
+def _highlightCtabFragmentSVG(data, smarts, size, loadMol=True, useRDKitChemistry=False,
+                              kekulize=False, atomMapNumber=False, computeCoords=False,
                               force=False):
     mols = _parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry)
     matches = _getMatches(mols, smarts, force)
-    return _mols2svg(mols, size, legend, kekulize=kekulize, fitImage=fitImage,
+    return _mols2svg(mols, size, kekulize=kekulize,
                      atomMapNumber=atomMapNumber, computeCoords=computeCoords, highlightAtomLists=matches)
 
 # ----------------------------------------------------------------------------------------------------------------------
