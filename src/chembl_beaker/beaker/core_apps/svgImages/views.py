@@ -18,7 +18,6 @@ def ctab2svgView(data, params):
 
     kwargs = dict()
     kwargs['size'] = int(params.get('size', 300))
-    separator = params.get('separator', '|')
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', False))
@@ -59,7 +58,6 @@ cURL examples:
 def smiles2svgView(data, params):
 
     kwargs = dict()
-    separator = params.get('separator', '|')
     kwargs['size'] = int(params.get('size', 300))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['delimiter'] = params.get('delimiter', ' ')
@@ -112,7 +110,6 @@ def highlightSmilesFragmentSvgView(data, params):
 
     kwargs = dict()
     smarts = params.get('smarts', '')
-    separator = params.get('separator', '|')
     kwargs['size'] = int(params.get('size', 300))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
     kwargs['delimiter'] = params.get('delimiter', ' ')
@@ -179,7 +176,6 @@ def highlightCtabFragmentSvgView(data, params):
     kwargs = dict()
     smarts = params.get('smarts', '')
     kwargs['size'] = int(params.get('size', 300))
-    separator = params.get('separator', '|')
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', False))
@@ -235,7 +231,6 @@ def inchi2svgView(data, params):
 
     kwargs = dict()
     kwargs['size'] = int(params.get('size', 300))
-    separator = params.get('separator', '|')
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', True))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
     kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
