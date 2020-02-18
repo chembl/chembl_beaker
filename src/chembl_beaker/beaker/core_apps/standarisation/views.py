@@ -6,7 +6,6 @@ from beaker import app
 from bottle import request, response
 from beaker.utils.io import _parseFlag
 from beaker.core_apps.standarisation.impl import _check, _standardize, _get_parent
-import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -24,7 +23,7 @@ def getParentView(data, params):
 @app.route('/getParent', method=['OPTIONS', 'POST'], name='getParent')
 def get_parent():
     """
-Remove salt/solvates.
+Removes salt/solvates using ChEMBL Structure Pipeline functionality.
 Examples and documentation: []()
 CTAB is either single molfile or SDF file.
 cURL examples:
@@ -52,7 +51,7 @@ def standardizeView(data, params):
 @app.route('/standardize', method=['OPTIONS', 'POST'], name='standardize')
 def standardize():
     """
-Get standardized molecule.
+Standardises a molecule using ChEMBL Structure Pipeline functionality.
 Examples and documentation: []()
 CTAB is either single molfile or SDF file.
 cURL examples:
@@ -80,13 +79,13 @@ def checkView(data, params):
 @app.route('/check', method=['OPTIONS', 'POST'], name='check')
 def check():
     """
-Check molecule for issues.
+Check molecule for issues using ChEMBL Structure Pipeline functionality.
 Examples and documentation: []()
 CTAB is either single molfile or SDF file.
 cURL examples:
 
-    curl -X POST --data-binary @standardize.mol ${BEAKER_ROOT_URL}check
-    curl -X POST -F "file=@standardize.mol" ${BEAKER_ROOT_URL}check
+    curl -X POST --data-binary @check.mol ${BEAKER_ROOT_URL}check
+    curl -X POST -F "file=@check.mol" ${BEAKER_ROOT_URL}check
 
     """
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()

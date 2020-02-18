@@ -3,7 +3,6 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from bottle import request
-import base64
 import os
 from beaker import app, config
 from beaker.utils.io import _parseFlag
@@ -59,23 +58,6 @@ def image2smilesView(img, params):
         known_location = '/usr/bin/osra'
     return _image2smiles(img, config.get('osra_binaries_location', known_location), **kwargs)
 
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-@app.route('/image2smiles/<image>', method=['OPTIONS', 'GET'], name="image2smiles")
-def image2smiles(image):
-    """
-Uses OSRA to convert image to CTAB. Image should be urlsafe_base64 encoded data of 300 DPI png graphic.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}image2smiles/$(cat mol.jpg | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}image2smiles/$(cat mol.png | base64 -w 0 | tr "+/" "-_")
-    """
-    if image.startswith('data:'):
-        img = base64.urlsafe_b64decode(image[image.find(',')+1:])
-    else:
-        img = base64.urlsafe_b64decode(image)
-    return image2smilesView(img, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

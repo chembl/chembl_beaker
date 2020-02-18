@@ -66,19 +66,21 @@ class TestServer(unittest.TestCase):
 
 
     def test_inchi2ctab(self):
-        inchi = 'InChI=1S/C19H20FNO3/c20-15-3-1-13(2-4-15)17-7-8-21-10-14(17)11-22-16-5-6-18-19(9-16)24-12-23-18/h1' \
-                '-6,9,14,17,21H,7-8,10-12H2/t14?,17-/m0/s1/i1D,2D,3D,4D,8D2,11D2,12D2,14D,17D'
+
+        ctab = b"""
+     RDKit          2D
+
+  1  0  0  0  0  0  0  0  0  0999 V2000
+    0.0000    0.0000    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+M  END
+$$$$
+"""
+
+        inchi = 'InChI=1S/CH4/h1H4'
 
         ctab_post = self.app.post("/inchi2ctab", inchi)
         self.assertEqual(ctab_post.status_int, 200)
-
-        ebinchi = base64.urlsafe_b64encode(inchi.encode("utf-8"))
-        esinchi = str(ebinchi, "utf-8")
-
-        ctab_get = self.app.get("/inchi2ctab/%s" % esinchi)
-        self.assertEqual(ctab_get.status_int, 200)
-
-        self.assertEqual(ctab_post.body, ctab_get.body)
+        self.assertEqual(ctab_post.body, ctab)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -95,13 +97,6 @@ class TestServer(unittest.TestCase):
         ctab_post = self.app.post("/mcs", txt)
         self.assertEqual(ctab_post.status_int, 200)
         self.assertEqual(ctab_post.body.decode("utf-8"), '[#6]1=[#6]-[#6]=[#6]-[#6]=[#6]-1')
-
-        ebtxt = base64.urlsafe_b64encode(txt.encode("utf-8"))
-        estxt = str(ebtxt, "utf-8")
-
-        ctab_get = self.app.get("/mcs/%s" % estxt)
-        self.assertEqual(ctab_get.status_int, 200)
-        self.assertEqual(ctab_get.body, ctab_post.body)
 
         ctab_post = self.app.post("/mcs?asSmiles=1", txt)
         self.assertEqual(ctab_post.status_int, 200)

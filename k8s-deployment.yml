@@ -9,7 +9,7 @@ spec:
     matchLabels:
       app: chembl-beaker
       tier: backend
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       labels:

@@ -49,7 +49,7 @@ def _smiles22D(data, computeCoords=False, delimiter=' ', smilesColumn=0, nameCol
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _is3D(data, loadMol=True, useRDKitChemistry=False):
+def _is3D(data, loadMol=True, useRDKitChemistry=True):
     mols = _parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry)
     flags = _apply(mols, _check3Dcoords)
     return json.dumps(flags)

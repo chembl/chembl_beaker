@@ -9,7 +9,6 @@ from beaker.core_apps.svgImages.impl import _ctab2svg, _smiles2svg, _inchi2svg
 from beaker.core_apps.svgImages.impl import _highlightCtabFragmentSVG, _highlightSmilesFragmentSVG
 from beaker.core_apps.svgImages.impl import _smiles2SimilarityMapSVG, _sdf2SimilarityMapSVG
 from bottle import request, response
-import base64
 
 # ----------------------------------------------------------------------------------------------------------------------
 

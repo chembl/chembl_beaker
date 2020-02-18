@@ -10,7 +10,6 @@ from beaker.core_apps.conversions.impl import _canonicalize_smiles, _ctab2inchiK
 from beaker.core_apps.conversions.impl import _smiles2inchi, _smiles2inchiKey
 from beaker.core_apps.conversions.impl import _smarts2ctab
 from beaker.utils.io import _parseFlag
-import base64
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -24,28 +23,6 @@ def ctab2smilesView(data, params):
     return _ctab2smiles(data, **kwargs)
 
 # ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/ctab2smiles/<ctab>', method=['OPTIONS', 'GET'], name="ctab2smiles")
-def ctab2smiles(ctab):
-    """
-Converts CTAB to SMILES format. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
-of multiple molfiles.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}ctab2smiles/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}ctab2smiles/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")?isomericSmiles=1
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smiles/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=1"
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smiles/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=0"
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smiles/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=1&sanitize=1"
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smiles/"$(cat explicitHs.mol | base64 -w 0 | tr "+/" "-_")"?removeHs=0"
-    """
-
-    data = base64.urlsafe_b64decode(ctab)
-    return ctab2smilesView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
 
 @app.route('/ctab2smiles', method=['OPTIONS', 'POST'], name="ctab2smiles")
 def ctab2smiles():
@@ -72,27 +49,6 @@ def ctab2smartsView(data, params):
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     return _ctab2smarts(data, **kwargs)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/ctab2smarts/<ctab>', method=['OPTIONS', 'GET'], name="ctab2smarts")
-def ctab2smarts(ctab):
-    """
-Converts CTAB to SMARTS format. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
-of multiple molfiles.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}ctab2smarts/$(cat isomeric.mol | base64 -w 0 | tr "+/" "-_")?isomericSmiles=1
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=1"
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=0"
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat non_kekule.mol | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=1&sanitize=1"
-    curl -X GET "${BEAKER_ROOT_URL}ctab2smarts/"$(cat explicitHs.mol | base64 -w 0 | tr "+/" "-_")"?removeHs=0"
-    """
-
-    data = base64.urlsafe_b64decode(ctab)
-    return ctab2smartsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -135,26 +91,6 @@ def smiles2ctabView(data, params):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-@app.route('/smiles2ctab/<smiles>', method=['OPTIONS', 'GET'], name="smiles2ctab")
-def smiles2ctab(smiles):
-    """
-Converts SMILES to CTAB. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
-optionally containing header line, specific to *.smi format.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET "${BEAKER_ROOT_URL}smiles2ctab/"$(cat rules.smi | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
-    curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2ctab/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(smiles)
-    return smiles2ctabView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 @app.route('/smiles2ctab', method=['OPTIONS', 'POST'], name="smiles2ctab")
 def smiles2ctab():
     """
@@ -181,23 +117,6 @@ def smarts2ctabView(data, params):
     kwargs['sanitize'] = _parseFlag(params.get('sanitize', True))
 
     return _smarts2ctab(data, **kwargs)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/smarts2ctab/<smarts>', method=['OPTIONS', 'GET'], name="smarts2ctab")
-def smarts2ctab(smarts):
-    """
-Converts SMARTS to CTAB. This method accepts urlsafe_base64 encoded string containing single or multiple SMARTS.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}smarts2ctab/$(echo '[CH2X4][CX3](=[OX1])[NX3H2]' | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smarts2ctab/$(cat amino.sma | base64 -w 0 | tr "+/" "-_")
-    curl -X GET "${BEAKER_ROOT_URL}smarts2ctab/"$(cat amino.sma | base64 -w 0 | tr "+/" "-_")"?computeCoords=0"
-    """
-
-    data = base64.urlsafe_b64decode(smarts)
-    return smarts2ctabView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -236,25 +155,6 @@ def smiles2inchiView(data, params):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-@app.route('/smiles2inchi/<smiles>', method=['OPTIONS', 'GET'], name="smiles2inchi")
-def smiles2inchi(smiles):
-    """
-Converts SMILES to InChi. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
-optionally containing header line, specific to *.smi format.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchi/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(smiles)
-    return smiles2inchiView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 @app.route('/smiles2inchi', method=['OPTIONS', 'POST'], name="smiles2inchi")
 def smiles2inchi():
     """
@@ -287,25 +187,6 @@ def smiles2inchiKeyView(data, params):
         kwargs['titleLine'] = _parseFlag(params.get('titleLine', True))
 
     return _smiles2inchiKey(data, **kwargs)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/smiles2inchiKey/<smiles>', method=['OPTIONS', 'GET'], name="smiles2inchiKey")
-def smiles2inchiKey(smiles):
-    """
-Converts SMILES to InChi Key. This method accepts urlsafe_base64 encoded string containing single or multiple SMILES
-optionally containing header line, specific to *.smi format.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat mcs.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles2inchiKey/$(cat mcs_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(smiles)
-    return smiles2inchiKeyView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -348,28 +229,6 @@ def canonicalizeSmilesView(data, params):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-@app.route('/canonicalizeSmiles/<smiles>', method=['OPTIONS', 'GET'], name="canonicalizeSmiles")
-def canonicalizeSmiles(smiles):
-    """
-Converts SMILES to canonical SMILES. This method accepts urlsafe_base64 encoded string containing single or multiple
-SMILES optionally containing header line, specific to *.smi format.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}canonicalizeSmiles/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}canonicalizeSmiles/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET "${BEAKER_ROOT_URL}canonicalizeSmiles/"$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")"?out_delimiter=|&nameHeader=foo"
-    curl -X GET "${BEAKER_ROOT_URL}canonicalizeSmiles/"$(cat non_kekule.smi | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=0"
-    curl -X GET "${BEAKER_ROOT_URL}canonicalizeSmiles/"$(cat non_kekule.smi | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=0&sanitize=1"
-    curl -X GET "${BEAKER_ROOT_URL}canonicalizeSmiles/"$(cat non_kekule.smi | base64 -w 0 | tr "+/" "-_")"?kekuleSmiles=1&sanitize=1"
-    curl -X GET "${BEAKER_ROOT_URL}canonicalizeSmiles/"$(cat isomeric.smi | base64 -w 0 | tr "+/" "-_")"?isomericSmiles=1"
-    """
-
-    data = base64.urlsafe_b64decode(smiles)
-    return canonicalizeSmilesView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 @app.route('/canonicalizeSmiles', method=['OPTIONS', 'POST'], name="canonicalizeSmiles")
 def canonicalizeSmiles():
     """
@@ -388,21 +247,6 @@ cURL examples:
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return canonicalizeSmilesView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/inchi2ctab/<inchi>', method=['OPTIONS', 'GET'], name="inchi2ctab")
-def inchi2ctab(inchi):
-    """
-Converts InChi to CTAB. This method accepts urlsafe_base64 encoded string containing one or multiple InChis.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}inchi2ctab/$(cat aspirin.inchi | base64 -w 0 | tr "+/" "-_")
-    """
-
-    inchis = base64.urlsafe_b64decode(inchi)
-    return _inchi2ctab(inchis)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -432,22 +276,6 @@ def ctab2inchiView(data, params):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-@app.route('/ctab2inchi/<ctab>', method=['OPTIONS', 'GET'], name="ctab2inchi")
-def ctab2inchi(ctab):
-    """
-Converts CTAB to InChis. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
-of multiple molfiles.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}ctab2inchi/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(ctab)
-    return ctab2inchiView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 @app.route('/ctab2inchi', method=['OPTIONS', 'POST'], name="ctab2inchi")
 def ctab2inchi():
     """
@@ -473,22 +301,6 @@ def ctab2inchiKeyView(data, params):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-@app.route('/ctab2inchiKey/<ctab>', method=['OPTIONS', 'GET'], name="ctab2inchiKey")
-def ctab2inchiKey(ctab):
-    """
-Converts CTAB to InChi Keys. CTAB is urlsafe_base64 encoded string containing single molfile or concatenation
-of multiple molfiles.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}ctab2inchiKey/$(cat aspirin.mol | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(ctab)
-    return ctab2inchiKeyView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 @app.route('/ctab2inchiKey', method=['OPTIONS', 'POST'], name="ctab2inchiKey")
 def ctab2inchiKey():
     """
@@ -501,21 +313,6 @@ cURL examples:
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return ctab2inchiKeyView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/inchi2inchiKey/<inchi>', method=['OPTIONS', 'GET'], name="inchi2inchiKey")
-def inchi2inchiKey(inchi):
-    """
-Converts InChis to InChiKeys. This method accepts urlsafe_base64 encoded string containing one or multiple InChis.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}inchi2inchiKey/$(cat aspirin.inchi | base64 -w 0 | tr "+/" "-_")
-    """
-
-    inchis = base64.urlsafe_b64decode(inchi)
-    return _inchi2inchiKey(inchis)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -534,4 +331,3 @@ cURL examples:
     return _inchi2inchiKey(inchis)
 
 # ----------------------------------------------------------------------------------------------------------------------
-

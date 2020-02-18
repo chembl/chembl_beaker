@@ -6,7 +6,6 @@ from beaker import app
 from bottle import request, response
 from beaker.utils.io import _parseFlag
 from beaker.core_apps.structuralAlerts.impl import _get_alerts
-import base64
 
 #-----------------------------------------------------------------------------------------------------------------------
 

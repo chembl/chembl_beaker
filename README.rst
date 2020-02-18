@@ -18,10 +18,9 @@ This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nc
 
  * `Format convertion <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/conversions/views.py>`_
  * `Compound recognition <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/osra/views.py>`_
- * `Vector image (SVG) generation <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/svgImages/views.py>`_
+ * `Vector image (SVG) generation, including Similarity Maps <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/svgImages/views.py>`_
  * `Descriptors <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/descriptors/views.py>`_
  * `Maximum Common Substructure <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/mcs/views.py>`_
- * `Smiliarity maps <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/similarityMaps/views.py>`_
  * `Structural alerts <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/structuralAlerts/views.py>`_
  * `ChEMBL Structure Pipeline <https://github.com/chembl/ChEMBL_Structure_Pipeline>`_
  * Marvin 4 JS compilant `webservices <https://marvin4js.chemaxon.com/marvin4js-latest/docs/dev/webservices.html>`_
