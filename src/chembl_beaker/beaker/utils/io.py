@@ -10,6 +10,7 @@ from beaker.utils.functional import _apply, _call
 from beaker.utils.chemical_transformation import _computeCoords
 from beaker.utils.chemical_transformation import _getSubstructMatch
 from chembl_structure_pipeline.standardizer import parse_molblock
+from bottle import HTTPError
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -58,6 +59,8 @@ def _parseMolData(data, loadMol=False, useRDKitChemistry=False):
     for molblock in suppl:
         if loadMol:
             mol = parse_molblock(molblock, useRDKitChemistry=useRDKitChemistry)
+            if not mol:
+                raise HTTPError(422, "Unprocessable Entity")
             res.append(mol)
         else:
             res.append(molblock)

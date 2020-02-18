@@ -7,7 +7,6 @@ from beaker import app
 from bottle import request
 from beaker.core_apps.D2Coords.impl import _ctab22D, _smiles22D, _is3D
 from beaker.utils.io import _parseFlag
-import base64
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -25,25 +24,9 @@ def ctab22DView(data, params):
 def is3DView(data, params):
     kwargs = dict()
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
-    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
 
     return _is3D(data, **kwargs)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/ctab22D/<ctab>', method=['OPTIONS', 'GET'], name="ctab22D")
-def ctab22D(ctab):
-    """
-Generate 2D coordinates from molfile using Schrodinger's coordgen.
-CTAB is urlsafe_base64 encoded string containing single molfile or concatenation of multiple molfiles.
-cuRL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}ctab22D/$(cat no_coords.mol | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(ctab)
-    return ctab22DView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -51,7 +34,7 @@ cuRL examples:
 @app.route('/ctab22D', method=['OPTIONS', 'POST'], name="ctab22D")
 def ctab22D():
     """
-Generate 2D coordinates from molfile using Schrodinger's coordgen.
+Generate 2D coordinates for a molecule using Schrodinger's coordgen.
 CTAB is either single molfile or SDF file.
 cURL examples:
 
@@ -83,24 +66,6 @@ def smiles22DView(data, params):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-@app.route('/smiles22D/<smiles>', method=['OPTIONS', 'GET'], name="smiles22D")
-def smiles22D(smiles):
-    """
-
-Generate 2D coordinates from SMILES using Schrodinger's coordgen.
-CTAB is urlsafe_base64 encoded string containing single molfile or concatenation of multiple molfiles.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}smiles22D/$(cat aspirin_with_header.smi | base64 -w 0 | tr "+/" "-_")
-    curl -X GET ${BEAKER_ROOT_URL}smiles22D/$(cat aspirin_no_header.smi | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(smiles)
-    return smiles22DView(data, request.params)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
 @app.route('/smiles22D', method=['OPTIONS', 'POST'], name="smiles22D")
 def smiles22D():
     """
@@ -123,7 +88,7 @@ cURL examples:
 @app.route('/is3D', method=['OPTIONS', 'POST'], name="is3D")
 def is3D():
     """
-Check if molecule is 3D.
+Check if molecule has any 3D coordinate.
 CTAB is either single molfile or SDF file.
 cURL examples:
 

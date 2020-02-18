@@ -6,7 +6,6 @@ from beaker import app
 from beaker.core_apps.mcs.impl import _mcs
 from beaker.utils.io import _parseFlag
 from bottle import request
-import base64
 
 # ----------------------------------------------------------------------------------------------------------------------
 
@@ -27,21 +26,6 @@ def mcsView(data, params):
     kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))
 
     return _mcs(data, **kwargs)
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-
-@app.route('/mcs/<ctab>', method=['OPTIONS', 'GET'], name="mcs")
-def mcs(ctab):
-    """
-Returns Maximum Common Substructure of a set of compounds. CTAB is urlsafe_base64 encoded string containing molfiles.
-cURL examples:
-
-    curl -X GET ${BEAKER_ROOT_URL}mcs/$(cat mcs.sdf | base64 -w 0 | tr "+/" "-_")
-    """
-
-    data = base64.urlsafe_b64decode(ctab)
-    return mcsView(data, request.params)
 
 # ----------------------------------------------------------------------------------------------------------------------
 
