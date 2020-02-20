@@ -47,7 +47,7 @@ deploy-dev:
       entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   dependencies:
-      - build-dev
+      - test-dev
   script:
       - echo $KUBE_URL_HX
       - echo "$KUBE_CA_PEM_HX" > "$(pwd)/kube.ca.pem"
@@ -95,7 +95,7 @@ deploy-prod-hx:
         entrypoint: ["/bin/sh", "-c"]
     stage: deploy
     dependencies:
-        - build-prod
+        - test-prod
     script:
         - echo $KUBE_URL_HX
         - echo "$KUBE_CA_PEM_HX" > "$(pwd)/kube.ca.pem"
@@ -117,6 +117,9 @@ deploy-prod-hh:
       name: lachlanevenson/k8s-kubectl:latest
       entrypoint: ["/bin/sh", "-c"]
   stage: deploy
+  dependencies:
+    - test-prod
+
   script:
       - echo $KUBE_URL_HH
       - echo "$KUBE_CA_PEM_HH" > "$(pwd)/kube.ca.pem"
