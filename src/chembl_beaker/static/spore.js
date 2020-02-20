@@ -158,7 +158,7 @@ var spore = {
         $(document).on('dragover', '.drop_zone', spore.handleDragOver);
         $(document).on('drop', '.drop_zone', spore.handleFileSelect);
         $(document).on('change', '.fileUploader', spore.handleFileSelect);
-        $(document).on('mouseover', '.clipboardBtn', spore.handleClipboard);
+        $(document).on('click', '.clipboardBtn', spore.handleClipboard);
 
         spore.settitle(this.destination,this.spec);
 
