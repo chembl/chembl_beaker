@@ -111,7 +111,7 @@ $$$$
         mol = r.body
         r = self.app.post("/standardize", mol)
         self.assertEqual(r.status_int, 200)
-        mol = r.body
+        mol = r.json[0]['standard_molblock']
         r = self.app.post("/ctab2smiles", mol)
         self.assertEqual(r.status_int, 200)
         s_smiles = r.body

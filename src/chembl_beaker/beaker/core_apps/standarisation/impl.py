@@ -19,7 +19,7 @@ def _check(data, loadMol=False, useRDKitChemistry=False):
 def _get_parent(data, loadMol=False, useRDKitChemistry=False):
     mols = _parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry)
     res = _apply(mols, standardizer.get_parent_molblock)
-    res_dict = {k: v for e in res for k, v in zip(('parent_molblock', 'exclude'), e)}
+    res_dict = [{k: v for e in m for k, v in zip(('parent_molblock', 'exclude'), e)} for m in res]
     return json.dumps(res_dict)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -27,6 +27,7 @@ def _get_parent(data, loadMol=False, useRDKitChemistry=False):
 def _standardize(data, loadMol=False, useRDKitChemistry=False):
     mols = _parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry)
     res = _apply(mols, standardizer.standardize_molblock)
-    return res
+    res_list = [{'standard_molblock': m} for m in res]
+    return json.dumps(res_list)
 
 #-----------------------------------------------------------------------------------------------------------------------

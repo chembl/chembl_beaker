@@ -61,6 +61,7 @@ cURL examples:
     """
 
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
+    response.content_type = 'application/json'
     return standardizeView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
@@ -71,6 +72,7 @@ def checkView(data, params):
     kwargs = dict()
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', False))
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
+    response.content_type = 'application/json'
     return _check(data, **kwargs)
 
 
@@ -89,6 +91,7 @@ cURL examples:
 
     """
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
+    response.content_type = 'application/json'
     return checkView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
