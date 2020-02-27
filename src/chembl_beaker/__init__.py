@@ -3,7 +3,7 @@ __author__ = 'mnowotka'
 import rdkit
 
 try:
-    __version__ = '1.5.0'
+    __version__ = '1.5.1'
 except Exception as e:
     __version__ = 'development'
 

@@ -2,6 +2,7 @@ __author__ = 'efelix'
 
 from rdkit import Chem
 from chembl_structure_pipeline import standardizer, checker
+from chembl_structure_pipeline.exclude_flag import exclude_flag
 from beaker.utils.functional import _apply
 from beaker.utils.io import _parseMolData
 import json
@@ -29,5 +30,12 @@ def _standardize(data, loadMol=False, useRDKitChemistry=False):
     res = _apply(mols, standardizer.standardize_molblock)
     res_list = [{'standard_molblock': m} for m in res]
     return json.dumps(res_list)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+def _exclude(data, loadMol=True, useRDKitChemistry=False):
+    mols = _parseMolData(data, loadMol=loadMol, useRDKitChemistry=useRDKitChemistry)
+    res = _apply(mols, exclude_flag, False)
+    return json.dumps(res)
 
 #-----------------------------------------------------------------------------------------------------------------------

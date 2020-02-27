@@ -5,7 +5,7 @@ __author__ = 'efelix'
 from beaker import app
 from bottle import request, response
 from beaker.utils.io import _parseFlag
-from beaker.core_apps.standarisation.impl import _check, _standardize, _get_parent
+from beaker.core_apps.standarisation.impl import _check, _standardize, _get_parent, _exclude
 
 #-----------------------------------------------------------------------------------------------------------------------
 
@@ -90,5 +90,33 @@ cURL examples:
     """
     data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
     return checkView(data, request.params)
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+
+def excludeView(data, params):
+
+    kwargs = dict()
+    kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
+    return _exclude(data, **kwargs)
+
+
+#-----------------------------------------------------------------------------------------------------------------------
+
+@app.route('/exclude', method=['OPTIONS', 'POST'], name='exclude')
+def exclude():
+    """
+Check if the structure will be excluded from ChEMBL.
+Examples and documentation: []()
+CTAB is either single molfile or SDF file.
+cURL examples:
+
+    curl -X POST --data-binary @exclude.mol ${BEAKER_ROOT_URL}exclude
+    curl -X POST -F "file=@exclude.mol" ${BEAKER_ROOT_URL}exclude
+
+    """
+    data = list(request.files.values())[0].file.read() if len(request.files) else request.body.read()
+    return excludeView(data, request.params)
 
 #-----------------------------------------------------------------------------------------------------------------------
