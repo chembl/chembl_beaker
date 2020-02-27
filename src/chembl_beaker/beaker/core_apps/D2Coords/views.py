@@ -24,7 +24,7 @@ def ctab22DView(data, params):
 def is3DView(data, params):
     kwargs = dict()
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
-    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
 
     return _is3D(data, **kwargs)
 
