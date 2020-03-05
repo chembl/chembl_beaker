@@ -77,6 +77,7 @@ def _adjustQuery(pattern):
     params = AdjustQueryParameters()
     params.adjustDegree = False
     params.makeBondsGeneric = True
+    params.makeAtomsGeneric = True
     return AdjustQueryProperties(pattern, params)
 
 # ----------------------------------------------------------------------------------------------------------------------

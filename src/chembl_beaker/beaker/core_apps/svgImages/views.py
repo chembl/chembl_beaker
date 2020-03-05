@@ -179,8 +179,8 @@ def highlightCtabFragmentSvgView(data, params):
     kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
     kwargs['kekulize'] = _parseFlag(params.get('kekulize', False))
     kwargs['atomMapNumber'] = _parseFlag(params.get('atomMapNumber', False))
-    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', True))
-    kwargs['force'] = _parseFlag(params.get('force', True))
+    kwargs['computeCoords'] = _parseFlag(params.get('computeCoords', False))
+    kwargs['force'] = _parseFlag(params.get('force', False))
 
     response.content_type = 'image/svg+xml'
     return _highlightCtabFragmentSVG(data, smarts, **kwargs)
