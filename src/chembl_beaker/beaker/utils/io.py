@@ -9,6 +9,7 @@ from rdkit import Chem
 from beaker.utils.functional import _apply, _call
 from beaker.utils.chemical_transformation import _computeCoords
 from beaker.utils.chemical_transformation import _getSubstructMatch
+import beaker.utils.chemical_transformation as ct
 from chembl_structure_pipeline.standardizer import parse_molblock
 from bottle import HTTPError
 
@@ -138,6 +139,7 @@ def _molFromSmarts(smarts):
 
 def _getMatches(mols, smarts, force=False):
     _call(mols, 'UpdatePropertyCache', strict=False)
+    _apply(mols, ct._sssr)
     return _apply(mols, _getSubstructMatch, _molFromSmarts(smarts), force)
 
 # ----------------------------------------------------------------------------------------------------------------------
