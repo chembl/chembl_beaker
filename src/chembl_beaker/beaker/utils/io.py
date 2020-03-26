@@ -7,8 +7,6 @@ import tempfile
 import io
 from rdkit import Chem
 from beaker.utils.functional import _apply, _call
-from beaker.utils.chemical_transformation import _computeCoords
-from beaker.utils.chemical_transformation import _getSubstructMatch
 import beaker.utils.chemical_transformation as ct
 from chembl_structure_pipeline.standardizer import parse_molblock
 from bottle import HTTPError
@@ -80,7 +78,8 @@ def _parseSMILESData(data, computeCoords=False, delimiter=' ', smilesColumn=0, n
                                    titleLine=titleLine, sanitize=sanitize)
     mols = [x for x in suppl if x]
     if computeCoords:
-        _apply(mols, _computeCoords, True)
+        _apply(mols, ct._computeCoords, True)
+        _apply(mols, ct._wedgeMolBonds)
     _call(mols, 'SetProp', '_Name', '')
     os.remove(fpath)
     return mols
@@ -140,7 +139,7 @@ def _molFromSmarts(smarts):
 def _getMatches(mols, smarts, force=False):
     _call(mols, 'UpdatePropertyCache', strict=False)
     _apply(mols, ct._sssr)
-    return _apply(mols, _getSubstructMatch, _molFromSmarts(smarts), force)
+    return _apply(mols, ct._getSubstructMatch, _molFromSmarts(smarts), force)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

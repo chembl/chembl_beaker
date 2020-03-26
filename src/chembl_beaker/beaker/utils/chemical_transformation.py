@@ -20,6 +20,13 @@ SANITIZE_ALL = sf.SANITIZE_ALL
 # ----------------------------------------------------------------------------------------------------------------------
 
 
+def _wedgeMolBonds(mol, force=False):
+    Chem.WedgeMolBonds(mol, mol.GetConformer())
+    return mol
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 def _computeCoords(mol, force=False):
     if force or (not mol.GetNumConformers() or mol.GetConformer().Is3D()):
         Chem.rdDepictor.SetPreferCoordGen(True)
