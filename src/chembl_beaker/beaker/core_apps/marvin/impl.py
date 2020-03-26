@@ -119,7 +119,7 @@ def _molExport(structure, **kwargs):
     elif output_f == 'mrv':
         out_structure = MolToMarvin(Chem.MolToMolBlock(mol))
 
-    return {"structure": out_structure.decode("utf-8"), "format": output_f, "contentUrl": "", "contentBaseUrl": ""}
+    return {"structure": out_structure, "format": output_f, "contentUrl": "", "contentBaseUrl": ""}
 
 
 # ----------------------------------------------------------------------------------------------------------------------

@@ -24,11 +24,11 @@ except:
 MOL_MARVIN_SCALE = 1.8666666517333335
 
 molBondTypes = {
-"SINGLE" : 1,
-"DOUBLE" : 2,
-"TRIPLE" : 3,
-"AROMATIC" : 'A',
-"UNSPECIFIED" : 8,
+"SINGLE" : "1",
+"DOUBLE" : "2",
+"TRIPLE" : "3",
+"AROMATIC" : "A",
+"UNSPECIFIED" : "8",
 }
 
 charges = {
@@ -65,7 +65,7 @@ class MarvinJSONEncoder(json.JSONEncoder):
                 return [ atom for atom in obj.iterchildren(tag='atom') ]
             if obj.tag == 'bond':
                 return {"atomRefs" : obj.get('atomRefs2').split(),
-                        "order": int(obj.get('order')),
+                        "order": obj.get('order'),
                         "stereo": obj.find("bondStereo")}
             if obj.tag == 'atom':
                 return {"id" : obj.get('id'),
@@ -102,7 +102,7 @@ class MarvinJSONEncoder(json.JSONEncoder):
                             'elementType': obj.get('elementType').split()}
 
             if obj.tag == 'bond':
-                return {"atomRefs" : obj.get('atomRefs2').split(), "order": int(obj.get('order'))}
+                return {"atomRefs" : obj.get('atomRefs2').split(), "order": obj.get('order')}
 
             if obj.tag == 'atom':
                 if obj.get('x2', False):
@@ -215,7 +215,8 @@ def _dict2Mol(obj, scale = 1.0):
                     second_atom = i + 1
                 if first_atom is not None and second_atom is not None:
                     break
-        buffer.write('{:3}{:3}{:3}{:3}{:3}{:3}{:3}\n'.format(first_atom, second_atom, bond['order'], stereo, 0, 0, 0))
+        order = 4 if bond['order'] == 'A' else bond['order']
+        buffer.write('{:3}{:3}{:3}{:3}{:3}{:3}{:3}\n'.format(first_atom, second_atom, order, stereo, 0, 0, 0))
     buffer.write('M  END\n')
     return buffer.getvalue()
 
