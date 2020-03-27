@@ -325,7 +325,7 @@ def _dictToEtree(data, name=None, depth=0):
 
 def _dataToXml(data, options=None):
     options = options or {}
-    return tostring(_dictToEtree(data, options), xml_declaration=False, encoding='utf-8')
+    return tostring(_dictToEtree(data, options), xml_declaration=False, encoding='unicode')
 
 #-----------------------------------------------------------------------------------------------------------------------
 
