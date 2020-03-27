@@ -76,7 +76,6 @@ Implements Marvin 4 js MolConvert web service. Converts compound from one format
     structure = params['structure']
     input_f = params.get('inputFormat')
     output_f = params.get('parameters', 'mrv')
-
     res = _molExport(structure, input=input_f, output=output_f)
     response.content_type = 'application/json'
     return json.dumps(res)
