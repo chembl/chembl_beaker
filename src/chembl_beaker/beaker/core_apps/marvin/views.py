@@ -19,8 +19,9 @@ Marvin's *.mrv format. Dim is an optional parameter specifying if 2D or 3D coord
     params = json.loads(request.body.read())
     structure = params['structure']
     dim = params.get('dim', 2)
+    cgen = params.get('cgen', False)
     response.content_type = 'text/plain'
-    return _clean(structure, dim)
+    return _clean(structure, dim, cgen)
 
 
 # ----------------------------------------------------------------------------------------------------------------------

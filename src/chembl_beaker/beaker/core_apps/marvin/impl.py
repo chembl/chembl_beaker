@@ -20,7 +20,7 @@ def _hydrogenize(block, hydro):
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _clean(mrv, dim=2):
+def _clean(mrv, dim=2, cgen=False):
     block = MarvinToMol(mrv)
     mol = Chem.MolFromMolBlock(block, sanitize=False)
     _call([mol], 'UpdatePropertyCache', strict=False)
@@ -29,9 +29,11 @@ def _clean(mrv, dim=2):
         print("No mol for block:\n %s" % block)
         return mrv
     
-    Chem.rdDepictor.SetPreferCoordGen(True)
+    if cgen:
+        Chem.rdDepictor.SetPreferCoordGen(True)
+    else:
+        Chem.rdDepictor.SetPreferCoordGen(False)
     Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
-    # AllChem.Compute2DCoords(mol, bondLength=0.8)
     return MolToMarvin(Chem.MolToMolBlock(mol))
 
 
