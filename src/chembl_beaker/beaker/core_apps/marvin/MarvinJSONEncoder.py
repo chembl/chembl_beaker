@@ -1,7 +1,7 @@
 __author__ = 'mnowotka'
 
+from lxml import objectify, etree
 from lxml.etree import _ElementTree, Element, tostring
-from lxml import objectify
 from lxml.objectify import ObjectifiedElement, StringElement
 import json
 from datetime import datetime, date
@@ -64,9 +64,10 @@ class MarvinJSONEncoder(json.JSONEncoder):
             if obj.tag == 'atomArray':
                 return [ atom for atom in obj.iterchildren(tag='atom') ]
             if obj.tag == 'bond':
+                st = obj.find("bondStereo")
                 return {"atomRefs" : obj.get('atomRefs2').split(),
                         "order": obj.get('order'),
-                        "stereo": obj.find("bondStereo")}
+                        "stereo": st if st else 0}
             if obj.tag == 'atom':
                 return {"id" : obj.get('id'),
                             "elementType": obj.get('elementType'),
@@ -360,6 +361,9 @@ def MarvinToMol(marvin):
     else:
         f = StringIO(marvin)
     tree = objectify.parse(f)
+    # dont use namespace
+    for elem in tree.getiterator():
+        elem.tag = etree.QName(elem).localname
     js = MarvinJSONEncoder().encode(tree)
     return _jsonToMol(json.loads(js), MOL_MARVIN_SCALE)
 
