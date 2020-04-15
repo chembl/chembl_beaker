@@ -85,4 +85,4 @@ Like every good software written in Python, beaker is self-documented. When you 
 
 Development - writing your own extentions
 --------
-Developing new app should be easy. The only required file is ``views.py`` where you should define your botte ``routes``. 
+Developing new app should be easy. The only required file is ``views.py`` where you should define your bottle ``routes``.
