@@ -12,6 +12,7 @@ from rdkit.Chem import GetSymmSSSR
 from rdkit.Chem import SanitizeMol
 from rdkit.Chem import AdjustQueryProperties
 from rdkit.Chem import AdjustQueryParameters
+from rdkit.Chem import AssignAtomChiralTagsFromStructure
 from rdkit.Chem.rdmolops import SanitizeFlags as sf
 from rdkit import Chem
 from itertools import compress
@@ -86,6 +87,12 @@ def _adjustQuery(pattern):
     params.makeBondsGeneric = True
     params.makeAtomsGeneric = True
     return AdjustQueryProperties(pattern, params)
+
+# ----------------------------------------------------------------------------------------------------------------------
+
+
+def _assignAtomChiralTagsFromStructure(mol):
+    return AssignAtomChiralTagsFromStructure(mol)
 
 # ----------------------------------------------------------------------------------------------------------------------
 

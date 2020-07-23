@@ -40,7 +40,8 @@ DEFAULT_APPS = [
     "beaker.core_apps.standarisation",
     "beaker.core_apps.D2Coords",
     "beaker.core_apps.autoDocs",
-    "beaker.core_apps.structuralAlerts"
+    "beaker.core_apps.structuralAlerts",
+    "beaker.core_apps.calculations"
     ]
 
 DEFAULT_PLUGINS = [
