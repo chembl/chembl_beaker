@@ -19,7 +19,7 @@ Removes any hydrogens from the graph of a molecule. CTAB is either single molfil
 cURL examples:
 
     curl -X POST --data-binary @removeHs.mol ${BEAKER_ROOT_URL}removeHs
-    curl -X POST -F "file=@removeHs.mol" -F "implicitOnly=1" ${BEAKER_ROOT_URL}removeHs
+    curl -X POST -F "file=@removeHs.mol" ${BEAKER_ROOT_URL}removeHs
     """
 
     data = request.files.values()[0].file.read() if len(request.files) else request.body.read()
