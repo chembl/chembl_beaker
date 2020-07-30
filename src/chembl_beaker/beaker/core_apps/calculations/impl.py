@@ -1,5 +1,4 @@
 from beaker.utils.io import _parseMolData
-from beaker.core_apps.D2Coords.impl import _check3Dcoords
 from chembl_structure_pipeline.standardizer import remove_hs_from_mol
 from chembl_structure_pipeline.standardizer import parse_molblock
 from rdkit import Chem
@@ -29,11 +28,8 @@ def _removeHs(data):
         props = molblock.split("M  END")[1].strip()
         props =  props if len(props) > 1 else None
         Chem.FastFindRings(mol)
-        if mol.NeedsUpdatePropertyCache():
-            mol.UpdatePropertyCache(strict=False)
-        if _check3Dcoords(mol):
-            Chem.AssignStereochemistryFrom3D(mol)
-        else:
-            Chem.AssignAtomChiralTagsFromStructure(mol)
+        mol.UpdatePropertyCache(strict=False)
+        Chem.AssignAtomChiralTagsFromStructure(mol)
+        Chem.AssignStereochemistry(mol, cleanIt=True, force=True)
         ms.append((remove_hs_from_mol(mol), props))
     return _getSDFString(ms)
