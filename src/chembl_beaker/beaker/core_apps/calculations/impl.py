@@ -23,7 +23,7 @@ def _create_sdf(f, mols):
 def remove_hs_from_mol(m):
     indices = []
     for atom in m.GetAtoms():
-        if atom.GetAtomicNum() == 1:
+        if atom.GetAtomicNum() == 1 and not atom.GetIsotope():
             bnd = atom.GetBonds()[0]
             if not (bnd.GetBondDir() in (Chem.BondDir.BEGINWEDGE, Chem.BondDir.BEGINDASH)) and \
                     not (bnd.HasProp("_MolFileBondStereo") and bnd.GetUnsignedProp("_MolFileBondStereo") in (1, 6)):
