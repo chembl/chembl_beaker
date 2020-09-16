@@ -46,7 +46,7 @@ var spore = {
         if(files.length > 1)
             return alert('More than one file added', 'Sorry, you can currently add only one file at time...');
 
-        if(file.size > 2000000)
+        if(file.size > 2097152)
             return alert('File too large', 'Files larger than 2MB will not be accepted now.');
 
         var descriptionBox = $('.dropDesc', target);
