@@ -19,7 +19,6 @@ spec:
       containers:
       - name: chembl-beaker
         image: <DOCKER_IMAGE>:<VERSION>
-        imagePullPolicy: Always
         ports:
         - containerPort: 5000
       imagePullSecrets:
