@@ -17,12 +17,12 @@ stages:
     - test
     - deploy
 
-# --------------------------- DEV --------------------------------------------
+# --------------------------- STAGING --------------------------------------------
 
-build-dev:
+build-staging:
   stage: build
   only:
-    - dev
+    - staging
   script:
     - docker version # verify docker cli is there. Also prints server info
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
@@ -31,37 +31,37 @@ build-dev:
     - echo Deploying $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
     - docker push ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA}
 
-test-dev:
+test-staging:
   stage: test
   only:
-      - dev 
+      - staging
   dependencies:
-      - build-dev
+      - build-staging
   script:
       - docker run --entrypoint python ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA} chembl_beaker/test_beaker.py
       - echo "done"
 
-deploy-dev:
+deploy-staging:
   image:
       name: lachlanevenson/k8s-kubectl:latest
       entrypoint: ["/bin/sh", "-c"]
   stage: deploy
   dependencies:
-      - test-dev
+      - test-staging
   script:
       - echo $KUBE_URL_HX
       - echo "$KUBE_CA_PEM_HX" > "$(pwd)/kube.ca.pem"
       - kubectl config set-cluster ${KUBE_CLUS_NAME_HX} --server="${KUBE_URL_HX}" --certificate-authority="$(pwd)/kube.ca.pem"
       - kubectl config set-credentials ${KUBE_USER_HX} --token="${KUBE_TOKEN_HX}"
-      - kubectl config set-context ${CHEMBL_NS_DEV} --cluster=${KUBE_CLUS_NAME_HX} --user=${KUBE_USER_HX}
-      - kubectl config use-context ${CHEMBL_NS_DEV}
-      - echo ${CHEMBL_NS_DEV} ${KUBE_URL_HX} ${KUBE_CLUS_NAME_HX} ${KUBE_USER_HX}
-      - kubectl get pods -n ${CHEMBL_NS_DEV}
+      - kubectl config set-context ${CHEMBL_NS_STAGING} --cluster=${KUBE_CLUS_NAME_HX} --user=${KUBE_USER_HX}
+      - kubectl config use-context ${CHEMBL_NS_STAGING}
+      - echo ${CHEMBL_NS_STAGING} ${KUBE_URL_HX} ${KUBE_CLUS_NAME_HX} ${KUBE_USER_HX}
+      - kubectl get pods -n ${CHEMBL_NS_STAGING}
       - sed -i "s~<VERSION>~${CI_COMMIT_SHORT_SHA}~" k8s-deployment.yml
       - sed -i "s~<DOCKER_IMAGE>~${DOCKER_IMAGE}~" k8s-deployment.yml
-      - kubectl apply -n ${CHEMBL_NS_DEV} -f k8s-deployment.yml
+      - kubectl apply -n ${CHEMBL_NS_STAGING} -f k8s-deployment.yml
   only:
-      - dev
+      - staging
 
 # --------------------------- PROD -------------------------------------------
 
