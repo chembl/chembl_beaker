@@ -10,7 +10,7 @@ from beaker.utils.io import _parseMolData
 # ----------------------------------------------------------------------------------------------------------------------
 
 
-def _mcs(data, asSmiles, atomCompare, bondCompare, threshold, ringMatchesRingOnly, completeRingsOnly, loadMol=False, useRDKitChemistry=False,
+def _mcs(data, asSmiles, atomCompare, bondCompare, threshold, ringMatchesRingOnly, completeRingsOnly, loadMol=True, useRDKitChemistry=True,
          isomericSmiles=False, canonical=True, kekuleSmiles=False):
     ms = _parseMolData(data, loadMol=loadMol,
                        useRDKitChemistry=useRDKitChemistry)

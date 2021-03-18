@@ -20,7 +20,7 @@ def mcsView(data, params):
     kwargs['completeRingsOnly'] = _parseFlag(params.get('completeRingsOnly', False))
     kwargs['threshold'] = params.get('threshold', None)
     kwargs['loadMol'] = _parseFlag(params.get('loadMol', True))
-    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', False))
+    kwargs['useRDKitChemistry'] = _parseFlag(params.get('useRDKitChemistry', True))
     kwargs['isomericSmiles'] = _parseFlag(params.get('isomericSmiles', False))
     kwargs['canonical'] = _parseFlag(params.get('canonical', True))
     kwargs['kekuleSmiles'] = _parseFlag(params.get('kekuleSmiles', False))

@@ -144,12 +144,12 @@ $$$$
         ctab_post = self.app.post("/mcs", txt)
         self.assertEqual(ctab_post.status_int, 200)
         self.assertEqual(
-            ctab_post.body.decode("utf-8"), "[#6]1=[#6]-[#6]=[#6]-[#6]=[#6]-1"
+            ctab_post.body.decode("utf-8"), "[#6]1:[#6]:[#6]:[#6]:[#6]:[#6]:1"
         )
 
         ctab_post = self.app.post("/mcs?asSmiles=1", txt)
         self.assertEqual(ctab_post.status_int, 200)
-        self.assertEqual(ctab_post.body, b"C1=CC=CC=C1")
+        self.assertEqual(ctab_post.body, b"c1ccccc1")
 
     # ----------------------------------------------------------------------------------------------------------------------
 

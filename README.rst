@@ -14,10 +14,9 @@ What is Beaker?
 
 This is chembl_beaker package developed at `ChEMBL <https://www.ebi.ac.uk/chembl/>`_ group, `EMBL-EBI <https://www.ebi.ac.uk/>`_, Cambridge, UK.
 
-This is wrapper for `RDKit <http://www.rdkit.org/>`_ and `OSRA <http://cactus.nci.nih.gov/osra/>`_, which exposes following methods:
+This is wrapper for `RDKit <http://www.rdkit.org/>`_ which exposes following methods:
 
  * `Format convertion <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/conversions/views.py>`_
- * `Compound recognition <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/osra/views.py>`_
  * `Vector image (SVG) generation, including Similarity Maps <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/svgImages/views.py>`_
  * `Descriptors <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/descriptors/views.py>`_
  * `Maximum Common Substructure <https://github.com/chembl/chembl_beaker/blob/master/src/chembl_beaker/beaker/core_apps/mcs/views.py>`_
@@ -61,7 +60,6 @@ Beaker is distributed with example configuration file named ``beaker.conf.sample
  * **bottle_port** - number of port on which Bottle server is listening for connections (integer, default ``8080``)
  * **bottle_host** - hostname of Bottle server (string, default ``localhost``)
  * **server_middleware** - networking middleware library used by Bottle (string, default ``tornado``)
- * **osra_binaries_location** - path to OSRA binary you want to use for compound recognition (string, default ``/usr/bin/osra``)
  * **enable_cors** - enable CORS plugin and respect all header settings below (True/False, default ``True``) 
  * **access_control_allow_origin** - content of 'Access-Control-Allow-Origin' header send with every response (string, default ``*``)
  * **access_control_allow_methods** - content of 'Access-Control-Allow-Methods' header send with every response (string, default ``GET, POST, PUT, OPTIONS``)
@@ -72,7 +70,6 @@ Beaker is distributed with example configuration file named ``beaker.conf.sample
     "beaker.core_apps.descriptors",
     "beaker.core_apps.marvin",
     "beaker.core_apps.mcs",
-    "beaker.core_apps.osra",
     "beaker.core_apps.rasterImages",
     "beaker.core_apps.svgImages",
     "beaker.core_apps.similarityMaps",

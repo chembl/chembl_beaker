@@ -1,20 +1,15 @@
 name: chembl-beaker
 channels:
 - defaults
-- rdkit
-- bioconda
-- chembl
+- conda-forge
 dependencies:
 - pillow==6.1.0
 - rdkit==2019.09.02
 - lxml==4.4.1
 - matplotlib==3.1.1
 - pycairo==1.18.1
-- osra==2.0.1
 - chembl_structure_pipeline==1.0.0
-- pip:
-    - bottle==0.12.18
-    - netaddr==0.7.19
-    - pymongo==3.10
-    - WebTest==2.0
-    - gunicorn==20.0
+- bottle==0.12.18
+- WebTest==2.0.35
+- netaddr==0.7.19
+- gunicorn==20.0.4

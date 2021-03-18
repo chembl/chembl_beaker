@@ -35,7 +35,6 @@ DEFAULT_APPS = [
     "beaker.core_apps.descriptors",
     "beaker.core_apps.marvin",
     "beaker.core_apps.mcs",
-    "beaker.core_apps.osra",
     "beaker.core_apps.svgImages",
     "beaker.core_apps.standarisation",
     "beaker.core_apps.D2Coords",
