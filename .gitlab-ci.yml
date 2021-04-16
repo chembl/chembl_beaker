@@ -25,10 +25,10 @@ build-staging:
     - staging
   script:
     - docker version # verify docker cli is there. Also prints server info
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo Building $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
     - docker build -t $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA} .
     - echo Deploying $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - docker push ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA}
 
 test-staging:
@@ -74,10 +74,10 @@ build-prod:
         DOCKER_HOST: tcp://docker:2375
     script:
         - docker version # verify docker cli is there. Also prints server info
-        - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
         - echo Building $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
         - docker build -t $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA} .
         - echo Deploying $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
+        - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
         - docker push ${DOCKER_IMAGE}:${CI_COMMIT_SHORT_SHA}
 
 test-prod:
