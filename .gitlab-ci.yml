@@ -76,6 +76,10 @@ build-prod:
        - master
     variables:
         DOCKER_HOST: tcp://docker:2375
+    before_script:
+        - mkdir -p $HOME/.docker
+        - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+        - cat $HOME/.docker/config.json
     script:
         - docker version # verify docker cli is there. Also prints server info
         - echo Building $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
