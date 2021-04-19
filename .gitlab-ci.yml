@@ -23,6 +23,10 @@ build-staging:
   stage: build
   only:
     - staging
+  before_script:
+    - mkdir -p $HOME/.docker
+    - echo $DOCKER_AUTH_CONFIG > $HOME/.docker/config.json
+    - cat $HOME/.docker/config.json
   script:
     - docker version # verify docker cli is there. Also prints server info
     - echo Building $DOCKER_IMAGE:${CI_COMMIT_SHORT_SHA}
