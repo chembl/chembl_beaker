@@ -1,10 +1,11 @@
 __author__ = 'mnowotka'
 
+from chembl_structure_pipeline.standardizer import parse_molblock
 from lxml import objectify, etree
 from lxml.etree import _ElementTree, Element, tostring
 from lxml.objectify import ObjectifiedElement, StringElement
 import json
-from datetime import datetime, date
+from datetime import date
 import rdkit
 from rdkit import Chem
 from rdkit.Chem.rdchem import GetPeriodicTable
@@ -334,7 +335,7 @@ def MolToMarvin(mol):
     if mol.endswith('.mol') and os.path.exists(mol):
         mol = Chem.MolFromMolFile(mol, False, False, False)
     else:
-        mol = Chem.MolFromMolBlock(mol, False, False, False)
+        mol = parse_molblock(mol, useRDKitChemistry=False)
     _call([mol], 'UpdatePropertyCache', strict=False)
     _apply([mol], ct._sssr)
 

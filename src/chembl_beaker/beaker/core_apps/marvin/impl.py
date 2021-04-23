@@ -3,7 +3,6 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from rdkit import Chem
-from rdkit.Chem import AllChem
 from beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
 from beaker.utils.functional import _apply, _call
 import beaker.utils.chemical_transformation as ct
@@ -102,6 +101,9 @@ def _molExport(structure, **kwargs):
     if not mol.GetNumConformers() or mol.GetConformer().Is3D():
         Chem.rdDepictor.SetPreferCoordGen(True)
         Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
+
+    # apply wedge bonds
+    Chem.WedgeMolBonds(mol, mol.GetConformer())
 
     if output_f == 'smiles':
         out_structure = Chem.MolToSmiles(mol)
