@@ -3,6 +3,7 @@ __author__ = 'mnowotka'
 # ----------------------------------------------------------------------------------------------------------------------
 
 from rdkit import Chem
+from chembl_structure_pipeline.standardizer import parse_molblock
 from beaker.core_apps.marvin.MarvinJSONEncoder import MolToMarvin, MarvinToMol
 from beaker.utils.functional import _apply, _call
 import beaker.utils.chemical_transformation as ct
@@ -87,13 +88,13 @@ def _molExport(structure, **kwargs):
     if not input_f:
         mol = _autoDetect(str(structure))
     elif input_f == 'mrv':
-        mol = Chem.MolFromMolBlock(MarvinToMol(structure), sanitize=False)
+        mol = parse_molblock(MarvinToMol(structure), useRDKitChemistry=False)
     elif input_f == 'smiles':
         mol = Chem.MolFromSmiles(str(structure), sanitize=False)
     elif input_f == 'inchi':
         mol = Chem.MolFromInchi(str(structure))
     else:
-        mol = Chem.MolFromMolBlock(structure, sanitize=False)
+        mol = parse_molblock(structure, useRDKitChemistry=False)
 
     _call([mol], 'UpdatePropertyCache', strict=False)
     _apply([mol], ct._sssr)
@@ -101,9 +102,8 @@ def _molExport(structure, **kwargs):
     if not mol.GetNumConformers() or mol.GetConformer().Is3D():
         Chem.rdDepictor.SetPreferCoordGen(True)
         Chem.rdDepictor.Compute2DCoords(mol, bondLength=0.8)
-
-    # apply wedge bonds
-    Chem.WedgeMolBonds(mol, mol.GetConformer())
+        # apply wedge bonds
+        Chem.WedgeMolBonds(mol, mol.GetConformer())
 
     if output_f == 'smiles':
         out_structure = Chem.MolToSmiles(mol)
@@ -135,7 +135,7 @@ def _autoDetect(structure):
         mol = Chem.MolFromSmiles(structure.strip(), sanitize=False)
 
     elif Chem.MolFromMolBlock(structure, sanitize=False):
-        return Chem.MolFromMolBlock(structure, sanitize=False)
+        return parse_molblock(structure, useRDKitChemistry=False)
 
     elif Chem.INCHI_AVAILABLE and Chem.inchi.MolFromInchi(structure.strip(), sanitize=True, removeHs=True):
         mol = Chem.inchi.MolFromInchi(structure.strip(), sanitize=True, removeHs=True)
